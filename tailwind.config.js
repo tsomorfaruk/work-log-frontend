@@ -1,19 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ['class'],
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: ["class"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       screens: {
-        xs: '400px',
+        xs: "400px",
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+      colors: {
+        686868: "#686868",
+        CFE6F1: "#CFE6F1",
+        303030: "#303030",
+        FFFFFF: "#FFFFFF",
+        ACACAC: "#ACACAC",
+        "007B99": "#007B99",
+        F2FCFF: "#F2FCFF",
       },
-      colors: {},
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require("tailwindcss-animate")],
 };

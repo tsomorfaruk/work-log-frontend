@@ -1,15 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
 const BASE_URL =
-  import.meta.env.MODE === 'development'
+  import.meta.env.MODE === "development"
     ? import.meta.env.VITE_BASE_URL_DEV
     : import.meta.env.VITE_BASE_URL_PROD;
 
-const axiosInstance = axios.create({
+const AxiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
+    Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
-export default axiosInstance;
+export default AxiosInstance;

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
 import { Utils } from "@/lib/utils";
 import { ApiResponse } from "@/classes/ApiResponse";
+import AxiosInstance from "@/apis/axiosInstance";
 const { buildUrl } = Utils;
 
 export const useApi = (
-  { endPoint = "", method = "get", query = {}, pathParams = {}, options = {} },
+  { endpoint = "", method = "get", query = {}, pathParams = {}, options = {} },
   initCall: boolean = true
 ) => {
   const [params, updateUParams] = useState(query);
@@ -21,9 +21,9 @@ export const useApi = (
     result: {},
   });
 
-  const apiUrl = useMemo(
-    () => buildUrl(endPoint, params, pathParams),
-    [endPoint, params, pathParams]
+  const apiEndpoint = useMemo(
+    () => buildUrl(endpoint, params, pathParams),
+    [endpoint, params, pathParams]
   );
 
   const fetchApiOnUpdate = useCallback(async () => {
@@ -32,8 +32,8 @@ export const useApi = (
     setResponse((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data } = await axios({
-        url: apiUrl,
+      const { data } = await AxiosInstance({
+        url: apiEndpoint,
         method,
         ...options,
       });
@@ -47,16 +47,16 @@ export const useApi = (
     } catch (error) {
       setResponse((prev) => ({ ...prev, isError: error, isLoading: false }));
     }
-  }, [apiUrl, method, options]);
+  }, [apiEndpoint, method, options]);
 
   const apiRequest = useCallback(
     async ({ payload = {}, options = {} }) => {
-      const url = Utils.buildUrl(endPoint, query, pathParams);
+      const url = Utils.buildUrl(endpoint, query, pathParams);
 
       setResponse((prev) => ({ ...prev, isLoading: true }));
 
       try {
-        const { data } = await axios({
+        const { data } = await AxiosInstance({
           url,
           method,
           data: payload,
@@ -73,7 +73,7 @@ export const useApi = (
         setResponse((prev) => ({ ...prev, isError: error, isLoading: false }));
       }
     },
-    [endPoint, query, method, pathParams]
+    [endpoint, query, method, pathParams]
   );
 
   const setApiPause = useCallback((pause: boolean = true) => {
