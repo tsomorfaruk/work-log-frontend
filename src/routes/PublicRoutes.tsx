@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import BgUrl from "@/assets/images/loginBg.jpg";
 
-export default function PubRoutes() {
+export default function PublicRoutes() {
   return (
     <div
       style={{ backgroundImage: `url(${BgUrl})` }}

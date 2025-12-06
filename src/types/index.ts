@@ -1,35 +1,36 @@
-import React from 'react';
+import { ApiResponse } from "@/classes/ApiResponse";
+import React from "react";
 
 export interface DefaultProps {
   children?: React.ReactElement | React.ReactElement[] | string;
   className?: string;
 }
 
-export interface RangeDataType {
-  id: string;
-  start: number;
-  end: number;
-  date?: string;
+export type QueryObj = Record<string, unknown>;
+export type PathParams = Record<string, string | number | undefined>;
+
+export interface UseApiConfig {
+  endpoint?: string;
+  method?: "get" | "post" | "put" | "patch" | "delete";
+  query?: QueryObj;
+  pathParams?: PathParams;
+  options?: Record<string, unknown>;
 }
 
-export interface HourToStringT {
-  hr: number;
-  min: number;
-  amp: string;
-}
-export interface SlotOptionType {
-  isDelButton?: boolean;
-  isAddButton?: boolean;
-  isMinSlot?: boolean;
-  isDashSlot?: boolean;
-  isHourSlot?: boolean;
-  isOffline?: boolean;
-}
-export interface SlotDataType {
-  options: SlotOptionType;
-  slots: RangeDataType[];
+export interface ApiHookState<T> {
+  isLoading: boolean;
+  hasError: unknown;
+  result: ApiResponse<T>;
 }
 
-export interface SlotsDataType {
-  [key: string]: SlotDataType;
+export type UpdateQueryType = QueryObj | ((prev: QueryObj) => QueryObj);
+
+export interface AuthState {
+  token: string | null;
+  user: { id: string | null; name: string } | null; // <- Replace `any` with your User type later
+}
+
+export interface AuthContextType {
+  auth: AuthState;
+  setAuth: (auth: AuthState) => void;
 }

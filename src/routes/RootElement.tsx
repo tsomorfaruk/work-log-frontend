@@ -1,10 +1,10 @@
-import Layout from '@/layout/Layout';
-import Login from '@/pages/Login';
-import Home from '@/pages/Home';
-import { Route, Routes } from 'react-router-dom';
-import NotFound from './NotFound';
-import PrivateRoutes from './PrivateRoutes';
-import PublicRoutes from './PublicRoutes';
+import Layout from "@/layout/Layout";
+import Login from "@/pages/Login";
+import Home from "@/pages/Home";
+import { Route, Routes } from "react-router-dom";
+import NotFound from "./NotFound";
+import PrivateRoutes from "./PrivateRoutes";
+import PublicRoutes from "./PublicRoutes";
 
 export default function RootElement() {
   return (
@@ -19,7 +19,7 @@ export default function RootElement() {
       </Route>
 
       {/* Private Routes */}
-      <Route element={<PrivateRoutes />}>
+      <Route path="*" element={<PrivateRoutes />}>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
         </Route>

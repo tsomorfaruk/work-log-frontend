@@ -1,13 +1,28 @@
-export class ApiResponse<T> {
-  data: T | null  ;
+export interface IApiResponse<T> {
+  data: T | null;
   totalRecord: number;
-  status?: string;
-  message?: string;   
+  status: "success" | "error" | string;
+  message: string;
+}
 
-  constructor(data: T | null = null, totalRecord: number = 0) {
-    this.data = data??{}  as T;
-    this.totalRecord = totalRecord;
-    this.status = undefined;
-    this.message = undefined;
-  } 
+export class ApiResponse<T> implements IApiResponse<T> {
+  data: T | null;
+  totalRecord: number;
+  status: "success" | "error" | string;
+  message: string;
+
+  constructor(payload: IApiResponse<T>) {
+    this.data = payload.data ?? null;
+    this.totalRecord = payload.totalRecord ?? 0;
+    this.status = payload.status;
+    this.message = payload.message;
+  }
+}
+
+export class ApiError extends Error {
+  status?: number;
+  constructor(message: string, status?: number) {
+    super(message);
+    this.status = status;
+  }
 }

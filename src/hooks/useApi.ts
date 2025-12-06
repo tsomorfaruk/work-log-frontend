@@ -1,57 +1,95 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Utils } from "@/lib/utils";
-import { ApiResponse } from "@/classes/ApiResponse";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ApiResponse, IApiResponse } from "@/classes/ApiResponse";
 import AxiosInstance from "@/apis/axiosInstance";
+import { isEqual } from "lodash";
+import { UseApiConfig, ApiHookState, UpdateQueryType } from "@/types";
+import { Utils } from "@/lib/utils";
+
 const { buildUrl } = Utils;
 
-export const useApi = (
-  { endpoint = "", method = "get", query = {}, pathParams = {}, options = {} },
+export const useApi = <T>(
+  {
+    endpoint = "",
+    method = "get",
+    query = {},
+    pathParams = {},
+    options = {},
+  }: UseApiConfig,
   initCall: boolean = true
 ) => {
-  const [params, updateUParams] = useState(query);
-  const isPause = useRef(!initCall);
-
-  const [response, setResponse] = useState<{
-    isLoading: boolean;
-    isError: unknown;
-    result: object;
-  }>({
-    isLoading: false,
-    isError: true,
-    result: {},
+  const oldConfigRef = useRef({
+    endpoint,
+    method,
+    query,
+    options,
+    pathParams,
   });
 
-  const apiEndpoint = useMemo(
-    () => buildUrl(endpoint, params, pathParams),
-    [endpoint, params, pathParams]
-  );
+  const [apiConfig, setApiConfig] = useState(oldConfigRef.current);
+  const isPaused = useRef(!initCall);
 
-  const fetchApiOnUpdate = useCallback(async () => {
-    if (isPause.current) return;
+  const [response, setResponse] = useState<ApiHookState<T>>({
+    isLoading: false,
+    hasError: null,
+    result: {} as ApiResponse<T>,
+  });
+
+  // --------------------------
+  // Update Query
+  // --------------------------
+  const updateQuery = (modifier: UpdateQueryType) => {
+    setApiConfig((prev) => ({
+      ...prev,
+      query: typeof modifier === "function" ? modifier(prev.query) : modifier,
+    }));
+  };
+
+  // --------------------------
+  // Auto fetch when config changes
+  // --------------------------
+  const fetchApi = useCallback(async () => {
+    const { endpoint, method, query, pathParams, options } = apiConfig;
+    const url = buildUrl(endpoint, query, pathParams);
+
+    if (isPaused.current) return;
 
     setResponse((prev) => ({ ...prev, isLoading: true }));
 
     try {
       const { data } = await AxiosInstance({
-        url: apiEndpoint,
+        url,
         method,
         ...options,
       });
 
       if (data.status !== "success") {
-        throw new Error(data.message || "Fetching error");
+        throw new Error(data.message ?? "API error");
       }
 
-      const result = new ApiResponse(data.body, data.body.totalRecord);
-      setResponse({ isLoading: false, isError: false, result });
-    } catch (error) {
-      setResponse((prev) => ({ ...prev, isError: error, isLoading: false }));
+      const result = new ApiResponse<T>(data as IApiResponse<T>);
+      setResponse({ isLoading: false, hasError: null, result });
+    } catch (err) {
+      setResponse((prev) => ({
+        ...prev,
+        isLoading: false,
+        hasError: err,
+      }));
     }
-  }, [apiEndpoint, method, options]);
+  }, [apiConfig]);
 
+  // --------------------------
+  // Manual API Request
+  // --------------------------
   const apiRequest = useCallback(
-    async ({ payload = {}, options = {} }) => {
-      const url = Utils.buildUrl(endpoint, query, pathParams);
+    async ({
+      payload = {},
+      options: overrideOptions = {},
+    }: {
+      payload?: unknown;
+      options?: Record<string, unknown>;
+    }) => {
+      const { endpoint, method, query, pathParams, options } = apiConfig;
+      const url = buildUrl(endpoint, query, pathParams);
 
       setResponse((prev) => ({ ...prev, isLoading: true }));
 
@@ -61,36 +99,63 @@ export const useApi = (
           method,
           data: payload,
           ...options,
+          ...overrideOptions,
         });
 
         if (data.status !== "success") {
-          throw new Error(data.message || "Fetching error");
+          throw new Error(data.message ?? "API error");
         }
 
-        const result = new ApiResponse(data.body, data.body.totalRecord);
-        setResponse({ isLoading: false, isError: false, result });
-      } catch (error) {
-        setResponse((prev) => ({ ...prev, isError: error, isLoading: false }));
+        const result = new ApiResponse<T>(data as IApiResponse<T>);
+        setResponse({ isLoading: false, hasError: null, result });
+
+        return { isLoading: false, hasError: null, result };
+      } catch (err) {
+        setResponse((prev) => ({
+          ...prev,
+          isLoading: false,
+          hasError: err,
+        }));
+
+        return {
+          isLoading: false,
+          hasError: err,
+          result: {} as ApiResponse<T>,
+        };
       }
     },
-    [endpoint, query, method, pathParams]
+    [apiConfig]
   );
 
+  // --------------------------
+  // Pause / Resume API
+  // --------------------------
   const setApiPause = useCallback((pause: boolean = true) => {
-    isPause.current = pause;
+    isPaused.current = pause;
   }, []);
 
+  // --------------------------
+  // React: Re-run when config changes
+  // --------------------------
   useEffect(() => {
-    fetchApiOnUpdate();
-  }, [fetchApiOnUpdate]);
+    fetchApi();
+  }, [fetchApi]);
+
+  useEffect(() => {
+    const newConfig = { endpoint, method, query, pathParams, options };
+
+    if (!isEqual(oldConfigRef.current, newConfig)) {
+      oldConfigRef.current = newConfig;
+      setApiConfig(newConfig);
+    }
+  }, [endpoint, method, query, pathParams, options]);
 
   return {
     ...response,
+    updateQuery,
     apiRequest,
-    updateUParams,
     setApiPause,
-    isPause,
-    params,
-    refetch: fetchApiOnUpdate,
+    refetch: fetchApi,
+    isPaused,
   };
 };
