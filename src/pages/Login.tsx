@@ -1,13 +1,13 @@
 import Input from "@/components/common/Input";
-import { FormEvent, ReactNode, useContext, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { FormEvent, useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import TextComp from "@/assets/svgs/Text.svg?react";
 import { useApi } from "@/hooks/useApi";
 import { AuthEndpoint } from "@/apis/Auth";
 import { Utils } from "@/lib/utils";
-import { AuthContext } from "@/contexts/auth/AuthContext";
 import { CookieManager } from "@/classes/CookieManger";
-import { capitalize, set } from "lodash";
+import { AuthState } from "@/types";
+import { AuthContext } from "@/contexts/auth/AuthContext";
 
 export default function Login() {
   const { setAuth } = useContext(AuthContext);
@@ -28,12 +28,12 @@ export default function Login() {
     const response = await apiRequest({ payload: data });
 
     if (!response.hasError) {
-      const { token, user } = response.result?.data || {};
+      const { token, user } = (response.result?.data as AuthState) || {};
 
       setAuth({ token: token ?? null, user: user ?? null });
 
       // Remember me
-      if (data?.isRemember?.checked) {
+      if (data?.isRemember) {
         CookieManager.set("token", token, { days: 7 });
       }
 
@@ -45,7 +45,8 @@ export default function Login() {
      *  Handle Error with TS-safe typing
      * ------------------------ */
     const axiosMsg =
-      (response.hasError as any)?.response?.data?.message ?? "Login failed";
+      (response.hasError as Record<string, object>)?.response?.data?.message ??
+      "Login failed";
 
     setError(axiosMsg);
 

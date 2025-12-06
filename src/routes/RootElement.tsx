@@ -4,14 +4,24 @@ import Home from "@/pages/Home";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./NotFound";
 import PrivateRoutes from "./PrivateRoutes";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "@/contexts/auth/AuthContext";
+import { CookieManager } from "@/classes/CookieManger";
 import PublicRoutes from "./PublicRoutes";
 
 export default function RootElement() {
+  const { setAuth } = useContext(AuthContext);
+
+  useEffect(() => {
+    const token = CookieManager.get("token");
+    if (token) {
+      setAuth((prev) => ({ ...prev, token: token }));
+    }
+  }, [setAuth]);
+
   return (
     <Routes>
-      {/* Public Layout (optional) */}
       <Route element={<PublicRoutes />}>
-        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         {/* <Route path="/signup" element={<Signup />} /> */}
         {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
@@ -19,7 +29,7 @@ export default function RootElement() {
       </Route>
 
       {/* Private Routes */}
-      <Route path="*" element={<PrivateRoutes />}>
+      <Route path="/" element={<PrivateRoutes />}>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
         </Route>

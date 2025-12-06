@@ -48,8 +48,15 @@ const getFormData = (formElement: HTMLFormElement) => {
   return data;
 };
 
+const isValidSelector = (selector = "") => {
+  const regex =
+    /^([a-zA-Z][a-zA-Z0-9-]*|\*|#[a-zA-Z_][a-zA-Z0-9_-]*|\.[a-zA-Z_][a-zA-Z0-9_-]*|\[[^\]]+\]|:[a-zA-Z-]+(\([^\)]*\))?)(\s*[>+~]?\s*([a-zA-Z][a-zA-Z0-9-]*|\*|#[a-zA-Z_][a-zA-Z0-9_-]*|\.[a-zA-Z_][a-zA-Z0-9_-]*|\[[^\]]+\]|:[a-zA-Z-]+(\([^\)]*\))?))*$/;
+  return regex.test(selector);
+};
+
 export const Utils = {
   buildUrl,
   getValidParams,
   getFormData,
+  isValidSelector,
 };

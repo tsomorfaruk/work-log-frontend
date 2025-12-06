@@ -1,15 +1,20 @@
-// @ts-nocheck
-
-const defaultOptions = {
-  days: null, // number of days until expiration
+type OptionTypes = {
+  days?: number;
+  path?: string;
+  domain?: string;
+  secure?: boolean;
+  sameSite?: "Lax";
+};
+const defaultOptions: OptionTypes = {
+  days: 30, // number of days until expiration
   path: "/", // cookie path
-  domain: null, // cookie domain
+  domain: "/", // cookie domain
   secure: false, // if true, only sent over HTTPS
   sameSite: "Lax", // can be "Strict", "Lax", or "None"
 };
 
 export class CookieManager {
-  static set(name, value, options = defaultOptions) {
+  static set(name: string, value: unknown, options = defaultOptions) {
     let serialized;
 
     if (value instanceof Map) {
@@ -40,7 +45,7 @@ export class CookieManager {
     document.cookie = cookie;
   }
 
-  static get(name) {
+  static get(name: string) {
     const cookies = document.cookie.split("; ");
     for (const c of cookies) {
       const [key, val] = c.split("=");
@@ -67,11 +72,10 @@ export class CookieManager {
     return null;
   }
 
-  static update(name, value, options = {}) {
-    this.set(name, value, options);
-  }
+  // static update(name:string ,value:unknown, options:OptionTypes);
+  // }
 
-  static clear(name, path = "/") {
+  static clear(name: string, path = "/") {
     document.cookie = `${encodeURIComponent(
       name
     )}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;

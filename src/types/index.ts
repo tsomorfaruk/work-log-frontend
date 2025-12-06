@@ -1,4 +1,5 @@
 import { ApiResponse } from "@/classes/ApiResponse";
+import { AxiosInterceptorOptions } from "axios";
 import React from "react";
 
 export interface DefaultProps {
@@ -14,7 +15,7 @@ export interface UseApiConfig {
   method?: "get" | "post" | "put" | "patch" | "delete";
   query?: QueryObj;
   pathParams?: PathParams;
-  options?: Record<string, unknown>;
+  options?: Record<string, AxiosInterceptorOptions>;
 }
 
 export interface ApiHookState<T> {
@@ -27,10 +28,10 @@ export type UpdateQueryType = QueryObj | ((prev: QueryObj) => QueryObj);
 
 export interface AuthState {
   token: string | null;
-  user: { id: string | null; name: string } | null; // <- Replace `any` with your User type later
+  user: { id: string | null; name: string } | null;
 }
 
 export interface AuthContextType {
   auth: AuthState;
-  setAuth: (auth: AuthState) => void;
+  setAuth: React.Dispatch<React.SetStateAction<AuthState>>;
 }

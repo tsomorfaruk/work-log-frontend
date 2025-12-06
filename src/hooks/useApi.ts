@@ -15,7 +15,7 @@ export const useApi = <T>(
     pathParams = {},
     options = {},
   }: UseApiConfig,
-  initCall: boolean = true
+  initCall: boolean = false
 ) => {
   const oldConfigRef = useRef({
     endpoint,
@@ -29,7 +29,7 @@ export const useApi = <T>(
   const isPaused = useRef(!initCall);
 
   const [response, setResponse] = useState<ApiHookState<T>>({
-    isLoading: false,
+    isLoading: initCall,
     hasError: null,
     result: {} as ApiResponse<T>,
   });
