@@ -1,17 +1,12 @@
 import Input from "@/components/common/Input";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import TextComp from "@/assets/svgs/Text.svg?react";
 import { useApi } from "@/hooks/useApi";
 import { AuthEndpoint } from "@/apis/Auth";
 import { Utils } from "@/lib/utils";
-import { CookieManager } from "@/classes/CookieManger";
-import { AuthState } from "@/types";
-import { AuthContext } from "@/contexts/auth/AuthContext";
 import { toast } from "sonner";
 
 export default function PasswordReset() {
-  const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +34,6 @@ export default function PasswordReset() {
       return;
     }
 
-    /** -------------------------
-     *  Handle Error with TS-safe typing
-     * ------------------------ */
     const axiosMsg =
       (response.hasError as Record<string, object>)?.response?.data?.message ??
       "Action Failed";
@@ -79,13 +71,13 @@ export default function PasswordReset() {
           />
         </div>
         <div>
-          <label className="block text-sm  text-303030 mb-3">Enter token</label>
+          <label className="block text-sm  text-303030 mb-3">Enter Token</label>
           <Input
             name="token"
             height={62}
             type="text"
             className="input-class"
-            placeholder="Enter your token passed to email"
+            placeholder="Enter your token sent to email"
             required
           />
         </div>

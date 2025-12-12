@@ -16,7 +16,7 @@ export default function PublicRoutes() {
           </div>
         </div>
         <div className="col-span-12 md:col-span-6 flex justify-center items-center">
-          <div className="max-w-[457px] max-h-[70vh] overflow-auto relative w-full h-full bg-F2FCFF rounded-3xl shadow-lg p-[36px_44px_68px]">
+          <div className="max-w-[457px] max-h-[90vh] overflow-auto relative w-full h-full bg-F2FCFF rounded-3xl shadow-lg p-[36px_44px_68px]">
             <Outlet />
           </div>
         </div>
