@@ -66,7 +66,7 @@ export default function PasswordReset() {
             height={62}
             type="email"
             className="input-class"
-            placeholder="Enter email or password"
+            placeholder="Enter or username"
             required
           />
         </div>
