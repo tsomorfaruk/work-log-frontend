@@ -8,6 +8,9 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "@/contexts/auth/AuthContext";
 import { CookieManager } from "@/classes/CookieManger";
 import PublicRoutes from "./PublicRoutes";
+import ForgotPassword from "@/pages/ForgotPassword";
+import OTPForm from "@/pages/OTPForm";
+import PasswordReset from "@/pages/PassworRest";
 
 export default function RootElement() {
   const { setAuth } = useContext(AuthContext);
@@ -22,9 +25,11 @@ export default function RootElement() {
   return (
     <Routes>
       <Route element={<PublicRoutes />}>
-        <Route path="/login" element={<Login />} />
+        <Route path="login" element={<Login />} />
         {/* <Route path="/signup" element={<Signup />} /> */}
-        {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="password-rest" element={<PasswordReset />} />
+
         {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
       </Route>
 

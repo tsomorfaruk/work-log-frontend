@@ -1,24 +1,20 @@
 import Input from "@/components/common/Input";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import TextComp from "@/assets/svgs/Text.svg?react";
 import { useApi } from "@/hooks/useApi";
 import { AuthEndpoint } from "@/apis/Auth";
 import { Utils } from "@/lib/utils";
-import { CookieManager } from "@/classes/CookieManger";
-import { AuthState } from "@/types";
-import { AuthContext } from "@/contexts/auth/AuthContext";
 
-export default function Login() {
-  const { setAuth } = useContext(AuthContext);
+import { toast } from "sonner";
+
+export default function ForgotPassword() {
   const navigate = useNavigate();
 
   const [error, setError] = useState<string | null>(null);
-
-  const { apiRequest } = useApi(
-    { endpoint: AuthEndpoint.login, method: "post" },
-    false
-  );
+  const { apiRequest } = useApi({
+    endpoint: AuthEndpoint.forgotPassword,
+    method: "post",
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,16 +24,8 @@ export default function Login() {
     const response = await apiRequest({ payload: data });
 
     if (!response.hasError) {
-      const { token, user } = (response.result?.data as AuthState) || {};
-
-      setAuth({ token: token ?? null, user: user ?? null });
-
-      // Remember me
-      if (data?.isRemember) {
-        CookieManager.set("token", token, { days: 7 });
-      }
-
-      navigate("/");
+      toast.success(`Token successfully sent to ${data.email}`);
+      navigate("/password-rest");
       return;
     }
 
@@ -59,10 +47,10 @@ export default function Login() {
   return (
     <div>
       <h2 className="text-4xl font-bold text-303030 mb-6 text-start">
-        Sign In
+        Forgot Password
       </h2>
       {error && (
-        <div className="absolute top-[86px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-400 text-base ">
+        <div className="absolute top-[86px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-400 text-ellipsis whitespace-nowrap text-base ">
           {error || "Something went wrong!"}
         </div>
       )}
@@ -80,38 +68,19 @@ export default function Login() {
             required
           />
         </div>
-        <div>
-          <label className="block text-sm  text-303030 mb-3">Password</label>
-          <Input
-            name="password"
-            height={62}
-            type="text"
-            className="input-class"
-            placeholder="Enter Password"
-            required
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <label className="flex items-center">
-            <Input
-              name="isRemember"
-              type="checkbox"
-              className="rounded text-xs"
-            />
-            <span className="ml-2 text-xs text-686868">Remember me</span>
-          </label>
-          <Link to="/forgot-password" className="text-xs text-686868">
-            Forgot password?
-          </Link>
-        </div>
-
         <button
           type="submit"
           className="mt-[42px] w-full h-[60px] bg-007B99 text-white font-medium rounded-lg transition-colors"
         >
-          Sign In
+          Submit
         </button>
+
+        <div className="flex items-center">
+          <span className="mr-2 text-xs text-686868">Remembered Password?</span>
+          <Link to="/login" className="text-xs text-6868689">
+            Login
+          </Link>
+        </div>
       </form>
     </div>
   );

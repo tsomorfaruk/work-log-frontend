@@ -8,36 +8,34 @@ import { Utils } from "@/lib/utils";
 import { CookieManager } from "@/classes/CookieManger";
 import { AuthState } from "@/types";
 import { AuthContext } from "@/contexts/auth/AuthContext";
+import { toast } from "sonner";
 
-export default function Login() {
+export default function PasswordReset() {
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [error, setError] = useState<string | null>(null);
 
-  const { apiRequest } = useApi(
-    { endpoint: AuthEndpoint.login, method: "post" },
-    false
-  );
+  const { apiRequest } = useApi({
+    endpoint: AuthEndpoint.resetPassword,
+    method: "post",
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const data = Utils.getFormData(e.currentTarget);
 
+    if (data.password !== data.password_confirmation) {
+      setError("Password not match");
+      return;
+    }
+
     const response = await apiRequest({ payload: data });
 
     if (!response.hasError) {
-      const { token, user } = (response.result?.data as AuthState) || {};
-
-      setAuth({ token: token ?? null, user: user ?? null });
-
-      // Remember me
-      if (data?.isRemember) {
-        CookieManager.set("token", token, { days: 7 });
-      }
-
-      navigate("/");
+      toast.success("Your pass rest successfully");
+      navigate("/login");
       return;
     }
 
@@ -46,7 +44,7 @@ export default function Login() {
      * ------------------------ */
     const axiosMsg =
       (response.hasError as Record<string, object>)?.response?.data?.message ??
-      "Login failed";
+      "Action Failed";
 
     setError(axiosMsg);
 
@@ -59,7 +57,7 @@ export default function Login() {
   return (
     <div>
       <h2 className="text-4xl font-bold text-303030 mb-6 text-start">
-        Sign In
+        Reset Your Password
       </h2>
       {error && (
         <div className="absolute top-[86px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-400 text-base ">
@@ -81,6 +79,17 @@ export default function Login() {
           />
         </div>
         <div>
+          <label className="block text-sm  text-303030 mb-3">Enter token</label>
+          <Input
+            name="token"
+            height={62}
+            type="text"
+            className="input-class"
+            placeholder="Enter your token passed to email"
+            required
+          />
+        </div>
+        <div>
           <label className="block text-sm  text-303030 mb-3">Password</label>
           <Input
             name="password"
@@ -91,18 +100,24 @@ export default function Login() {
             required
           />
         </div>
-
-        <div className="flex items-center justify-between">
-          <label className="flex items-center">
-            <Input
-              name="isRemember"
-              type="checkbox"
-              className="rounded text-xs"
-            />
-            <span className="ml-2 text-xs text-686868">Remember me</span>
+        <div>
+          <label className="block text-sm  text-303030 mb-3">
+            Confirm Password
           </label>
-          <Link to="/forgot-password" className="text-xs text-686868">
-            Forgot password?
+          <Input
+            name="password_confirmation"
+            height={62}
+            type="text"
+            className="input-class"
+            placeholder="Enter Password"
+            required
+          />
+        </div>
+
+        <div className="flex items-center">
+          <span className="mr-2 text-xs text-686868">Remembered password?</span>
+          <Link to="/login" className="text-xs text-686868">
+            Login
           </Link>
         </div>
 
@@ -110,7 +125,7 @@ export default function Login() {
           type="submit"
           className="mt-[42px] w-full h-[60px] bg-007B99 text-white font-medium rounded-lg transition-colors"
         >
-          Sign In
+          Rest Password
         </button>
       </form>
     </div>
