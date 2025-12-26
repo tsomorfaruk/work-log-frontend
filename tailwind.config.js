@@ -16,6 +16,10 @@ export default {
         "007B99": "#007B99",
         F2FCFF: "#F2FCFF",
       },
+      boxShadow: {
+        "custom-1": "0px 1px 3px 1px #00000026",
+        "custom-2": "0px 1px 2px 0px #0000004D",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

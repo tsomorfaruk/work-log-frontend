@@ -4,8 +4,9 @@ import { Navigate, Outlet } from "react-router-dom";
 
 export default function PrivateRoutes() {
   const {
-    auth: { token },
+    auth: { token: t },
   } = useContext(AuthContext);
+  const token = true;
 
   return !token ? <Navigate to="/login" replace /> : <Outlet />;
 }

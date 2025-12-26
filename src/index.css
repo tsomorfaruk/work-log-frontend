@@ -60,6 +60,12 @@
   .input-class {
     @apply w-full px-4 py-4 placeholder:text-xs rounded-lg bg-CFE6F1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all;
   }
+  .shadow-left {
+    box-shadow: 0px 1px 3px 1px #00000026;
+  }
+  .shadow-right {
+    box-shadow: 0px 1px 2px 0px #0000004d;
+  }
 }
 
 @layer utilities {

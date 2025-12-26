@@ -1,9 +1,11 @@
 import { AuthEndpoint } from "@/apis/Auth";
 import { CookieManager } from "@/classes/CookieManger";
+import InputGroup from "@/components/common/InputGroup";
 import Loader from "@/components/common/Loader";
 import RenderTo from "@/components/common/RenderTo";
 import { useApi } from "@/hooks/useApi";
-import { LogOut } from "lucide-react";
+import { BellIcon, CalendarIcon, SearchIcon, UserIcon } from "@/icons";
+import {} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -27,7 +29,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="flex items-center py-2 mt-2 shadow-md">
+    <nav className="flex items-center py-2 mt-2 shadow-md bg-F2FCFF">
       <RenderTo
         top={"50%"}
         left={"50%"}
@@ -36,7 +38,7 @@ export default function Navbar() {
       >
         <Loader />
       </RenderTo>
-      <div className="container mx-auto flex items-center">
+      <div className="container mx-auto flex items-center gap-6">
         <div className="flex-1">
           <img
             src="https://www.svgrepo.com/show/491978/gas-costs.svg"
@@ -44,7 +46,23 @@ export default function Navbar() {
             width="40"
           />
         </div>
-        <LogOut className="cursor-pointer" onClick={handleLogout} size={32} />
+
+        <InputGroup type="search" startIcon={<SearchIcon height={16} />} />
+        <div className="flex items-center gap-6">
+          <BellIcon
+            width={50}
+            height={50}
+            className="p-2.5  bg-CFE6F1 rounded-full"
+          />
+          <CalendarIcon
+            width={50}
+            height={50}
+            className="p-2.5  bg-CFE6F1 rounded-full"
+          />
+        </div>
+        <UserIcon width={50} height={50} />
+
+        {/* <LogOut className="cursor-pointer" onClick={handleLogout} size={32} /> */}
       </div>
     </nav>
   );

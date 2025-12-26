@@ -1,14 +1,20 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./navbar/Navbar";
-import Footer from "./footer/Footer";
+import Sidebar from "./sidebar/Sidebar";
+
 export default function Layout() {
   return (
-    <>
-      <Navbar />
-      <div className="h-[80vh]">
-        <Outlet />
+    <div className="p-10">
+      <div className="mb-10">
+        <Navbar />
       </div>
-      <Footer />
-    </>
+      <div className="min-h-[80vh] flex items-start gap-6">
+        <Sidebar />
+        <div className="flex-1               ">
+          <Outlet />
+        </div>
+      </div>
+      {/* <Footer /> */}
+    </div>
   );
 }
