@@ -8,9 +8,9 @@ export default function Layout() {
       <div className="mb-10">
         <Navbar />
       </div>
-      <div className="min-h-[80vh] flex items-start gap-6">
+      <div className="flex h-[78vh] items-start gap-6">
         <Sidebar />
-        <div className="flex-1               ">
+        <div className="flex-1">
           <Outlet />
         </div>
       </div>

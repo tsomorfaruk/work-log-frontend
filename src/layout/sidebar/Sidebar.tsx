@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
   return (
-    <div className="bg-F2FCFF py-3 w-[260px] shadow-custom-1 rounded-xl">
+    <div className="bg-F2FCFF h-full py-3 w-[260px] shadow-custom-1 rounded-xl">
       <div className="mx-4">
         <Grid4
           width={24}
