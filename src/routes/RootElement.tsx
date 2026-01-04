@@ -9,8 +9,11 @@ import { AuthContext } from "@/contexts/auth/AuthContext";
 import { CookieManager } from "@/classes/CookieManger";
 import PublicRoutes from "./PublicRoutes";
 import ForgotPassword from "@/pages/ForgotPassword";
-import OTPForm from "@/pages/OTPForm";
-import PasswordReset from "@/pages/PassworRest";
+import PasswordReset from "@/pages/PasswordRest";
+import Scheduling from "@/pages/Scheduling";
+import Requests from "@/pages/Requests";
+import Employees from "@/pages/Employees";
+import Reporting from "@/pages/Reporting";
 
 export default function RootElement() {
   const { setAuth } = useContext(AuthContext);
@@ -37,6 +40,10 @@ export default function RootElement() {
       <Route path="/" element={<PrivateRoutes />}>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="scheduling" element={<Scheduling />} />
+          <Route path="requests" element={<Requests />} />
+          <Route path="employees" element={<Employees />} />
+          <Route path="reporting" element={<Reporting />} />
         </Route>
       </Route>
 
