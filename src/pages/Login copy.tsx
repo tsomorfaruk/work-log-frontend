@@ -52,11 +52,11 @@ export default function Login() {
       <FormProvider {...methods}>
         <div className="space-y-2 mb-4">
           <HookFormItem name="email" label="Email" isRequired>
-            <Input className="input-class" />
+            <Input className="border border-black" />
           </HookFormItem>
 
           <HookFormItem name="password" label="Password" isRequired>
-            <Input className="input-class" />
+            <Input className="border border-black" />
           </HookFormItem>
         </div>
         <Button

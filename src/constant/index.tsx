@@ -8,17 +8,17 @@ export const sideItems = [
     icon: <Element3 width={24} height={24} />,
   },
   {
-    link: "schedule",
+    link: "scheduling",
     title: "Scheduling",
     icon: <CalendarIcon width={24} height={24} />,
   },
   {
-    link: "Requests",
+    link: "requests",
     title: "Requests",
     icon: <BellIcon width={24} height={24} />,
   },
   {
-    link: "request",
+    link: "employees",
     title: "Employees",
     icon: <UserIcon width={24} height={24} />,
   },
