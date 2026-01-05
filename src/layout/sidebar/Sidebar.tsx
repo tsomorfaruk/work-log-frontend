@@ -17,7 +17,7 @@ export default function Sidebar() {
           to={link}
           key={title}
           className={({ isActive }) => `list-none
-             flex cursor-pointer border-l-4 items-center gap-3 px-4 py-3 font-bold text-[20px]  hover:text-007B99  hover:bg-CFE6F1 ${
+             flex cursor-pointer border-l-4 items-center gap-3 px-4 py-3 font-bold text-base 2xl:text-xl  hover:text-007B99  hover:bg-CFE6F1 ${
                isActive
                  ? "bg-CFE6F text-007B99 border-007B99"
                  : "text-[#2B3133] bg-transparent border-transparent"
