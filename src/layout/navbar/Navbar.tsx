@@ -1,31 +1,32 @@
-import { AuthEndpoint } from "@/apis/Auth";
-import { CookieManager } from "@/classes/CookieManger";
 import InputGroup from "@/components/common/InputGroup";
 import Loader from "@/components/common/Loader";
 import RenderTo from "@/components/common/RenderTo";
-import { useApi } from "@/hooks/useApi";
 import { BellIcon, CalendarIcon, SearchIcon, UserIcon } from "@/icons";
+import { useAppDispatch } from "@/redux/hooks";
+import { useLogoutMutation } from "@/services/auth/authService";
+import { userLoggedOut } from "@/services/auth/authSlice";
 import {} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { apiRequest, isLoading } = useApi({
-    endpoint: AuthEndpoint.logout,
-    method: "post",
-  });
+  const dispatch = useAppDispatch();
+
+  const [logout, { isLoading }] = useLogoutMutation();
 
   const handleLogout = async () => {
-    const response = await apiRequest({});
-    if (!response.hasError) {
-      CookieManager.clear("token");
-      navigate("/login");
-    } else {
-      toast.error("Logout failed", {
-        description: "Sunday, December 03, 2023 at 9:00 AM",
+    logout()
+      .unwrap()
+      .then(() => {
+        // Not coming here. Having trouble (401). goes to error. Must check what's wrong with token set
+        navigate("/login");
+        dispatch(userLoggedOut());
+      })
+      .catch((err) => {
+        console.error("err: ", err);
+        toast.error("Login failed");
       });
-    }
   };
 
   return (
@@ -61,6 +62,8 @@ export default function Navbar() {
           />
         </div>
         <UserIcon width={50} height={50} />
+
+        <button onClick={handleLogout}>Logout</button>
 
         {/* <LogOut className="cursor-pointer" onClick={handleLogout} size={32} /> */}
       </div>

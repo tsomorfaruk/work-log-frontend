@@ -1,0 +1,72 @@
+import { useState } from "react";
+
+import Table from "@/components/common/Table";
+// import Dropdown from "@/components/ui/dropdown";
+
+import { useGetUserListQuery } from "@/services/employee";
+
+import { getColumns } from "./columns";
+import EmployeeModal from "./libs/employeeModal";
+import Button from "@/components/ui/button";
+
+export default function Employees() {
+  // const [value, setValue] = useState<string[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentPageNo, setCurrentPageNo] = useState(1);
+
+  const { data, isLoading, isFetching, isError } = useGetUserListQuery();
+  const columns = getColumns();
+
+  return (
+    <div className="mb-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="section-title">Employee List</h1>
+
+        <div className="flex gap-6 items-center">
+          {/* <Dropdown
+            // label="Users"
+            type="multi"
+            options={[
+              { label: "Admin", value: "admin" },
+              { label: "Editor", value: "editor" },
+            ]}
+            value={value}
+            onChange={setValue}
+            isSearchable
+          /> */}
+          <Button
+            variant="primary"
+            className="min-w-max"
+            onClick={() => setIsOpen(true)}
+          >
+            + Add New Employee
+          </Button>
+
+          {isOpen && <EmployeeModal isOpen={isOpen} setIsOpen={setIsOpen} />}
+        </div>
+      </div>
+
+      <Table
+        columns={columns}
+        data={data?.data?.users?.data ?? []}
+        border={{
+          table: false,
+          rows: false,
+          columns: false,
+        }}
+        striped={true}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        isError={isError}
+        pagination={{
+          limit: currentPageNo * (data?.data?.users?.per_page ?? 1),
+          offset: data?.data?.users?.to ?? 1,
+          onPageChange: (page) => {
+            setCurrentPageNo(page);
+          },
+          total: data?.data?.users?.total ?? 0,
+        }}
+      />
+    </div>
+  );
+}

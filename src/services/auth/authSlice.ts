@@ -1,8 +1,9 @@
+import { getAuthToken } from "@/lib/authCookie";
 import { RootState } from "@/redux/store";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  token: undefined,
+  token: getAuthToken() || undefined,
 };
 
 const authSlice = createSlice({

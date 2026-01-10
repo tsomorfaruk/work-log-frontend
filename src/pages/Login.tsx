@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/common/Input";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/button";
 import { useAppDispatch } from "@/redux/hooks";
 import { userLoggedIn } from "@/services/auth/authSlice";
 
