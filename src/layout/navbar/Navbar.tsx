@@ -30,7 +30,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="flex items-center py-2 mt-2 shadow-md bg-F2FCFF">
+    <nav className="flex items-center py-2 mt-2 shadow-md bg-F2FCFF fixed top-0 w-full mx-4 z-50">
       <RenderTo
         top={"50%"}
         left={"50%"}
