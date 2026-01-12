@@ -9,7 +9,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import PasswordReset from "@/pages/PasswordRest";
 import Scheduling from "@/pages/Scheduling";
 import Requests from "@/pages/Requests";
-import Employees from "@/pages/Employees";
+import Employees from "@/pages/Employee/Table";
 import Reporting from "@/pages/Reporting";
 
 export default function RootElement() {

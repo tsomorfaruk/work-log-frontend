@@ -1,32 +1,85 @@
-import { sideItems } from "@/constant";
-import { Grid4 } from "iconsax-reactjs";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { Grid4 } from "iconsax-reactjs";
+import { getSidebarData } from "@/layout/sidebar/data";
+import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
+  const data = getSidebarData();
+
+  const [isOpen, setIsOpen] = useState(true);
+
+  // mobile default collapsed
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsOpen(false);
+      } else {
+        setIsOpen(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className="bg-F2FCFF h-full py-3 w-[260px] shadow-custom-1 rounded-xl">
-      <div className="mx-4">
+    // <aside
+    //   className={cn(
+    //     "bg-F2FCFF h-screen shadow-custom-1 transition-all duration-300 flex flex-col",
+    //     isOpen ? "w-[260px]" : "w-20"
+    //   )}
+    // >
+    <aside
+      className={cn(
+        "fixed top-24 left-4 z-40 h-screen bg-F2FCFF shadow-custom-1 transition-all duration-300 flex flex-col",
+        isOpen ? "w-[260px]" : "w-20"
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-4">
         <Grid4
           width={24}
           height={24}
-          className="bg-CFE6F1 p-1 rounded-md mb-4"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="bg-CFE6F1 p-1 rounded-md cursor-pointer"
         />
       </div>
-      {sideItems.map(({ title, icon, link = "" }) => (
-        <NavLink
-          to={link}
-          key={title}
-          className={({ isActive }) => `list-none
-             flex cursor-pointer border-l-4 items-center gap-3 px-4 py-3 font-bold text-base 2xl:text-xl  hover:text-007B99  hover:bg-CFE6F1 ${
-               isActive
-                 ? "bg-CFE6F text-007B99 border-007B99"
-                 : "text-[#2B3133] bg-transparent border-transparent"
-             }`}
-        >
-          <li className="">{icon}</li>
-          <li>{title}</li>
-        </NavLink>
-      ))}
-    </div>
+
+      {/* Menu */}
+      <nav className="flex-1 space-y-1">
+        {data.map(({ title, icon, link }) => (
+          <NavLink
+            key={title}
+            to={link}
+            onClick={() => {
+              // mobile: expand on item click
+              if (window.innerWidth < 768) {
+                setIsOpen(true);
+              }
+            }}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 px-4 py-3 mx-2 rounded-lg border-l-4 transition-all",
+                "hover:bg-CFE6F1 hover:text-007B99 hover:border-007B99",
+                isActive
+                  ? "bg-CFE6F1 text-007B99 border-007B99"
+                  : "text-[#2B3133] border-transparent"
+              )
+            }
+          >
+            <span className="min-w-[24px] flex justify-center">{icon}</span>
+
+            {/* Title */}
+            {isOpen && (
+              <span className="font-bold text-base 2xl:text-xl whitespace-nowrap">
+                {title}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
   );
 }

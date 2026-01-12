@@ -1,0 +1,89 @@
+import { X } from "lucide-react";
+import { useEscapeKey } from "@/hooks/useEscapeKey"; // your hook
+import { cn } from "@/lib/utils";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+
+interface ModalProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  title: string;
+  children: React.ReactNode;
+  size?: "sm" | "md" | "lg" | "xl";
+  closeOnOutsideClick?: boolean; // default false
+  closeOnEscape?: boolean; // default true
+  skipOnEscape?: boolean;
+}
+
+const sizeClasses: Record<string, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-[60%]",
+};
+
+const Modal = ({
+  isOpen,
+  setIsOpen,
+  title,
+  children,
+  size = "md",
+  closeOnOutsideClick = false,
+  closeOnEscape = true,
+  skipOnEscape,
+}: ModalProps) => {
+  useEscapeKey(
+    () => {
+      if (closeOnEscape && isOpen) setIsOpen(false);
+    },
+    {
+      disabled: skipOnEscape,
+    }
+  );
+
+  useLockBodyScroll(isOpen);
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        onClick={() => closeOnOutsideClick && setIsOpen(false)}
+        className="fixed inset-0 z-40 bg-black/50"
+      />
+
+      {/* Modal content */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* <div className="fixed inset-0 z-50 flex items-center justify-center p-4 max-h-[90%] top-1/2 transform -translate-y-1/2 overflow-auto"> */}
+        <div
+          className={cn(
+            " max-h-[90%] overflow-auto relative w-full bg-white rounded-lg shadow-lg dark:bg-gray-950 dark:border-gray-800 border border-gray-200 p-6",
+            sizeClasses[size]
+          )}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4">
+            <h4 className="text-lg 2xl:text-xl leading-tight font-bold text-black">
+              {title}
+            </h4>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          </div>
+
+          {/* Full-width border */}
+          <div className="border-b border-gray-200 dark:border-gray-700 -mx-6" />
+
+          {/* Body */}
+          <div className="pt-4">{children}</div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Modal;

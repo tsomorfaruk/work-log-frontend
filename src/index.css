@@ -30,6 +30,10 @@
     @apply bg-slate-700 rounded-sm;
   }
 
+  .section-title {
+    @apply text-2xl 2xl:text-[28px] leading-tight font-bold text-[#111827];
+  }
+
   .unstyled-dialog {
     all: unset !important;
     display: block !important;

@@ -33,8 +33,8 @@ export default function ForgotPassword() {
      *  Handle Error with TS-safe typing
      * ------------------------ */
     const axiosMsg =
-      (response.hasError as Record<string, object>)?.response?.data?.message ??
-      "Login failed";
+      // (response.hasError as Record<string, object>)?.response?.data?.message ??
+      (response.hasError as any)?.response?.data?.message ?? "Login failed";
 
     setError(axiosMsg);
 
