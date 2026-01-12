@@ -30,8 +30,6 @@ const HookFormItem = ({
       control={control}
       name={name}
       render={({ field, fieldState: { error } }) => {
-        console.log("error: ", error);
-
         return (
           <div className={className}>
             {label && (
@@ -45,10 +43,7 @@ const HookFormItem = ({
               labelClassName: cn("!text-xs", children.props.labelClassName),
               errorMessage: error?.message,
               hasError: !!error,
-              errorClassName: cn(
-                "static mt-1 px-1 rtl:right-1 rtl:text-right",
-                errorClassName
-              ),
+              errorClassName: cn("static mt-1 px-1", errorClassName),
               styles: {
                 //   ...SelectStyles,
                 ...children.props.styles,
@@ -58,7 +53,7 @@ const HookFormItem = ({
             })}
 
             {error?.message && (
-              <p className="text-red-500 text-xs">{error.message}</p>
+              <p className="text-red-500 text-xs mt-2">{error.message}</p>
             )}
           </div>
         );

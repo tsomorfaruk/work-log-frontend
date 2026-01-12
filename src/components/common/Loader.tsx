@@ -10,7 +10,7 @@ const Loader = ({
   flipVertical = false,
   padding = 0,
 }) => {
-  const transforms = [];
+  const transforms: any[] = [];
   if (rotation !== 0) transforms.push(`rotate(${rotation}deg)`);
   if (flipHorizontal) transforms.push("scaleX(-1)");
   if (flipVertical) transforms.push("scaleY(-1)");

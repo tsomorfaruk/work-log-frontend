@@ -1,0 +1,169 @@
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { useMemo, useRef, useState } from "react";
+import { DropdownProps } from "./types";
+import Label from "@/components/common/Label";
+import { ChevronDown } from "lucide-react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
+import { useDropdownPosition } from "./hooks/useDropdownPosition";
+
+const Dropdown = <T,>({
+  options,
+  value,
+  onChange,
+  type = "single",
+  placeholder = "Select options...",
+  error,
+  isLoading = false,
+  isSearchable = false,
+  label,
+  position = "bottom",
+  onSearch,
+  isClearable = false,
+}: DropdownProps<T>) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  useEscapeKey(() => setIsOpen(false));
+  useClickOutside(dropdownRef, () => setIsOpen(false));
+
+  const dropdownPosition = useDropdownPosition(dropdownRef, position);
+  const hasValue = !!value?.length;
+
+  /* ---------------- selected labels ---------------- */
+  const selectedLabels = useMemo(() => {
+    if (!value?.length) return "";
+
+    return options
+      .filter((opt) => value.includes(opt.value))
+      .map((opt) => opt.label)
+      .join(", ");
+  }, [options, value]);
+
+  /* ---------------- search filter ---------------- */
+  const filteredOptions = useMemo(() => {
+    if (!search) return options;
+    return options.filter((opt) =>
+      opt.label.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [options, search]);
+
+  /* ---------------- handlers ---------------- */
+  const handleSelect = (optionValue: T) => {
+    if (type === "single") {
+      onChange?.([optionValue]);
+      setIsOpen(false);
+      return;
+    }
+
+    if (value?.includes(optionValue)) {
+      onChange?.(value.filter((v) => v !== optionValue));
+    } else {
+      onChange?.([...(value ?? []), optionValue]);
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange?.([]);
+  };
+
+  return (
+    <div ref={dropdownRef} className="relative w-full">
+      {label && (
+        <Label className="mb-1 block text-sm font-medium text-gray-700">
+          {label}
+        </Label>
+      )}
+
+      {/* Trigger */}
+      <div
+        onClick={() => setIsOpen((p) => !p)}
+        className={`flex min-h-[42px] cursor-pointer items-center justify-between rounded-md border px-3 py-2 text-sm
+          ${error ? "border-red-500" : "border-gray-300"}
+        `}
+      >
+        <span className={selectedLabels ? "text-gray-900" : "text-gray-400"}>
+          {selectedLabels || placeholder}
+        </span>
+
+        <div className="flex items-center gap-2">
+          {isClearable && hasValue && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          )}
+          <ChevronDown />
+        </div>
+      </div>
+
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+
+      {/* Menu */}
+      {isOpen && (
+        <div
+          className={`absolute z-50 w-full rounded-md border bg-white shadow-md
+            ${dropdownPosition === "bottom" ? "mt-1" : "bottom-full mb-1"}
+          `}
+        >
+          {isSearchable && (
+            <input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                onSearch?.(e.target.value);
+              }}
+              placeholder="Search..."
+              className="w-full border-b px-3 py-2 text-sm outline-none"
+            />
+          )}
+
+          <div className="max-h-56 overflow-y-auto">
+            {isLoading && (
+              <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+            )}
+
+            {!isLoading && filteredOptions.length === 0 && (
+              <div className="px-3 py-2 text-sm text-gray-500">
+                No options found
+              </div>
+            )}
+
+            {!isLoading &&
+              filteredOptions.map((option) => {
+                const checked = value?.includes(option.value);
+
+                return (
+                  <div
+                    key={String(option.value)}
+                    onClick={() => handleSelect(option.value)}
+                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-100"
+                  >
+                    <div
+                      className={`flex h-4 w-4 items-center justify-center rounded border
+                        ${
+                          checked
+                            ? "border-blue-600 bg-blue-600"
+                            : "border-gray-400"
+                        }
+                      `}
+                    >
+                      {checked && <div className="h-2 w-2 rounded bg-white" />}
+                    </div>
+
+                    <span className="text-sm">{option.label}</span>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Dropdown;

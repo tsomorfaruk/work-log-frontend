@@ -20,6 +20,7 @@ const baseQuery = fetchBaseQuery({
     const allState: any = getState();
     console.log("allState: ", allState);
     const token = allState?.auth?.token;
+
     // const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     // headers.set("Content-type", "application/json");
