@@ -36,7 +36,7 @@ export default function Layout() {
         style={{ marginLeft: window.innerWidth < 768 ? "0px" : "260px" }} // initial margin
       >
         <div className="p-10">
-          <div className="min-h-[calc(100vh-80px)]">
+          <div className="min-h-[calc(100vh-80px)] mt-4">
             {" "}
             {/* 80px ~ navbar height */}
             <Outlet />

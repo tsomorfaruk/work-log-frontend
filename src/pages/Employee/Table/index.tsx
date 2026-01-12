@@ -21,7 +21,7 @@ export default function Employees() {
 
   return (
     <div className="mb-10">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-10">
         <h1 className="section-title">Employee List</h1>
 
         <div className="flex gap-6 items-center">
