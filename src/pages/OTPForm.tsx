@@ -1,49 +1,50 @@
-import Input from "@/components/common/Input";
-import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useApi } from "@/hooks/useApi";
-import { AuthEndpoint } from "@/apis/Auth";
-import { Utils } from "@/lib/utils";
+// import Input from "@/components/common/Input";
+// import { useState } from "react";
+// import {  useNavigate } from "react-router-dom";
+// import { useApi } from "@/hooks/useApi";
+// import { AuthEndpoint } from "@/apis/Auth";
+// import { Utils } from "@/lib/utils";
 
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export default function OTPForm() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const [error, setError] = useState<string | null>(null);
-  const { apiRequest } = useApi({
-    endpoint: AuthEndpoint.forgotPassword,
-    method: "post",
-  });
+  // const [error, setError] = useState<string | null>(null);
+  // const { apiRequest } = useApi({
+  //   endpoint: AuthEndpoint.forgotPassword,
+  //   method: "post",
+  // });
+  // console.log('error: ', error);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    const data = Utils.getFormData(e.currentTarget);
+  //   const data = Utils.getFormData(e.currentTarget);
 
-    const response = await apiRequest({ payload: data });
+  //   const response = await apiRequest({ payload: data });
 
-    if (!response.hasError) {
-      toast.success(`OTP sent to ${data.email}`);
-      navigate("/otp-form");
-      return;
-    }
+  //   if (!response.hasError) {
+  //     toast.success(`OTP sent to ${data.email}`);
+  //     navigate("/otp-form");
+  //     return;
+  //   }
 
-    /** -------------------------
-     *  Handle Error with TS-safe typing
-     * ------------------------ */
-    const axiosMsg =
-      (response.hasError as Record<string, object>)?.response?.data?.message ??
-      "Login failed";
+  //   /** -------------------------
+  //    *  Handle Error with TS-safe typing
+  //    * ------------------------ */
+  //   const axiosMsg =
+  //     // (response.hasError as Record<string, object>)?.response?.data?.message ??
+  //     (response.hasError as any)?.response?.data?.message ?? "Login failed";
 
-    setError(axiosMsg);
+  //   setError(axiosMsg);
 
-    const timer = setTimeout(() => {
-      setError(null);
-    }, 3000);
+  //   const timer = setTimeout(() => {
+  //     setError(null);
+  //   }, 3000);
 
-    return () => clearTimeout(timer);
-  };
+  //   return () => clearTimeout(timer);
+  // };
   return (
     <div className="mx-auto flex w-full max-w-md flex-col space-y-16">
       <div className="flex flex-col items-center justify-center text-center space-y-2">

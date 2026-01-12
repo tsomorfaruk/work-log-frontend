@@ -64,6 +64,7 @@ export default function Login() {
             e.preventDefault();
             methods.handleSubmit(onSubmit)();
           }}
+          isLoading={isLoggingIn}
         >
           Save
         </Button>

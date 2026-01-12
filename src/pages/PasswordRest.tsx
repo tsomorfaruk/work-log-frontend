@@ -35,8 +35,8 @@ export default function PasswordReset() {
     }
 
     const axiosMsg =
-      (response.hasError as Record<string, object>)?.response?.data?.message ??
-      "Action Failed";
+      // (response.hasError as Record<string, object>)?.response?.data?.message ??
+      (response.hasError as any)?.response?.data?.message ?? "Action Failed";
 
     setError(axiosMsg);
 
