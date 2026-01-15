@@ -95,16 +95,9 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
       "is_active",
       data.is_active ? String(data.is_active[0]) : "0"
     );
-
-    // ---- only on create
-    if (!employeeId) {
-      formData.append("password", data.password ?? "");
-      formData.append(
-        "password_confirmation",
-        data.password_confirmation ?? ""
-      );
-      formData.append("address", data.address ?? "");
-    }
+    formData.append("password", data.password ?? "");
+    formData.append("password_confirmation", data.password_confirmation ?? "");
+    formData.append("address", data.address ?? "");
 
     // ---- update
     if (employeeId) {
@@ -213,30 +206,25 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 <Input className="input-class" />
               </HookFormItem>
 
-              {!employeeId && (
-                <HookFormItem name="password" label="Password" isRequired>
-                  <Input className="input-class" />
-                </HookFormItem>
-              )}
-              {!employeeId && (
-                <HookFormItem
-                  name="password_confirmation"
-                  label="Confirm Password"
-                  isRequired
-                >
-                  <Input className="input-class" />
-                </HookFormItem>
-              )}
+              <HookFormItem name="password" label="Password" isRequired>
+                <Input className="input-class" />
+              </HookFormItem>
 
-              {!employeeId && (
-                <HookFormItem
-                  name="address"
-                  label="Address"
-                  className="col-span-2"
-                >
-                  <Textarea className="input-class" />
-                </HookFormItem>
-              )}
+              <HookFormItem
+                name="password_confirmation"
+                label="Confirm Password"
+                isRequired
+              >
+                <Input className="input-class" />
+              </HookFormItem>
+
+              <HookFormItem
+                name="address"
+                label="Address"
+                className="col-span-2"
+              >
+                <Textarea className="input-class" />
+              </HookFormItem>
 
               <HookFormItem
                 name="is_active"

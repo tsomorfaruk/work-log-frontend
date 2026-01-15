@@ -7,12 +7,16 @@ import { useState } from "react";
 import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
 import { useDeleteUserMutation } from "@/services/employee";
 import { onShowToastMessages } from "@/lib/toast";
+import { EyeIcon } from "@/assets/icons/EyeIcon";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   employeeId: number;
 }
 
 const ActionColumn = ({ employeeId }: Props) => {
+  const navigate = useNavigate();
+
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
@@ -39,6 +43,10 @@ const ActionColumn = ({ employeeId }: Props) => {
           type: "error",
         });
       });
+  };
+
+  const handleViewUser = () => {
+    navigate(`/employees/${employeeId}`);
   };
 
   return (
@@ -78,6 +86,10 @@ const ActionColumn = ({ employeeId }: Props) => {
           }}
         />
       )}
+
+      <Button title="Edit" onClick={handleViewUser}>
+        <EyeIcon />
+      </Button>
     </div>
   );
 };

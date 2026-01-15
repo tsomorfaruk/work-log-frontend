@@ -52,6 +52,7 @@ export const getColumns = () => {
       render: (row) => {
         return <ActionColumn employeeId={row?.id} />;
       },
+      align: "center",
     },
   ];
 

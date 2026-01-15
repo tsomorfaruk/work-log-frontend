@@ -80,6 +80,9 @@ export interface EmployeeDetailsResponse {
       is_active: boolean;
       roles: string[];
       department: EmployeeDepartmentResponse | null;
+      password: string;
+      password_confirmation: string;
+      address: string | undefined;
       created_at: string;
     };
   };

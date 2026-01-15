@@ -33,7 +33,7 @@ const HookFormItem = ({
         return (
           <div className={className}>
             {label && (
-              <Label isRequired={isRequired} className="mb-0.5">
+              <Label isRequired={isRequired} className="mb-0.5 text-left">
                 {label}
               </Label>
             )}

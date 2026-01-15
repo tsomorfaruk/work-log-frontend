@@ -34,6 +34,10 @@
     @apply text-2xl 2xl:text-[28px] leading-tight font-bold text-[#111827];
   }
 
+  .form-subsection-title {
+    @apply text-lg lg:text-xl font-bold text-black mb-6;
+  }
+
   .unstyled-dialog {
     all: unset !important;
     display: block !important;

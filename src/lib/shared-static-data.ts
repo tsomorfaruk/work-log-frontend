@@ -12,3 +12,16 @@ export const getStatusOptions = (filterValue?: number): Option[] => {
 
   return data;
 };
+
+export const getBloodGroupOptions = (): Option<string>[] => {
+  return [
+    { label: "A+", value: "A+" },
+    { label: "A-", value: "A-" },
+    { label: "B+", value: "B+" },
+    { label: "B-", value: "B-" },
+    { label: "AB+", value: "AB+" },
+    { label: "AB-", value: "AB-" },
+    { label: "O+", value: "O+" },
+    { label: "O-", value: "O-" },
+  ];
+};
