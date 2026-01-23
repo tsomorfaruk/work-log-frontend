@@ -26,7 +26,7 @@ import {
   useGetUserDetailsQuery,
 } from "@/services/employee";
 import { onShowToastMessages } from "@/lib/toast";
-import FormSkeleton from "@/components/common/FormSkeleton";
+import FormSkeleton from "@/components/common/Skeleton";
 import { setEmployeeDetails } from "./helper";
 import ImageUploader from "@/components/common/ImageUploader";
 
@@ -88,12 +88,12 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
     formData.append("designation", data.designation);
     formData.append(
       "department_id",
-      data.department_id ? String(data.department_id) : "0"
+      data.department_id ? String(data.department_id) : "0",
     );
     formData.append("role", data.role ? String(data.role) : "0");
     formData.append(
       "is_active",
-      data.is_active ? String(data.is_active[0]) : "0"
+      data.is_active ? String(data.is_active[0]) : "0",
     );
     formData.append("password", data.password ?? "");
     formData.append("password_confirmation", data.password_confirmation ?? "");
@@ -154,7 +154,8 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
       ) : (
         <div>
           <FormProvider {...form}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6"> */}
+            <div className="flex flex-col xl:grid xl:grid-cols-2 gap-6 mb-6">
               <ImageUploader
                 onChange={setImageFile}
                 layoutClassName="col-span-2 mx-auto"
@@ -163,18 +164,18 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 }
               />
               <HookFormItem name="first_name" label="First Name" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem name="last_name" label="Last Name">
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem name="display_name" label="Display Name" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
               <HookFormItem name="designation" label="Designation" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem name="department_id" label="Department" isRequired>
@@ -199,15 +200,15 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
               </HookFormItem>
 
               <HookFormItem name="phone" label="Phone" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem name="email" label="Email" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem name="password" label="Password" isRequired>
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem
@@ -215,7 +216,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 label="Confirm Password"
                 isRequired
               >
-                <Input className="input-class" />
+                <Input />
               </HookFormItem>
 
               <HookFormItem

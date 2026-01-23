@@ -13,6 +13,7 @@ interface Props {
   className?: string;
   errorClassName?: string;
   isRequired?: boolean;
+  componentType?: "datePicker";
 }
 
 const HookFormItem = ({
@@ -22,6 +23,7 @@ const HookFormItem = ({
   errorClassName,
   isRequired,
   label,
+  componentType,
 }: Props) => {
   const { control } = useFormContext();
 
@@ -39,7 +41,19 @@ const HookFormItem = ({
             )}
             {React.cloneElement(children, {
               ...field,
-              className: cn("text-sm", children.props.className),
+              selected: field.value, // 👈 REQUIRED for react-datepicker
+              onChange: (value: any) => {
+                field?.onChange?.(value); // RHF update
+                children?.props?.onChange?.(value); // your handler
+              },
+              className: cn(
+                // "text-sm w-full px-4 py-4 placeholder:text-xs rounded-lg border border-[#C0C8CC] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all",
+                {
+                  "text-sm w-full px-4 py-4 placeholder:text-xs rounded-lg border border-[#C0C8CC] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all":
+                    componentType !== "datePicker",
+                },
+                children.props.className,
+              ),
               labelClassName: cn("!text-xs", children.props.labelClassName),
               errorMessage: error?.message,
               hasError: !!error,

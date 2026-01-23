@@ -2,9 +2,10 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { useMemo, useRef, useState } from "react";
 import { DropdownProps } from "./types";
 import Label from "@/components/common/Label";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { useDropdownPosition } from "./hooks/useDropdownPosition";
+import clsx from "clsx";
 
 const Dropdown = <T,>({
   options,
@@ -19,8 +20,9 @@ const Dropdown = <T,>({
   position = "bottom",
   onSearch,
   isClearable = false,
+  containerClassname,
 }: DropdownProps<T>) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLElement>(null!);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -44,7 +46,7 @@ const Dropdown = <T,>({
   const filteredOptions = useMemo(() => {
     if (!search) return options;
     return options.filter((opt) =>
-      opt.label.toLowerCase().includes(search.toLowerCase())
+      opt.label.toLowerCase().includes(search.toLowerCase()),
     );
   }, [options, search]);
 
@@ -69,7 +71,10 @@ const Dropdown = <T,>({
   };
 
   return (
-    <div ref={dropdownRef} className="relative w-full">
+    <div
+      ref={dropdownRef}
+      className={clsx("relative w-full", containerClassname)}
+    >
       {label && (
         <Label className="mb-1 block text-sm font-medium text-gray-700">
           {label}
@@ -143,16 +148,10 @@ const Dropdown = <T,>({
                     onClick={() => handleSelect(option.value)}
                     className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-100"
                   >
-                    <div
-                      className={`flex h-4 w-4 items-center justify-center rounded border
-                        ${
-                          checked
-                            ? "border-blue-600 bg-blue-600"
-                            : "border-gray-400"
-                        }
-                      `}
-                    >
-                      {checked && <div className="h-2 w-2 rounded bg-white" />}
+                    <div className="flex h-4 w-4 items-center justify-center">
+                      {checked && (
+                        <Check size={16} color="#006972" strokeWidth={3} />
+                      )}
                     </div>
 
                     <span className="text-sm">{option.label}</span>

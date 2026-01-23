@@ -73,7 +73,7 @@ export default function Sidebar() {
 
             {/* Title */}
             {isOpen && (
-              <span className="font-bold text-base 2xl:text-xl whitespace-nowrap">
+              <span className="font-bold text-base 2xl:text-lg whitespace-nowrap">
                 {title}
               </span>
             )}

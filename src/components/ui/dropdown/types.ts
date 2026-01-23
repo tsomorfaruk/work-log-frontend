@@ -10,6 +10,7 @@ export interface DropdownProps<T = number> {
   value?: T[];
   onChange?: (value: T[]) => void;
 
+  containerClassname?: string;
   type?: DropdownType;
   placeholder?: string;
   error?: string;

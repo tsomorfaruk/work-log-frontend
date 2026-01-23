@@ -1,19 +1,15 @@
 import { TableColumn } from "@/components/common/Table";
 import { EmployeeResponse } from "@/models/employee";
-import ActionColumn from "./libs/employeeModal/libs/actionColumn";
 import Badge from "@/components/common/Badge";
+import ActionColumn from "./libs/employeeModal/libs/actionColumn";
 
 export const getColumns = () => {
   const columns: TableColumn<EmployeeResponse>[] = [
-    { key: "id", header: "ID", width: 80 },
+    // { key: "id", header: "ID", width: 80 },
     {
-      key: "first_name",
+      key: "display_name",
       header: "Name",
       width: 160,
-      render: (row) => {
-        const fullName = `${row.first_name ?? ""} ${row.last_name ?? ""}`;
-        return <p>{fullName}</p>;
-      },
     },
     {
       key: "roles",

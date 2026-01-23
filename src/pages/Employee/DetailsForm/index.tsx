@@ -1,27 +1,30 @@
-import HookFormItem from "@/components/shared/hookform/HookFormItem";
-import Button from "@/components/ui/button";
-import Dropdown from "@/components/ui/dropdown";
-import { getStatusOptions } from "@/lib/shared-static-data";
-import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { TAlterEmployeeSchema } from "../Table/libs/employeeModal/schema";
 import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { alterEmployeeSchema, employeeDefaultValues } from "./schema";
-import {
-  useGetDepartmentListQuery,
-  useGetRoleListQuery,
-} from "@/services/shared";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { FormProvider, useForm } from "react-hook-form";
+
+import Badge from "@/components/common/Badge";
+import Button from "@/components/ui/button";
+
 import {
   useAlterUserMutation,
+  useDeleteUserMutation,
   useGetUserDetailsQuery,
 } from "@/services/employee";
-import { setEmployeeDetails } from "../Table/libs/employeeModal/helper";
+
 import { onShowToastMessages } from "@/lib/toast";
-import ImageUploader from "@/components/common/ImageUploader";
-import Input from "@/components/common/Input";
-import { convertToOptions } from "@/lib/dropdown";
-import Textarea from "@/components/common/Textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  alterEmployeeSchema,
+  employeeDefaultValues,
+  TAlterEmployeeSchema,
+} from "./schema";
+import { formatPayload, setEmployeeDetails } from "./helper";
+import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
+import PersonalInformation from "./libs/PersonalInformation";
+import WorkInformation from "./libs/WorkInformation";
+import BankInformation from "./libs/BankInformation";
 
 const EmployeeDetailsForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,18 +32,12 @@ const EmployeeDetailsForm = () => {
 
   const employeeId = id ? +id : undefined;
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
   const form = useForm<TAlterEmployeeSchema>({
-    resolver: zodResolver(alterEmployeeSchema(!!employeeId)),
+    resolver: zodResolver(alterEmployeeSchema()),
     defaultValues: employeeDefaultValues,
   });
-
-  // const { formState } = form;
-
-  const { data: departments, isLoading: isLoadingDepartment } =
-    useGetDepartmentListQuery();
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoleListQuery();
 
   const { data: employeeDetails } = useGetUserDetailsQuery(employeeId!, {
     skip: !employeeId,
@@ -59,59 +56,19 @@ const EmployeeDetailsForm = () => {
   };
 
   const onSubmit = (data: TAlterEmployeeSchema) => {
-    // const payload: AlterEmployeePayload = {
-    //   ...data,
-    //   designation: data.designation ? String(data.designation) : "0",
-    //   department_id: data.department_id ? Number(data.department_id) : 0,
-    //   role: data.role ? String(data.role) : "0",
-    //   is_active: data.is_active ? Number(data.is_active[0]) : 0,
-    //   id: employeeId,
-    // };
+    const formData = formatPayload({
+      data,
+      employeeDetails,
+    });
 
-    const formData = new FormData();
-
-    // ---- required fields
-    formData.append("first_name", data.first_name);
-    if (data?.last_name) formData.append("last_name", data.last_name);
-    formData.append("display_name", data.display_name);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-
-    formData.append("designation", data.designation);
-    formData.append(
-      "department_id",
-      data.department_id ? String(data.department_id) : "0"
-    );
-    formData.append("role", data.role ? String(data.role) : "0");
-    formData.append(
-      "is_active",
-      data.is_active ? String(data.is_active[0]) : "0"
-    );
-    formData.append("password", data.password ?? "");
-    formData.append("password_confirmation", data.password_confirmation ?? "");
-    formData.append("address", data.address ?? "");
-
-    // ---- update
-    if (employeeId) {
-      formData.append("id", String(employeeId));
-    }
-
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
-
-    // ---- image upload
-    // if (data.image && data.image.length > 0) {
-    //   formData.append("image", data.image[0]);
-    // }
-
-    alterEmployee({ id: employeeId, formData })
+    alterEmployee({
+      id: employeeId,
+      formData,
+    })
       .unwrap()
       .then((res) => {
         onShowToastMessages({
-          message:
-            res?.message ??
-            `Employee ${!employeeId ? "created" : "updated"} successfully`,
+          message: res?.message ?? "Employee updated successfully",
           type: "success",
         });
 
@@ -119,7 +76,7 @@ const EmployeeDetailsForm = () => {
       })
       .catch((err) => {
         onShowToastMessages({
-          message: `Failed to  ${!employeeId ? "create" : "update"}  employee`,
+          message: "Failed to update employee",
           type: "error",
           data: err?.data?.data,
           shouldExtractFirst: true,
@@ -127,20 +84,65 @@ const EmployeeDetailsForm = () => {
       });
   };
 
-  console.log(id); // 👉 the :id fr
+  const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
+
+  const closeDeleteModal = () => {
+    setIsOpenDeleteModal(false);
+  };
+
+  const handleDeleteUser = () => {
+    if (employeeId)
+      deleteUser(employeeId)
+        .unwrap()
+        .then((res) => {
+          onShowToastMessages({
+            message: res?.message ?? "Employee deleted successfully",
+            type: "success",
+          });
+
+          navigate("/employees");
+          closeDeleteModal();
+        })
+        .catch((err) => {
+          onShowToastMessages({
+            message: err?.data?.message ?? "Failed to delete employee",
+            type: "error",
+          });
+        });
+  };
+
   return (
-    <div>
+    <div className="shadow-md bg-F2FCFF rounded-3xl">
       <FormProvider {...form}>
-        <div className="">
-          <div>
+        <div className="flex justify-between bg-[#CFE6F1] p-6 mb-6 rounded-tl-3xl rounded-tr-3xl">
+          <div className="flex gap-6">
             <img
               src={"image source"}
               alt="uploaded"
-              className="w-28 h-28 rounded-3xl object-cover"
+              className="w-28 h-28 rounded-3xl object-cover border border-[#007B99]"
             />
+
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold mb-3 text-black">
+                {employeeDetails?.data?.user?.display_name}
+              </h2>
+
+              <div className="flex gap-3 items-center">
+                {employeeDetails?.data?.user?.department?.display_name && (
+                  <Badge variant="primary">
+                    {employeeDetails.data.user.department.display_name}
+                  </Badge>
+                )}
+                {employeeDetails?.data?.user?.designation && (
+                  <Badge variant="primary">
+                    {employeeDetails.data.user.designation}
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-y-6 items-center">
             <Button
               variant="primary"
               onClick={(e) => {
@@ -155,12 +157,8 @@ const EmployeeDetailsForm = () => {
 
             <Button
               variant="danger"
-              onClick={(e) => {
-                e.preventDefault();
-                // form.handleSubmit(onSubmit)();
-                // delete function ❓❓
-              }}
-              isLoading={isAlteringEmployee}
+              onClick={() => setIsOpenDeleteModal(true)}
+              disabled={isAlteringEmployee}
               className="!text-sm"
             >
               Delete
@@ -168,79 +166,30 @@ const EmployeeDetailsForm = () => {
           </div>
         </div>
 
-        <div>
-          <h5 className="form-subsection-title">Personal Information</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <HookFormItem name="first_name" label="First Name" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
+        {isOpenDeleteModal && (
+          <ConfirmationModal
+            isOpen={isOpenDeleteModal}
+            setIsOpen={setIsOpenDeleteModal}
+            title="Confirm Delete"
+            description="Are you really want to delete this employee profile?"
+            actions={[
+              {
+                onAction: () => {
+                  handleDeleteUser();
+                },
+                isLoading: isDeletingUser,
+                buttonText: "Delete",
+                variant: "danger",
+              },
+            ]}
+          />
+        )}
 
-            <HookFormItem name="last_name" label="Last Name">
-              <Input className="input-class" />
-            </HookFormItem>
+        <PersonalInformation form={form} />
 
-            <HookFormItem name="display_name" label="Display Name" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
-            <HookFormItem name="designation" label="Designation" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
+        <WorkInformation form={form} />
 
-            <HookFormItem name="department_id" label="Department" isRequired>
-              <Dropdown
-                options={convertToOptions(departments?.data?.departments, {
-                  labelKey: "display_name",
-                  valueKey: "id",
-                })}
-                isLoading={isLoadingDepartment}
-                isSearchable
-              />
-            </HookFormItem>
-            <HookFormItem name="role" label="Role" isRequired>
-              <Dropdown
-                options={convertToOptions(roles?.data?.roles, {
-                  labelKey: "name",
-                  valueKey: "name",
-                })}
-                isLoading={isLoadingRoles}
-                isSearchable
-              />
-            </HookFormItem>
-
-            <HookFormItem name="phone" label="Phone" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
-
-            <HookFormItem name="email" label="Email" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
-
-            <HookFormItem name="password" label="Password" isRequired>
-              <Input className="input-class" />
-            </HookFormItem>
-
-            <HookFormItem
-              name="password_confirmation"
-              label="Confirm Password"
-              isRequired
-            >
-              <Input className="input-class" />
-            </HookFormItem>
-
-            <HookFormItem name="address" label="Address" className="col-span-2">
-              <Textarea className="input-class" />
-            </HookFormItem>
-
-            <HookFormItem
-              name="is_active"
-              label="Status"
-              isRequired
-              className="col-span-2"
-            >
-              <Dropdown options={getStatusOptions()} />
-            </HookFormItem>
-          </div>
-        </div>
+        <BankInformation />
       </FormProvider>
     </div>
   );

@@ -1,14 +1,16 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
 
-type BadgeVariants = "success" | "error";
+type BadgeVariants = "success" | "error" | "primary";
 
 interface Props {
   variant: BadgeVariants;
   children?: ReactNode;
+  containerClassname?: string;
+  onClick?: () => void;
 }
 
-const Badge = ({ variant, children }: Props) => {
+const Badge = ({ variant, children, containerClassname, onClick }: Props) => {
   return (
     <div
       className={clsx(
@@ -16,8 +18,12 @@ const Badge = ({ variant, children }: Props) => {
         {
           "bg-[#86EFAC] text-[#166534]": variant === "success",
           "bg-[#FFDAD6] text-[#93000A]": variant === "error",
-        }
+          "bg-[#9DF0FB] text-[#004F56]": variant === "primary",
+          "cursor-pointer": !!onClick,
+        },
+        containerClassname,
       )}
+      onClick={onClick}
     >
       {children}
     </div>
