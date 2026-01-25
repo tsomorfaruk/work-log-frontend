@@ -67,7 +67,9 @@ const HookFormItem = ({
             })}
 
             {error?.message && (
-              <p className="text-red-500 text-xs mt-2">{error.message}</p>
+              <p className="text-left text-red-500 text-xs mt-2">
+                {error.message}
+              </p>
             )}
           </div>
         );
