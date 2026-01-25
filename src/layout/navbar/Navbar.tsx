@@ -16,13 +16,15 @@ export default function Navbar() {
 
   const [logout, { isLoading }] = useLogoutMutation();
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     logout()
       .unwrap()
       .then(() => {
-        // Not coming here. Having trouble (401). goes to error. Must check what's wrong with token set
-        navigate("/login");
         dispatch(userLoggedOut());
+        // navigate("/login");
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 100);
       })
       .catch((err) => {
         console.error("err: ", err);

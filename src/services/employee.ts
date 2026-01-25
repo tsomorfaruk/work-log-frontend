@@ -37,7 +37,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       },
     }),
     // getUserList: builder.query<Response<PromoListResponse>, PromoListParams>({
-    getUserList: builder.query<EmployeeListResponse, { page: number }>({
+    getUserList: builder.query<EmployeeListResponse, { page?: number }>({
       query: (params) => ({
         url: `/admin/users`,
         params,

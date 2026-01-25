@@ -11,6 +11,7 @@ export interface FormSkeletonProps {
   columns?: number;
   layout?: SkeletonLayoutItem[];
   isLabelEnabled?: boolean;
+  containerClassname?: string;
 }
 
 const FormSkeleton: React.FC<FormSkeletonProps> = ({
@@ -18,10 +19,11 @@ const FormSkeleton: React.FC<FormSkeletonProps> = ({
   columns = 2,
   layout = [],
   isLabelEnabled,
+  containerClassname,
 }) => {
   return (
     <div
-      className="grid gap-6"
+      className={clsx("grid gap-6", containerClassname)}
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
       }}
@@ -35,7 +37,7 @@ const FormSkeleton: React.FC<FormSkeletonProps> = ({
             className={clsx(
               "space-y-2",
               config.colSpan && `col-span-${config.colSpan}`,
-              config.rowSpan && `row-span-${config.rowSpan}`
+              config.rowSpan && `row-span-${config.rowSpan}`,
             )}
           >
             {/* label skeleton */}

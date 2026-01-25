@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import clsx from "clsx";
 import Spinner from "../Spinner";
 import Pagination, { PaginationProps } from "../Pagination";
@@ -27,22 +27,34 @@ export interface TableProps<T> {
     columns?: boolean;
   };
 
+  radius?: {
+    header: boolean;
+  };
+
   className?: string;
+  containerClassName?: string;
+
   isError?: boolean;
   isLoading?: boolean;
   isFetching?: boolean;
   pagination?: PaginationProps;
+  showSerial?: boolean;
+  topContent?: JSX.Element;
 }
 
 const Table = <T extends object>({
   columns,
   data,
   border = { table: true, rows: true, columns: true },
+  radius = { header: true },
   className,
+  containerClassName,
   isError,
   isLoading,
   isFetching,
   pagination,
+  showSerial = false,
+  topContent,
 }: TableProps<T>) => {
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
@@ -64,25 +76,44 @@ const Table = <T extends object>({
     <div
       className={clsx(
         "overflow-x-auto shadow-custom-1 border-b-[#C0C8CC] rounded-2xl bg-[#F2FCFF]",
-        isFetching && !isLoading && "opacity-70 blur-[2px] transition-all"
+        isFetching && !isLoading && "opacity-70 blur-[2px] transition-all",
+        containerClassName,
       )}
       style={{
         scrollbarWidth: "thin",
       }}
     >
+      {topContent && topContent}
+
       <table
         className={clsx(
           "table-auto text-sm w-full overflow-hidden",
           {
-            "rounded-2xl": !pagination,
-            "rounded-tl-2xl rounded-tr-2xl": !!pagination,
+            "rounded-2xl": !pagination && radius.header,
+            "rounded-tl-2xl rounded-tr-2xl": !!pagination && radius.header,
           },
           border.table && "border border-gray-300",
-          className
+          className,
         )}
       >
         <thead>
           <tr className="bg-CFE6F1 h-16 2xl:h-20">
+            {showSerial && (
+              <th
+                className={clsx(
+                  "px-7 text-sm 2xl:text-base font-bold capitalize select-none",
+                  border.columns && "border",
+                )}
+                style={{
+                  width: 10,
+                  minWidth: 10,
+                }}
+              >
+                <div className={clsx("flex items-center gap-1")}>
+                  <p>SL</p>
+                </div>
+              </th>
+            )}
             {columns.map((col) => (
               <th
                 key={String(col.key)}
@@ -90,7 +121,7 @@ const Table = <T extends object>({
                 className={clsx(
                   "px-7 text-sm 2xl:text-base font-bold capitalize select-none",
                   border.columns && "border",
-                  col.className
+                  col.className,
                 )}
                 style={{
                   width: col.width,
@@ -164,9 +195,24 @@ const Table = <T extends object>({
                 key={rowIdx}
                 className={clsx(
                   "bg-F2FCFF border-b border-b-[#C0C8CC]",
-                  border.rows && "border-b border-gray-300"
+                  border.rows && "border-b border-gray-300",
                 )}
               >
+                {showSerial && (
+                  <td
+                    className={clsx(
+                      // "px-2 py-2 bg-inherit",
+                      "px-7 py-6 bg-inherit",
+
+                      border.columns && "border",
+                    )}
+                  >
+                    {!pagination?.currentPage && !pagination?.limit
+                      ? rowIdx + 1
+                      : (pagination?.currentPage - 1) * pagination?.limit +
+                        (rowIdx + 1)}
+                  </td>
+                )}
                 {columns.map((col, colIdx) => {
                   const value = row[col.key];
 
@@ -181,7 +227,7 @@ const Table = <T extends object>({
                         col.className,
                         { "sticky left-0 z-10": colIdx === 0 },
                         col.align === "center" && "text-center",
-                        col.align === "right" && "text-right"
+                        col.align === "right" && "text-right",
                       )}
                       style={{
                         width: col.width,

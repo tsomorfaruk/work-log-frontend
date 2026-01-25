@@ -2,8 +2,8 @@ import { X } from "lucide-react";
 import { useEscapeKey } from "@/hooks/useEscapeKey"; // your hook
 import { cn } from "@/lib/utils";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
-import { ReactNode } from "react";
-import Button from "@/components/ui/button";
+import { Fragment, ReactNode } from "react";
+import Button, { ButtonVariants } from "@/components/ui/button";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -15,10 +15,12 @@ interface ConfirmationModalProps {
   closeOnEscape?: boolean; // default true
   customFooter?: ReactNode;
   actions?: {
+    variant: ButtonVariants;
+    buttonText: string;
     hideCancel?: boolean;
-    onDelete?: () => void;
-    isDeleting?: boolean;
-  };
+    onAction?: () => void;
+    isLoading?: boolean;
+  }[];
 }
 
 const sizeClasses: Record<string, string> = {
@@ -60,7 +62,7 @@ const ConfirmationModal = ({
         <div
           className={cn(
             " max-h-[90%] overflow-auto relative w-full bg-white rounded-lg shadow-lg dark:bg-gray-950 dark:border-gray-800 border border-gray-200 p-6",
-            sizeClasses[size]
+            sizeClasses[size],
           )}
         >
           {/* Header */}
@@ -83,7 +85,7 @@ const ConfirmationModal = ({
           {/* Body */}
           <div className="my-6">
             {description && (
-              <p className="text-xs 2xl:text-sm leading-tight text-black mt-2">
+              <p className="text-xs 2xl:text-sm leading-tight text-black text-left mt-2">
                 {description}
               </p>
             )}
@@ -100,16 +102,22 @@ const ConfirmationModal = ({
                   Cancel
                 </Button>
               )} */}
-              {actions?.onDelete && (
-                <Button
-                  variant="danger"
-                  onClick={() => actions?.onDelete?.()}
-                  className="!text-sm"
-                  isLoading={actions?.isDeleting}
-                >
-                  Delete
-                </Button>
-              )}
+              {actions?.map?.((action, index) => {
+                return (
+                  <Fragment key={index}>
+                    {action?.onAction && (
+                      <Button
+                        variant={action?.variant}
+                        onClick={() => action?.onAction?.()}
+                        className="!text-sm"
+                        isLoading={action?.isLoading}
+                      >
+                        {action?.buttonText}
+                      </Button>
+                    )}
+                  </Fragment>
+                );
+              })}
             </div>
           )}
         </div>

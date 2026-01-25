@@ -1,3 +1,5 @@
+import { ApiResponse } from "./common";
+
 export interface EmployeeResponse {
   id: number;
   first_name: string;
@@ -17,9 +19,7 @@ export interface EmployeeResponse {
   created_at: string;
 }
 
-export interface EmployeeListResponse {
-  status: string;
-  message: string;
+export interface EmployeeListResponse extends ApiResponse {
   data: {
     users: {
       current_page: number;
@@ -46,7 +46,7 @@ export interface EmployeeListResponse {
           label: string;
           page: null;
           active: boolean;
-        }
+        },
       ];
       next_page_url: null;
       path: string;
@@ -64,9 +64,7 @@ export interface EmployeeDepartmentResponse {
   code_name: string;
 }
 
-export interface EmployeeDetailsResponse {
-  status: string;
-  message: string;
+export interface EmployeeDetailsResponse extends ApiResponse {
   data: {
     user: {
       id: number;
@@ -80,7 +78,18 @@ export interface EmployeeDetailsResponse {
       is_active: boolean;
       roles: string[];
       department: EmployeeDepartmentResponse | null;
+      password: string;
+      password_confirmation: string;
+      address: string | undefined;
       created_at: string;
+      dob: string | null;
+      blood_group: string | null;
+      day_of_joining: string | null;
+      job_type: string | null;
+      bank_acc_name: string | null;
+      bank_acc_number: string | null;
+      bank_routing_number: string | null;
+      bank_address: string | null;
     };
   };
 }

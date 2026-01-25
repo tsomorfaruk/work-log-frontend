@@ -50,13 +50,13 @@ export default function Login() {
   return (
     <div>
       <FormProvider {...methods}>
-        <div className="space-y-2 mb-4">
+        <div className="space-y-4 mb-4">
           <HookFormItem name="email" label="Email" isRequired>
-            <Input className="input-class" />
+            <Input />
           </HookFormItem>
 
           <HookFormItem name="password" label="Password" isRequired>
-            <Input className="input-class" />
+            <Input />
           </HookFormItem>
         </div>
         <Button
@@ -65,8 +65,9 @@ export default function Login() {
             methods.handleSubmit(onSubmit)();
           }}
           isLoading={isLoggingIn}
+          variant="primary"
         >
-          Save
+          Login
         </Button>
       </FormProvider>
     </div>

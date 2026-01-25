@@ -5,9 +5,9 @@ import Table from "@/components/common/Table";
 
 import { useGetUserListQuery } from "@/services/employee";
 
-import { getColumns } from "./columns";
 import EmployeeModal from "./libs/employeeModal";
 import Button from "@/components/ui/button";
+import { getColumns } from "./columns";
 
 export default function Employees() {
   // const [value, setValue] = useState<string[]>([]);
@@ -49,6 +49,7 @@ export default function Employees() {
       </div>
 
       <Table
+        showSerial
         columns={columns}
         data={data?.data?.users?.data ?? []}
         border={{

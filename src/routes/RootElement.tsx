@@ -7,10 +7,11 @@ import PrivateRoutes from "./PrivateRoutes";
 import UnAuthorizedRoutes from "./UnAuthorizedRoutes";
 import ForgotPassword from "@/pages/ForgotPassword";
 import PasswordReset from "@/pages/PasswordRest";
-import Scheduling from "@/pages/Scheduling";
+import Scheduling from "@/pages/Scheduling/Table";
 import Requests from "@/pages/Requests";
 import Employees from "@/pages/Employee/Table";
 import Reporting from "@/pages/Reporting";
+import EmployeeDetailsForm from "@/pages/Employee/DetailsForm";
 
 export default function RootElement() {
   return (
@@ -31,6 +32,7 @@ export default function RootElement() {
           <Route path="scheduling" element={<Scheduling />} />
           <Route path="requests" element={<Requests />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="employees/:id" element={<EmployeeDetailsForm />} />
           <Route path="reporting" element={<Reporting />} />
         </Route>
       </Route>
