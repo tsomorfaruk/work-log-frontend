@@ -17,7 +17,7 @@ interface ModalProps {
 const sizeClasses: Record<string, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
-  lg: "max-w-lg",
+  lg: "max-w-[600px]",
   xl: "max-w-[60%]",
 };
 
@@ -37,7 +37,7 @@ const Modal = ({
     },
     {
       disabled: skipOnEscape,
-    }
+    },
   );
 
   useLockBodyScroll(isOpen);
@@ -58,7 +58,7 @@ const Modal = ({
         <div
           className={cn(
             " max-h-[90%] overflow-auto relative w-full bg-white rounded-lg shadow-lg dark:bg-gray-950 dark:border-gray-800 border border-gray-200 p-6",
-            sizeClasses[size]
+            sizeClasses[size],
           )}
         >
           {/* Header */}

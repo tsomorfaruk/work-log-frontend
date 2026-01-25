@@ -72,7 +72,7 @@ const Dropdown = <T,>({
 
   return (
     <div
-      ref={dropdownRef}
+      ref={dropdownRef as any}
       className={clsx("relative w-full", containerClassname)}
     >
       {label && (

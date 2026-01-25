@@ -10,6 +10,7 @@ import { Option } from "@/components/ui/dropdown/types";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
 import { useState } from "react";
 import FormSkeleton from "@/components/common/Skeleton";
+import RotaModal from "../components/modals";
 
 export default function Scheduling() {
   const getScheduleFrequencyOptions = (): Option<ScheduleFrequency>[] => {
@@ -84,7 +85,8 @@ export default function Scheduling() {
             <Button variant="primary" onClick={() => setIsOpen(true)}>
               + New Shift
             </Button>
-            {/* {isOpen && <EmployeeModal isOpen={isOpen} setIsOpen={setIsOpen} />} */}
+
+            {isOpen && <RotaModal isOpen={isOpen} setIsOpen={setIsOpen} />}
           </div>
         </div>
       )}
@@ -103,6 +105,9 @@ export default function Scheduling() {
           isLoading={isLoading}
           isFetching={isFetching}
           isError={isError}
+          // onColumnClick={(data) => {
+          //   console.log("data1111111111: ", data);
+          // }}
           // pagination={{
           //   // limit: currentPageNo * (data?.data?.users?.per_page ?? 1),
           //   limit: data?.data?.users?.per_page ?? 1,

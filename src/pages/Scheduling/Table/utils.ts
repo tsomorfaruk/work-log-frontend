@@ -78,3 +78,18 @@ export const formatScheduleDate = (
 
   return `${formattedDate} (${day})`;
 };
+
+export const formatRotaModalDate = (
+  dateString?: string | null,
+): string | null => {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return null;
+
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+
+  return `${weekday} ${month} ${day}`;
+};

@@ -32,6 +32,9 @@ interface IDateProps {
   maxFutureYearForSelect?: number;
   dateFormat?: string;
   showTimeSelect?: boolean;
+  showTimeSelectOnly?: boolean;
+  timeIntervals?: number;
+  timeCaption?: string;
   showIcon?: boolean;
   disabled?: boolean;
   icon?: any;
@@ -88,7 +91,7 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
   function CustomDatePicker(
     {
       label,
-      errorMessage,
+      // errorMessage,
       hasError,
       isRequired,
       placeholder,
@@ -104,6 +107,9 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
       maxDate,
       dateFormat,
       showTimeSelect = false,
+      showTimeSelectOnly = false,
+      timeIntervals = 15,
+      timeCaption = "Time",
       showIcon = true,
       icon,
       datePickerClassName,
@@ -149,19 +155,28 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             onBlur={onBlur}
             onFocus={() => {}}
             minDate={minDate}
-            maxDate={maxDate ?? dynamicMaxDate} // Use dynamic maxDate here
+            maxDate={maxDate ?? dynamicMaxDate}
             showIcon={showIcon}
             autoComplete={"off"}
-            renderCustomHeader={(e) => CustomHeader(e, effectiveMaxYear)}
-            showTimeSelect={showTimeSelect}
-            dateFormat={
-              !dateFormat
-                ? `${convertMomentToDateFnsFormat("")}${!showTimeSelect ? "" : ", hh:mm a"}`
-                : dateFormat
+            renderCustomHeader={
+              !showTimeSelectOnly
+                ? (e) => CustomHeader(e, effectiveMaxYear)
+                : undefined
             }
-            showMonthDropdown
+            showTimeSelect={showTimeSelect || showTimeSelectOnly}
+            showTimeSelectOnly={showTimeSelectOnly}
+            timeIntervals={timeIntervals}
+            timeCaption={timeCaption}
+            dateFormat={
+              showTimeSelectOnly
+                ? (dateFormat ?? "hh:mm a")
+                : !dateFormat
+                  ? `${convertMomentToDateFnsFormat("")}${!showTimeSelect ? "" : ", hh:mm a"}`
+                  : dateFormat
+            }
+            showMonthDropdown={!showTimeSelectOnly}
             value={selected}
-            showYearDropdown
+            showYearDropdown={!showTimeSelectOnly}
             adjustDateOnChange
             className={cn(
               datePickerClassName,
@@ -172,15 +187,21 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             )}
             icon={icon ?? <CalenderIcon />}
             calendarIconClassname="cursor-pointer absolute top-1 end-1"
-            placeholderText={placeholder ? placeholder : "Select Date"}
+            placeholderText={
+              placeholder
+                ? placeholder
+                : showTimeSelectOnly
+                  ? "Select Time"
+                  : "Select Date"
+            }
             {...rest}
           />
         </ErrorBoundary>
-        {hasError && errorMessage && (
+        {/* {hasError && errorMessage && (
           <p className="px-1 -mt-1 text-xs ltr:text-left rtl:text-right text-danger">
             {errorMessage}
           </p>
-        )}
+        )} */}
       </div>
     );
   },
