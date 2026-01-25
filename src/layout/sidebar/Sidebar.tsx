@@ -1,28 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Grid4 } from "iconsax-reactjs";
 import { getSidebarData } from "@/layout/sidebar/data";
 import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setSidebarOpen, toggleSidebar } from "@/redux/slices/uiSlice";
 
 export default function Sidebar() {
   const data = getSidebarData();
-
-  const [isOpen, setIsOpen] = useState(true);
+  const dispatch = useAppDispatch();
+  const isOpen = useAppSelector((state) => state.ui.sidebarOpen);
 
   // mobile default collapsed
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setIsOpen(false);
+        dispatch(setSidebarOpen(false));
       } else {
-        setIsOpen(true);
+        dispatch(setSidebarOpen(true));
       }
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [dispatch]);
 
   return (
     // <aside
@@ -33,8 +35,8 @@ export default function Sidebar() {
     // >
     <aside
       className={cn(
-        "fixed top-24 left-4 z-40 h-screen bg-F2FCFF shadow-custom-1 transition-all duration-300 flex flex-col",
-        isOpen ? "w-[260px]" : "w-20"
+        "fixed top-24 left-4 z-40 min-h-screen bg-F2FCFF shadow-custom-1 transition-all duration-300 flex flex-col",
+        isOpen ? "w-[260px]" : "w-20",
       )}
     >
       {/* Header */}
@@ -42,7 +44,7 @@ export default function Sidebar() {
         <Grid4
           width={24}
           height={24}
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => dispatch(toggleSidebar())}
           className="bg-CFE6F1 p-1 rounded-md cursor-pointer"
         />
       </div>
@@ -56,7 +58,8 @@ export default function Sidebar() {
             onClick={() => {
               // mobile: expand on item click
               if (window.innerWidth < 768) {
-                setIsOpen(true);
+                // dispatch(setSidebarOpen(true));
+                dispatch(toggleSidebar());
               }
             }}
             className={({ isActive }) =>
@@ -65,7 +68,7 @@ export default function Sidebar() {
                 "hover:bg-CFE6F1 hover:text-007B99 hover:border-007B99",
                 isActive
                   ? "bg-CFE6F1 text-007B99 border-007B99"
-                  : "text-[#2B3133] border-transparent"
+                  : "text-[#2B3133] border-transparent",
               )
             }
           >

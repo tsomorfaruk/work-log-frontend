@@ -31,7 +31,7 @@
   }
 
   .section-title {
-    @apply text-2xl 2xl:text-[28px] leading-tight font-bold text-[#111827];
+    @apply text-xl lg:text-2xl 2xl:text-[28px] leading-tight font-bold text-[#111827];
   }
 
   .form-subsection-title {

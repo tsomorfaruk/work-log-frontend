@@ -24,7 +24,6 @@ export default function Scheduling() {
     getScheduleFrequencyOptions()[0].value,
   );
   const [isOpen, setIsOpen] = useState(false);
-  console.log("isOpen: ", isOpen);
 
   const { data, isLoading, isFetching, isError } = useGetSchedulingListQuery({
     frequency,
@@ -36,7 +35,6 @@ export default function Scheduling() {
     frequency === "month"
       ? (data?.data as { month: any })?.month?.start_date
       : (data?.data as { week: any })?.week?.start_date;
-  console.log("schedulingPeriodStartedAt: ", schedulingPeriodStartedAt);
 
   const transformedScheduling: TransformedSchedulingResponse =
     transformSchedulingResponse(data);
@@ -48,25 +46,27 @@ export default function Scheduling() {
       {isFetching ? (
         <FormSkeleton itemCount={1} columns={2} containerClassname="mb-6" />
       ) : (
-        <div className="flex gap-6 justify-between items-center">
-          <div className="flex gap-6 items-center mb-6">
-            <Button
-              className="bg-[#CFE6F1] border-[1.5px] border-[#C0C8CC] size-12 rounded-xl"
-              title="Previous"
-            >
-              <LeftArrowIcon />
-            </Button>
+        <div className="flex flex-wrap gap-3 lg:gap-6 justify-between items-center mb-6">
+          <div className="flex flex-col lg:flex-row gap-3 lg:gap-6 items-center">
+            <div className="flex gap-3 lg:gap-6 items-center">
+              <Button
+                className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
+                title="Previous"
+              >
+                <LeftArrowIcon className="size-4 lg:size-auto" />
+              </Button>
 
-            <p className="text-lg 2xl:text-xl leading-none font-bold">
-              {formatScheduleDate(schedulingPeriodStartedAt)}
-            </p>
+              <p className="text-base lg:text-lg 2xl:text-xl leading-none font-bold">
+                {formatScheduleDate(schedulingPeriodStartedAt)}
+              </p>
 
-            <Button
-              className="bg-[#CFE6F1] border-[1.5px] border-[#C0C8CC] size-12 rounded-xl"
-              title="Next"
-            >
-              <RightArrowIcon />
-            </Button>
+              <Button
+                className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
+                title="Next"
+              >
+                <RightArrowIcon className="size-4 lg:size-auto" />
+              </Button>
+            </div>
 
             <Dropdown
               containerClassname="!w-40"
@@ -95,6 +95,8 @@ export default function Scheduling() {
         <RotaTable
           // showSerial
           // columns={columns}
+
+          frequency={frequency}
           data={transformedScheduling}
           border={{
             table: false,

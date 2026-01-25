@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./api/apiSlice";
 // import { Provider } from "react-redux";
 import authSliceReducer from "../services/auth/authSlice";
+import uiReducer from "./slices/uiSlice";
 import { errorMiddleware } from "./middlewares/errorMiddleware";
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSliceReducer,
+    ui: uiReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
   middleware: (getDefaultMiddlewares) =>

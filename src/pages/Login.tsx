@@ -48,9 +48,12 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="p-4">
       <FormProvider {...methods}>
-        <div className="space-y-4 mb-4">
+        <h1 className="text-4xl lg:text-5xl font-bold text-[#BA1A1A] text-center pt-8 lg:pt-12 mb-6 lg:mb-12">
+          Work Log
+        </h1>
+        <div className="space-y-4 mb-4 w-full">
           <HookFormItem name="email" label="Email" isRequired>
             <Input />
           </HookFormItem>

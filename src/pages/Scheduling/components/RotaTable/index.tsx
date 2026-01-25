@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import clsx from "clsx";
 import Pagination, { PaginationProps } from "@/components/common/Pagination";
 import Spinner from "@/components/common/Spinner";
@@ -7,6 +7,7 @@ import Button from "@/components/ui/button";
 import { RotaButtonIcon } from "@/assets/icons/RotaButtonIcon";
 import { formatDate, hasDatePassed, isToday } from "@/lib/date-helpers";
 import RotaModal from "../modals";
+import { ScheduleFrequency } from "@/models/Requests/schedule";
 
 export interface TableColumn<T> {
   key: keyof T;
@@ -38,6 +39,7 @@ export interface TableProps {
   showSerial?: boolean;
 
   onColumnClick?: (col: TransformedSchedulingResponse | null) => void;
+  frequency: ScheduleFrequency;
 }
 
 const RotaTable = ({
@@ -50,6 +52,7 @@ const RotaTable = ({
   pagination,
   showSerial = false,
   onColumnClick,
+  frequency,
 }: TableProps) => {
   const dateColHeaders = data?.data?.rotas?.[0]?.rotas?.map(
     (item) => item.date,
@@ -66,14 +69,21 @@ const RotaTable = ({
   const [employeeId, setEmployeeId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // const totalWorkTime = data?.data?.rotas?.[0]?.rotas?.reduce(
-  //   (a, c) => {
-  //     return a + (c?.rota?.total_hours ? +c?.rota?.total_hours : 0);
-  //   },
-  //   [0],
-  // );
+  const completedWorkTime = useMemo(() => {
+    return (
+      data?.data?.rotas?.[0]?.rotas?.reduce((sum, item) => {
+        const hours = Number(item?.rota?.total_hours);
+        return sum + (Number.isFinite(hours) ? hours : 0);
+      }, 0) ?? 0
+    );
+  }, [data]);
 
-  // console.log("totalWorkTime: ", totalWorkTime);
+  const totalWorkTime = useMemo(() => {
+    if (frequency === "month") {
+      return 4 * 40;
+    }
+    return 40;
+  }, []);
 
   return (
     <>
@@ -214,12 +224,22 @@ const RotaTable = ({
                         />
                       </div>
                       <div>
-                        <p className="text-sm 2xl:text-base leading-none text-black">
+                        <p className="text-sm 2xl:text-base leading-none text-black mb-0.5">
                           {row?.employee?.display_name}
                         </p>
-                        <p className="text-[10px] leading-none text-black">
-                          25/25/40
-                        </p>
+                        {completedWorkTime !== undefined && (
+                          <p
+                            className={clsx(
+                              "text-[10px] leading-none text-[#007B99]",
+                              {
+                                "text-[#BA1A1A] font-semibold":
+                                  completedWorkTime < totalWorkTime,
+                              },
+                            )}
+                          >
+                            {completedWorkTime}/40
+                          </p>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -248,8 +268,10 @@ const RotaTable = ({
                                   ),
                                 })}
                                 onClick={() => {
-                                  setEmployeeId(row.employee_id);
-                                  setIsOpen(true);
+                                  if (!hasDatePassed(dateColHeaders[colIdx])) {
+                                    setEmployeeId(row.employee_id);
+                                    setIsOpen(true);
+                                  }
                                 }}
                               />
                             </Button>
