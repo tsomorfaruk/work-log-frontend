@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import { ButtonHTMLAttributes, DetailedHTMLProps, ReactNode } from "react";
 
 export type ButtonVariants =
   | "default"
@@ -7,7 +7,8 @@ export type ButtonVariants =
   | "secondary"
   | "tertiary"
   | "danger"
-  | "success";
+  | "success"
+  | "neutral";
 
 interface Props extends DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -16,6 +17,8 @@ interface Props extends DetailedHTMLProps<
   variant?: ButtonVariants;
   isLoading?: boolean;
   isDisabled?: boolean;
+  icon?: ReactNode;
+  iconPosition?: "left" | "right";
 }
 
 const Button = (props: Props) => {
@@ -25,6 +28,8 @@ const Button = (props: Props) => {
     isDisabled = false,
     children,
     className,
+    icon,
+    iconPosition = "left",
     ...rest
   } = props;
 
@@ -35,7 +40,7 @@ const Button = (props: Props) => {
       {...rest}
       disabled={disabled}
       className={clsx(
-        "flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-150",
+        "flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-150 min-w-max",
         {
           "cursor-pointer": !disabled,
           "!cursor-not-allowed opacity-60": disabled,
@@ -44,11 +49,16 @@ const Button = (props: Props) => {
           "bg-[#9DF0FB] text-[#004F56]": variant === "secondary",
           "bg-[#FFDAD6] text-[#93000A]": variant === "danger",
           "bg-[#86EFAC] text-[#166534]": variant === "success",
+          "bg-[#CFE6F1] text-[#354A53]": variant === "neutral",
         },
         className,
       )}
     >
-      {children}
+      <div className="flex gap-1 items-center">
+        {icon && iconPosition === "left" && icon}
+        {children}
+        {icon && iconPosition === "right" && icon}
+      </div>
       {isLoading && (
         <>
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

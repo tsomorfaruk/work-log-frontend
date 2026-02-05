@@ -2,8 +2,10 @@ import { X } from "lucide-react";
 import { useEscapeKey } from "@/hooks/useEscapeKey"; // your hook
 import { cn } from "@/lib/utils";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
-import { Fragment, ReactNode } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import Button, { ButtonVariants } from "@/components/ui/button";
+import Textarea from "../Textarea";
+import Label from "../Label";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -18,9 +20,14 @@ interface ConfirmationModalProps {
     variant: ButtonVariants;
     buttonText: string;
     hideCancel?: boolean;
-    onAction?: () => void;
+    onAction?: ({ noteValue }: { noteValue: string | null }) => void;
     isLoading?: boolean;
   }[];
+  note?:
+    | boolean
+    | {
+        label: string;
+      };
 }
 
 const sizeClasses: Record<string, string> = {
@@ -39,7 +46,10 @@ const ConfirmationModal = ({
   closeOnOutsideClick = false,
   closeOnEscape = true,
   actions,
+  note,
 }: ConfirmationModalProps) => {
+  const [noteValue, setNoteValue] = useState<string | null>(null);
+
   useEscapeKey(() => {
     if (closeOnEscape && isOpen) setIsOpen(false);
   });
@@ -90,6 +100,18 @@ const ConfirmationModal = ({
               </p>
             )}
           </div>
+          {note && (
+            <div className="flex flex-col justify-start items-start mb-4">
+              <Label className="mb-0.5">
+                {(typeof note !== "boolean" && note?.label) ?? "Note"}
+              </Label>
+              <Textarea
+                onChange={(e) => {
+                  setNoteValue(e.target.value);
+                }}
+              />
+            </div>
+          )}
 
           {actions && (
             <div className="flex gap-6 items-center justify-end">
@@ -108,7 +130,7 @@ const ConfirmationModal = ({
                     {action?.onAction && (
                       <Button
                         variant={action?.variant}
-                        onClick={() => action?.onAction?.()}
+                        onClick={() => action?.onAction?.({ noteValue })}
                         className="!text-sm"
                         isLoading={action?.isLoading}
                       >

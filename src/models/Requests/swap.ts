@@ -4,6 +4,10 @@ export interface SwapRequestRota {
   shift_start: string;
   shift_end: string;
   shift_type: string;
+  employee: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface SwapRequestItem {
@@ -14,7 +18,7 @@ export interface SwapRequestItem {
   my_rota: SwapRequestRota;
   requested_rota: SwapRequestRota;
   approved_by: string;
-  approved_at: null;
+  approved_at: string | null;
 }
 
 export interface SwapRequestListResponse {

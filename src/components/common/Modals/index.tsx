@@ -15,10 +15,10 @@ interface ModalProps {
 }
 
 const sizeClasses: Record<string, string> = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-[600px]",
-  xl: "max-w-[60%]",
+  sm: "w-full lg:max-w-sm",
+  md: "w-full lg:max-w-md",
+  lg: "w-full lg:max-w-[600px]",
+  xl: "w-full lg:max-w-[60%]",
 };
 
 const Modal = ({
@@ -57,7 +57,7 @@ const Modal = ({
         {/* <div className="fixed inset-0 z-50 flex items-center justify-center p-4 max-h-[90%] top-1/2 transform -translate-y-1/2 overflow-auto"> */}
         <div
           className={cn(
-            " max-h-[90%] overflow-auto relative w-full bg-white rounded-lg shadow-lg dark:bg-gray-950 dark:border-gray-800 border border-gray-200 p-6",
+            "max-h-[90%] overflow-auto relative w-full bg-white rounded-lg shadow-lg dark:bg-gray-950 dark:border-gray-800 border border-gray-200 p-6",
             sizeClasses[size],
           )}
         >

@@ -1,0 +1,53 @@
+import { SVGProps } from "react";
+
+export const UserRemoveIcon = (props: SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M15 15C18.4518 15 21.25 12.2018 21.25 8.75C21.25 5.29822 18.4518 2.5 15 2.5C11.5482 2.5 8.75 5.29822 8.75 8.75C8.75 12.2018 11.5482 15 15 15Z"
+        stroke="#004D61"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M4.26245 27.5C4.26245 22.6625 9.07495 18.75 14.9999 18.75C16.1999 18.75 17.3625 18.9125 18.45 19.2125"
+        stroke="#004D61"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M27.5 22.5C27.5 22.9 27.45 23.2875 27.35 23.6625C27.2375 24.1625 27.0375 24.65 26.775 25.075C25.9125 26.525 24.325 27.5 22.5 27.5C21.2125 27.5 20.05 27.0125 19.175 26.2125C18.8 25.8875 18.475 25.5 18.225 25.075C17.7625 24.325 17.5 23.4375 17.5 22.5C17.5 21.15 18.0375 19.9125 18.9125 19.0125C19.825 18.075 21.1 17.5 22.5 17.5C23.975 17.5 25.3125 18.1375 26.2125 19.1625C27.0125 20.05 27.5 21.225 27.5 22.5Z"
+        stroke="#004D61"
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M23.7875 21.1748L21.15 23.8123"
+        stroke="#004D61"
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M21.175 21.1997L23.825 23.8372"
+        stroke="#004D61"
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};

@@ -2,10 +2,10 @@ import { useState } from "react";
 import Tab, { TabItem } from "../../components/common/Tab";
 import {
   RequestType,
-  ShiftRequestTabs,
+  LeaveRequestTabs,
   SwapRequestTabs,
 } from "@/models/Requests/common";
-import { useGetRequestListQuery } from "@/services/requests";
+import { RequestStatusEnum, useGetRequestListQuery } from "@/services/requests";
 import {
   SwapRequestItem,
   SwapRequestListResponse,
@@ -27,25 +27,45 @@ const tabs: TabItem<RequestType>[] = [
 ];
 
 const swapRequestTabs: TabItem<SwapRequestTabs>[] = [
-  { title: "Pending Requests", key: "pending" },
+  { title: "All", key: "all", value: "" },
+  {
+    title: "Pending",
+    key: "pending",
+    value: String(RequestStatusEnum.PENDING),
+  },
 ];
 
-const shiftRequestTabs: TabItem<ShiftRequestTabs>[] = [
-  { title: "Pending Requests", key: "pending" },
+const leaveRequestTabs: TabItem<LeaveRequestTabs>[] = [
+  { title: "All", key: "all", value: "" },
+  {
+    title: "Pending",
+    key: "pending",
+    value: String(RequestStatusEnum.PENDING),
+  },
+  {
+    title: "Rejected",
+    key: "rejected",
+    value: String(RequestStatusEnum.REJECTED),
+  },
 ];
 
 export default function Requests() {
   const [activeTab, setActiveTab] = useState<RequestType>("swaps");
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [currentTab, setCurrentTab] = useState<
-    SwapRequestTabs | ShiftRequestTabs
-  >("pending");
+    SwapRequestTabs | LeaveRequestTabs
+  >("all");
+
+  const [status, setStatus] = useState<undefined | RequestStatusEnum>(
+    undefined,
+  );
 
   console.log("currentTab: ", currentTab); // will be used later based on API
 
   const { data, isLoading, isFetching, isError } = useGetRequestListQuery({
     page: currentPageNo,
     type: activeTab,
+    status,
   });
 
   const columns = getColumns({ activeTab });
@@ -87,7 +107,14 @@ export default function Requests() {
             icon={<AlertIcon />}
           />
         </div>
-        <Tab tabs={tabs} onTabChange={setActiveTab} defaultTab="swaps" />
+        {/* <Tab tabs={tabs} onTabChange={setActiveTab} defaultTab="swaps" /> */}
+        <Tab
+          tabs={tabs}
+          onTabChange={({ key }) => {
+            setActiveTab(key as RequestType);
+          }}
+          defaultTab="swaps"
+        />
       </div>
 
       <Table
@@ -95,15 +122,24 @@ export default function Requests() {
           activeTab === "swaps" ? (
             <Tab
               tabs={swapRequestTabs}
-              onTabChange={setCurrentTab}
-              defaultTab="pending"
+              // onTabChange={setCurrentTab}
+              onTabChange={({ key, value }) => {
+                setCurrentTab(key as SwapRequestTabs);
+                if (value !== "") setStatus(Number(value));
+                else setStatus(undefined);
+              }}
+              // defaultTab="pending"
               containerClassname="mb-9"
             />
           ) : (
             <Tab
-              tabs={shiftRequestTabs}
-              onTabChange={setCurrentTab}
-              defaultTab="pending"
+              tabs={leaveRequestTabs}
+              onTabChange={({ key, value }) => {
+                setCurrentTab(key as LeaveRequestTabs);
+                if (value !== "") setStatus(Number(value));
+                else setStatus(undefined);
+              }}
+              // defaultTab="pending"
               containerClassname="mb-9"
             />
           )
