@@ -1,37 +1,48 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
-import {} from "@/models/employee";
-import { RequestListResponse, RequestType } from "@/models/Requests/common";
+import {
+  RequestListResponse,
+  RequestParams,
+  RequestType,
+} from "@/models/Requests/common";
+
+export enum RequestStatusEnum {
+  PENDING = 1,
+  APPROVED = 2,
+  REJECTED = 3,
+}
 
 export const requestApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    modifyRequest: builder.mutation<any, { id?: number; formData: FormData }>({
-      query: ({ id, formData }) => {
-        // swaps/1/status
-        const url = !id ? "/admin/users" : `/admin/users/${id}`;
+    modifyRequestStatus: builder.mutation<
+      any,
+      { requestId: number; formData: FormData; type: RequestType }
+    >({
+      query: ({ requestId, formData }) => {
+        // 1 = pending, 2 = approved, 3 = rejected
+        const url = `/admin/${type}/${requestId}/status`;
         return {
           url,
           method: "POST",
           body: formData,
         };
       },
-      invalidatesTags: (_result, _error, arg) => {
-        if (arg.id) return [{ type: "requests", id: arg.id }, "requests"];
-        return ["requests"];
-      },
+      invalidatesTags: () => ["requests"],
     }),
     // getUserList: builder.query<Response<PromoListResponse>, PromoListParams>({
     getRequestList: builder.query<
       //   SchedulingListResponse,
       RequestListResponse,
-      { type: RequestType; page: number }
+      RequestParams
     >({
-      query: ({ type }) => ({
+      query: ({ type, status }) => ({
         url: `/admin/${type}`,
+        params: { status },
       }),
       providesTags: ["requests"],
     }),
   }),
 });
 
-export const { useGetRequestListQuery } = requestApi;
+export const { useGetRequestListQuery, useModifyRequestStatusMutation } =
+  requestApi;

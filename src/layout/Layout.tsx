@@ -23,6 +23,8 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./navbar/Navbar";
 import Sidebar from "./sidebar/Sidebar";
 import { useAppSelector } from "@/redux/hooks";
+import AppErrorBoundary from "@/components/common/AppErrorBoundary";
+import clsx from "clsx";
 
 export default function Layout() {
   const isOpen = useAppSelector((state) => state.ui.sidebarOpen);
@@ -35,14 +37,19 @@ export default function Layout() {
       <Sidebar />
 
       <div
-        className="transition-all duration-300"
-        style={{ marginLeft: isOpen ? "260px" : "80px" }}
+        className={clsx("transition-all duration-300 ml-20", {
+          "lg:ml-[260px]": isOpen,
+        })}
+        // className="transition-all duration-300"
+        // style={{ marginLeft: isOpen ? "260px" : "80px" }}
       >
         <div className="pl-7 p-4 lg:p-10">
           <div className="min-h-[calc(100vh-80px)] mt-10 lg:mt-4">
             {" "}
             {/* 80px ~ navbar height */}
-            <Outlet />
+            <AppErrorBoundary>
+              <Outlet />
+            </AppErrorBoundary>
           </div>
         </div>
       </div>

@@ -67,6 +67,8 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange(page);
   };
 
+  if (!totalPages) return;
+
   return (
     <div className="flex justify-between items-center">
       <h5 className="text-xs 2xl:text-sm">
@@ -83,7 +85,7 @@ const Pagination: React.FC<PaginationProps> = ({
             "px-3 py-1 rounded-md border",
             currentPage === 1
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-200"
+              : "hover:bg-gray-200",
           )}
         >
           <RightArrowIcon className="transform rotate-180" />
@@ -107,12 +109,12 @@ const Pagination: React.FC<PaginationProps> = ({
                 "px-3 py-1 rounded-md border",
                 page === currentPage
                   ? "bg-[#007B99] text-white"
-                  : "hover:bg-gray-100"
+                  : "hover:bg-gray-100",
               )}
             >
               {page}
             </Button>
-          )
+          ),
         )}
 
         {/* Next Button */}
@@ -123,7 +125,7 @@ const Pagination: React.FC<PaginationProps> = ({
             "px-3 py-1 rounded-md border",
             currentPage === totalPages
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-200"
+              : "hover:bg-gray-200",
           )}
         >
           <RightArrowIcon />

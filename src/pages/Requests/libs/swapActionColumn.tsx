@@ -1,27 +1,42 @@
 import { useState } from "react";
 import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
-import { useDeleteUserMutation } from "@/services/employee";
 import { onShowToastMessages } from "@/lib/toast";
 import Badge from "@/components/common/Badge";
+import {
+  RequestStatusEnum,
+  useModifyRequestStatusMutation,
+} from "@/services/requests";
 
 interface Props {
-  employeeId: number;
+  requestId: number;
 }
 
-const ActionColumn = ({ employeeId }: Props) => {
+const SwapActionColumn = ({ requestId }: Props) => {
   // const navigate = useNavigate();
 
   const [isOpenApproveModal, setIsOpenApproveModal] = useState(false);
   const [isOpenRejectModal, setIsOpenRejectModal] = useState(false);
 
-  const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
+  const [modifyRequestStatus, { isLoading: isModifying }] =
+    useModifyRequestStatusMutation();
 
   const closeDeleteModal = () => {
     setIsOpenRejectModal(false);
   };
 
-  const handleDeleteUser = () => {
-    deleteUser(employeeId)
+  const handleModifyStatus = ({
+    noteValue,
+    status,
+  }: {
+    noteValue: string | null;
+    status: RequestStatusEnum;
+  }) => {
+    const formData = new FormData();
+
+    formData.append("status", `${status}`);
+    formData.append("note", noteValue ?? "");
+
+    modifyRequestStatus({ requestId, formData, type: "swaps" })
       .unwrap()
       .then((res) => {
         onShowToastMessages({
@@ -57,12 +72,16 @@ const ActionColumn = ({ employeeId }: Props) => {
           setIsOpen={setIsOpenApproveModal}
           title="Confirm Approve"
           description="Are you really want to approve this request?"
+          note
           actions={[
             {
-              onAction: () => {
-                handleDeleteUser();
+              onAction: ({ noteValue }) => {
+                handleModifyStatus({
+                  noteValue,
+                  status: RequestStatusEnum.APPROVED,
+                });
               },
-              isLoading: isDeletingUser,
+              isLoading: isModifying,
               buttonText: "Approve",
               variant: "success",
             },
@@ -84,12 +103,16 @@ const ActionColumn = ({ employeeId }: Props) => {
           setIsOpen={setIsOpenRejectModal}
           title="Confirm Reject"
           description="Are you really want to reject this request?"
+          note
           actions={[
             {
-              onAction: () => {
-                handleDeleteUser();
+              onAction: ({ noteValue }) => {
+                handleModifyStatus({
+                  noteValue,
+                  status: RequestStatusEnum.REJECTED,
+                });
               },
-              isLoading: isDeletingUser,
+              isLoading: isModifying,
               buttonText: "Reject",
               variant: "danger",
             },
@@ -100,4 +123,4 @@ const ActionColumn = ({ employeeId }: Props) => {
   );
 };
 
-export default ActionColumn;
+export default SwapActionColumn;

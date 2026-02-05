@@ -1,6 +1,6 @@
 import Layout from "@/layout/Layout";
 import Login from "@/pages/Login";
-import Home from "@/pages/Home";
+import Dashboard from "@/pages/Dashboard";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./NotFound";
 import PrivateRoutes from "./PrivateRoutes";
@@ -28,7 +28,7 @@ export default function RootElement() {
       {/* Private Routes */}
       <Route path="/" element={<PrivateRoutes />}>
         <Route element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<Dashboard />} />
           <Route path="scheduling" element={<Scheduling />} />
           <Route path="requests" element={<Requests />} />
           <Route path="employees" element={<Employees />} />

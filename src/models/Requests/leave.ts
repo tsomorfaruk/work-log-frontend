@@ -7,11 +7,15 @@ export interface LeaveRequestItem {
     from: string;
     to: string;
     total_day: string;
+    employee: {
+      id: number;
+      name: string;
+    };
   };
-  approved: null;
-  approved_by: null;
-  approved_at: null;
-  note: null;
+  approved: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  note: string | null;
 }
 
 export interface LeaveRequestListResponse {

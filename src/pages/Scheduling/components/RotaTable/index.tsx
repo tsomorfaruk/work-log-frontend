@@ -58,6 +58,8 @@ const RotaTable = ({
     (item) => item.date,
   );
 
+  console.log({ dateColHeaders, data });
+
   const allEmployeeRotas = data?.data?.rotas?.map((employeeRotas) => {
     return employeeRotas.rotas.map((item) => item.rota);
   });

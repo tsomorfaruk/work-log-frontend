@@ -2,7 +2,14 @@ import { TableColumn } from "@/components/common/Table";
 import { RequestType } from "@/models/Requests/common";
 import { SwapRequestItem } from "@/models/Requests/swap";
 import { LeaveRequestItem } from "@/models/Requests/leave";
-import ActionColumn from "./libs/actionColumn";
+import SwapActionColumn from "./libs/swapActionColumn";
+import { Link } from "react-router-dom";
+import LeaveActionColumn from "./libs/leaveActionColumn";
+
+const formatRequestTime = (time: string): string => {
+  const [h = "00", m = "00"] = time.split(":");
+  return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
+};
 
 export const getColumns = ({
   activeTab,
@@ -15,59 +22,42 @@ export const getColumns = ({
       key: "requested_by",
       header: "Employee",
       width: 160,
-      render: () => {
+      render: (row) => {
         return (
-          <div className="flex justify-between">
-            <div className="flex gap-6 items-center">
-              <img
-                src={"image source"}
-                alt="DP"
-                className="size-10 rounded-3xl object-cover border border-[#007B99]"
-              />
-
-              <div>
-                <h4 className="text-base xl:text-base text-black">
-                  Display Name
-                </h4>
-                <p className="text-[10px] xl:text-[10px] text-black">Role</p>
-              </div>
-            </div>
-          </div>
+          <Link
+            to={`/employees/${row?.my_rota?.employee?.id}`}
+            className="text-base xl:text-base text-black hover:text-[#007B99] hover:underline"
+          >
+            {row?.my_rota?.employee?.name}
+          </Link>
         );
       },
     },
     {
       key: "requested_at",
-      header: "Types/Dates",
-      width: 160,
-      render: () => {
+      header: "Requested Shift",
+      width: 240,
+      render: (row) => {
         return (
-          <>
-            <p className="text-sm xl:text-base leading-none font-semibold text-[#BA1A1A] mb-0.5">
-              Shift Release
-            </p>
-            <p className="text-xs leading-none">
-              Shift on 16 Oct{" "}
-              <span className="text-bold">08:00 - 17:00 Line</span>
-            </p>
-          </>
+          <p className="text-xs font-bold text-[#007B99]">
+            {formatRequestTime(row?.requested_rota?.shift_start || "")} -{" "}
+            {formatRequestTime(row?.requested_rota?.shift_end || "")}(
+            {row?.requested_rota?.date})
+          </p>
         );
       },
     },
     {
-      key: "status",
-      header: "Details/Reason",
-      width: 160,
-      render: () => {
+      key: "my_rota",
+      header: "Current Shift",
+      width: 240,
+      render: (row) => {
         return (
-          <>
-            <p className="text-sm xl:text-base leading-none font-semibold text-[#454545] mb-0.5">
-              Urgent need to leave town.
-            </p>
-            <p className="text-xs leading-none">
-              Warning: Needs approval within 2 hours or shift is uncovered.
-            </p>
-          </>
+          <p className="text-xs font-bold text-[#BA1A1A]">
+            {formatRequestTime(row?.my_rota?.shift_start || "")} -{" "}
+            {formatRequestTime(row?.my_rota?.shift_end || "")}(
+            {row?.my_rota?.date})
+          </p>
         );
       },
     },
@@ -76,7 +66,7 @@ export const getColumns = ({
       header: "Actions",
       width: 160,
       render: (row) => {
-        return <ActionColumn employeeId={row?.id} />;
+        if (!row?.approved_at) return <SwapActionColumn requestId={row?.id} />;
       },
       align: "center",
     },
@@ -87,59 +77,59 @@ export const getColumns = ({
       key: "requested_by",
       header: "Employee",
       width: 160,
-      render: () => {
+      render: (row) => {
         return (
-          <div className="flex justify-between">
-            <div className="flex gap-6 items-center">
-              <img
-                src={"image source"}
-                alt="uploaded"
-                className="size-10 rounded-3xl object-cover border border-[#007B99]"
-              />
-
-              <div>
-                <h4 className="text-sm xl:base text-black">Display Name</h4>
-                <p className="text-sm xl:base text-black">Role</p>
-              </div>
-            </div>
-          </div>
+          <Link
+            to={`/employees/${row?.requested?.employee?.id}`}
+            className="text-base xl:text-base text-black hover:text-[#007B99] hover:underline"
+          >
+            {row?.requested?.employee?.name}
+          </Link>
         );
       },
     },
     {
       key: "requested",
-      header: "Types/Dates",
+      header: "Dates",
       width: 160,
-      render: () => {
+      render: (row) => {
+        return (
+          <p className="text-sm">
+            {row?.requested?.from} - {row?.requested?.to}
+          </p>
+        );
+      },
+    },
+    {
+      key: "requested",
+      header: "Types",
+      width: 160,
+      render: (row) => {
+        return <p className="text-sm">{row?.leave_type}</p>;
+      },
+    },
+    {
+      key: "note",
+      header: "Reason",
+      width: 160,
+      render: (row) => {
         return (
           <>
-            <p className="text-sm xl:text-base leading-none font-semibold text-[#BA1A1A]">
-              Shift Release
-            </p>
-            <p className="text-xs leading-none">
-              Shift on 16 Oct{" "}
-              <span className="text-bold">08:00 - 17:00 Line</span>
+            <p className="text-sm xl:text-base leading-none font-semibold text-[#454545]">
+              {row?.note}
             </p>
           </>
         );
       },
     },
     {
-      key: "status",
-      header: "Details/Reason",
+      key: "id",
+      header: "Actions",
       width: 160,
-      render: () => {
-        return (
-          <>
-            <p className="text-sm xl:text-base leading-none font-semibold text-[#454545]">
-              Urgent need to leave town.
-            </p>
-            <p className="text-xs leading-none">
-              Warning: Needs approval within 2 hours or shift is uncovered.
-            </p>
-          </>
-        );
+      render: (row) => {
+        if (!row?.approved_at) return <LeaveActionColumn requestId={row?.id} />;
       },
+      align: "center",
     },
   ];
 

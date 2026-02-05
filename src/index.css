@@ -38,6 +38,15 @@
     @apply text-lg lg:text-xl font-bold text-black mb-6;
   }
 
+  .card-wrapper {
+    @apply shadow-custom-1 border-b-[#C0C8CC] rounded-2xl bg-[#F2FCFF] p-3 lg:p-6;
+  }
+
+  .card-title {
+    /* @apply text-2xl lg:text-[28px] leading-tight font-bold text-black; */
+    @apply text-xl lg:text-2xl leading-tight font-bold text-black;
+  }
+
   .unstyled-dialog {
     all: unset !important;
     display: block !important;

@@ -1,15 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { Grid4 } from "iconsax-reactjs";
 import { getSidebarData } from "@/layout/sidebar/data";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSidebarOpen, toggleSidebar } from "@/redux/slices/uiSlice";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 export default function Sidebar() {
   const data = getSidebarData();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.sidebarOpen);
+
+  const sidebarRef = useRef<HTMLElement>(null!);
+
+  // useClickOutside(sidebarRef, () => dispatch(setSidebarOpen(false)));
+  useClickOutside(sidebarRef, () => {
+    if (window.innerWidth <= 1023) {
+      dispatch(setSidebarOpen(false));
+    }
+  });
 
   // mobile default collapsed
   useEffect(() => {
@@ -38,6 +48,7 @@ export default function Sidebar() {
         "fixed top-24 left-4 z-40 min-h-screen bg-F2FCFF shadow-custom-1 transition-all duration-300 flex flex-col",
         isOpen ? "w-[260px]" : "w-20",
       )}
+      ref={sidebarRef}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4">
