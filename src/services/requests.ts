@@ -18,7 +18,7 @@ export const requestApi = apiSlice.injectEndpoints({
       any,
       { requestId: number; formData: FormData; type: RequestType }
     >({
-      query: ({ requestId, formData }) => {
+      query: ({ requestId, formData, type }) => {
         // 1 = pending, 2 = approved, 3 = rejected
         const url = `/admin/${type}/${requestId}/status`;
         return {
