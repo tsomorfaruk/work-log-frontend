@@ -2,12 +2,25 @@ import React, { useMemo, useState } from "react";
 import clsx from "clsx";
 import Pagination, { PaginationProps } from "@/components/common/Pagination";
 import Spinner from "@/components/common/Spinner";
-import { TransformedSchedulingResponse } from "@/models/scheduling";
+import {
+  AlterSchedulingPayload,
+  SingleRotaResponse,
+} from "@/models/scheduling";
 import Button from "@/components/ui/button";
 import { RotaButtonIcon } from "@/assets/icons/RotaButtonIcon";
-import { formatDate, hasDatePassed, isToday } from "@/lib/date-helpers";
+import {
+  convertTo24Hour,
+  createDateRange,
+  formatDate,
+  formatTimeRange,
+  hasDatePassed,
+  isToday,
+} from "@/lib/date-helpers";
 import RotaModal from "../modals";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
+import { EditIcon } from "@/assets/icons/EditIcon";
+import { TransformedRotaResponse } from "../../Table/rota-helper";
+import { Link } from "react-router-dom";
 
 export interface TableColumn<T> {
   key: keyof T;
@@ -21,7 +34,7 @@ export interface TableColumn<T> {
 }
 
 export interface TableProps {
-  data: TransformedSchedulingResponse;
+  data: TransformedRotaResponse;
 
   striped?: boolean;
 
@@ -38,7 +51,7 @@ export interface TableProps {
   pagination?: PaginationProps;
   showSerial?: boolean;
 
-  onColumnClick?: (col: TransformedSchedulingResponse | null) => void;
+  onColumnClick?: (col: SingleRotaResponse | null) => void;
   frequency: ScheduleFrequency;
 }
 
@@ -54,38 +67,38 @@ const RotaTable = ({
   onColumnClick,
   frequency,
 }: TableProps) => {
-  const dateColHeaders = data?.data?.rotas?.[0]?.rotas?.map(
-    (item) => item.date,
-  );
-
-  console.log({ dateColHeaders, data });
-
-  const allEmployeeRotas = data?.data?.rotas?.map((employeeRotas) => {
-    return employeeRotas.rotas.map((item) => item.rota);
+  const dateColHeaders = createDateRange({
+    start: data?.start_date,
+    end: data?.end_date,
   });
 
-  const colIndexToday = data?.data?.rotas?.[0]?.rotas?.findIndex((item) =>
-    isToday(item?.date),
-  );
+  const allEmployeeRotas = data?.data;
+
+  const colIndexToday = dateColHeaders?.findIndex((item) => isToday(item));
 
   const [employeeId, setEmployeeId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const completedWorkTime = useMemo(() => {
     return (
-      data?.data?.rotas?.[0]?.rotas?.reduce((sum, item) => {
-        const hours = Number(item?.rota?.total_hours);
+      data?.data?.[0]?.rotas?.reduce((sum, item) => {
+        const hours = Number(item?.total_hours);
         return sum + (Number.isFinite(hours) ? hours : 0);
       }, 0) ?? 0
     );
   }, [data]);
 
   const totalWorkTime = useMemo(() => {
-    if (frequency === "month") {
+    if (frequency === "monthly") {
       return 4 * 40;
     }
     return 40;
-  }, []);
+  }, [frequency]);
+
+  const [defaultRotaValue, setDefaultRotaValue] =
+    useState<Partial<AlterSchedulingPayload> | null>(null);
+
+  const [rotaId, setRotaId] = useState<number>();
 
   return (
     <>
@@ -94,6 +107,8 @@ const RotaTable = ({
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           employeeId={employeeId}
+          defaultValue={defaultRotaValue}
+          rotaId={rotaId}
         />
       )}
       <div
@@ -190,121 +205,165 @@ const RotaTable = ({
                 </td>
               </tr>
             ) : (
-              data?.data?.rotas?.map((row, rowIdx) => (
-                <tr
-                  key={rowIdx}
-                  className={clsx(
-                    "bg-F2FCFF border-b border-b-[#CFE6F1]",
-                    border.rows && "border-b border-[#CFE6F1]",
-                  )}
-                >
-                  {showSerial && (
+              // data?.data?.rotas?.map((row, rowIdx) => {
+              data?.data?.map((row, rowIdx) => {
+                return (
+                  <tr
+                    key={rowIdx}
+                    className={clsx(
+                      "bg-F2FCFF border-b border-b-[#CFE6F1]",
+                      border.rows && "border-b border-[#CFE6F1]",
+                    )}
+                  >
+                    {showSerial && (
+                      <td
+                        className={clsx(
+                          "p-4 bg-inherit",
+                          border.columns && "border",
+                        )}
+                      >
+                        {!pagination?.currentPage && !pagination?.limit
+                          ? rowIdx + 1
+                          : (pagination?.currentPage - 1) * pagination?.limit +
+                            (rowIdx + 1)}
+                      </td>
+                    )}
+
                     <td
                       className={clsx(
                         "p-4 bg-inherit",
                         border.columns && "border",
                       )}
                     >
-                      {!pagination?.currentPage && !pagination?.limit
-                        ? rowIdx + 1
-                        : (pagination?.currentPage - 1) * pagination?.limit +
-                          (rowIdx + 1)}
-                    </td>
-                  )}
-
-                  <td
-                    className={clsx(
-                      "p-4 bg-inherit",
-                      border.columns && "border",
-                    )}
-                  >
-                    <div className="flex gap-x-1.5 items-center">
-                      <div>
-                        <img
-                          src="to be written"
-                          className="size-[30px] border border-[#007B99] rounded-full"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-sm 2xl:text-base leading-none text-black mb-0.5">
-                          {row?.employee?.display_name}
-                        </p>
-                        {completedWorkTime !== undefined && (
-                          <p
-                            className={clsx(
-                              "text-[10px] leading-none text-[#007B99]",
-                              {
-                                "text-[#BA1A1A] font-semibold":
-                                  completedWorkTime < totalWorkTime,
-                              },
-                            )}
+                      <div className="flex gap-x-1.5 items-center">
+                        <div>
+                          <Link
+                            to={`/employees/${row?.employee?.id}`}
+                            target="_blank"
+                            className="text-sm 2xl:text-base leading-none text-black mb-1 hover:underline"
                           >
-                            {completedWorkTime}/40
-                          </p>
-                        )}
+                            {row?.employee?.display_name}
+                          </Link>
+                          {completedWorkTime !== undefined && (
+                            <p
+                              className={clsx(
+                                "text-[10px] leading-none text-[#007B99]",
+                                {
+                                  "text-[#BA1A1A] font-semibold":
+                                    completedWorkTime < totalWorkTime,
+                                },
+                              )}
+                            >
+                              {completedWorkTime}/{totalWorkTime}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {allEmployeeRotas?.[rowIdx]?.map(
-                    (currentRota: any, colIdx) => {
-                      console.log("currentRota: ", currentRota);
+                    {allEmployeeRotas?.[rowIdx]?.rotas?.map(
+                      (currentRota, colIdx) => {
+                        if (!currentRota) {
+                          return (
+                            <td
+                              key={`empty-${rowIdx}-${colIdx}`}
+                              className={clsx(
+                                "p-4",
+                                border.columns && "border",
+                                {
+                                  "bg-[#00E1FF] bg-opacity-20 border-x-[3px] border-x-[#00E1FF]":
+                                    colIdx === colIndexToday,
+                                },
+                              )}
+                              onClick={() => {
+                                onColumnClick?.(currentRota);
+                              }}
+                            >
+                              <Button>
+                                <RotaButtonIcon
+                                  className={clsx("text-[#ffffff30]", {
+                                    "cursor-not-allowed": hasDatePassed(
+                                      dateColHeaders[colIdx],
+                                    ),
+                                  })}
+                                  onClick={() => {
+                                    if (
+                                      !hasDatePassed(dateColHeaders[colIdx])
+                                    ) {
+                                      setEmployeeId(+row.employeeId);
+                                      setIsOpen(true);
 
-                      if (!currentRota) {
+                                      const currentRotaData: Partial<AlterSchedulingPayload> =
+                                        {
+                                          employee_id: +row?.employeeId,
+                                          date: dateColHeaders[colIdx],
+                                        };
+
+                                      setDefaultRotaValue(currentRotaData);
+                                    }
+                                  }}
+                                />
+                              </Button>
+                            </td>
+                          );
+                        }
+
+                        // const rotaTime = `${currentRota.shift_start_time} - ${currentRota.shift_end_time}`;
+
                         return (
                           <td
-                            key={`empty-${rowIdx}-${colIdx}`}
+                            key={`${rowIdx}-${colIdx}`}
                             className={clsx("p-4", border.columns && "border", {
                               "bg-[#00E1FF] bg-opacity-20 border-x-[3px] border-x-[#00E1FF]":
                                 colIdx === colIndexToday,
                             })}
                             onClick={() => {
-                              onColumnClick?.(currentRota);
+                              if (currentRota) onColumnClick?.(currentRota);
                             }}
                           >
-                            <Button>
-                              <RotaButtonIcon
-                                className={clsx("text-[#ffffff30]", {
-                                  "cursor-not-allowed": hasDatePassed(
-                                    dateColHeaders[colIdx],
-                                  ),
-                                })}
-                                onClick={() => {
-                                  if (!hasDatePassed(dateColHeaders[colIdx])) {
-                                    setEmployeeId(row.employee_id);
-                                    setIsOpen(true);
-                                  }
-                                }}
-                              />
-                            </Button>
+                            <div className="bg-black rounded-2xl w-max">
+                              <div className="flex gap-2 items-center bg-[#CFE6F1] px-3 py-5 text-sm leading-none text-black rounded-xl w-max ml-1">
+                                {/* <p>{rotaTime}</p> */}
+                                <p>
+                                  {formatTimeRange({
+                                    start: currentRota.shift_start_time,
+                                    end: currentRota.shift_end_time,
+                                  })}
+                                </p>
+                                {!hasDatePassed(dateColHeaders[colIdx]) && (
+                                  <Button
+                                    icon={<EditIcon className="size-4" />}
+                                    onClick={() => {
+                                      setIsOpen(true);
+
+                                      // const xxxxxxxxxxxxxxx
+                                      const currentRotaData: AlterSchedulingPayload =
+                                        {
+                                          employee_id: +row?.employeeId,
+                                          date: currentRota?.date,
+                                          start_time: convertTo24Hour(
+                                            currentRota?.shift_start_time,
+                                          )!,
+                                          end_time: convertTo24Hour(
+                                            currentRota?.shift_end_time,
+                                          )!,
+                                          notes: currentRota?.remarks,
+                                        };
+
+                                      setDefaultRotaValue(currentRotaData);
+                                      setRotaId(currentRota?.id);
+                                    }}
+                                  ></Button>
+                                )}
+                              </div>
+                            </div>
                           </td>
                         );
-                      }
-
-                      const rotaTime = `${currentRota.shift_start_time} - ${currentRota.shift_end_time}`;
-
-                      return (
-                        <td
-                          key={`${rowIdx}-${colIdx}`}
-                          className={clsx("p-4", border.columns && "border", {
-                            "bg-[#00E1FF] bg-opacity-20 border-x-[3px] border-x-[#00E1FF]":
-                              colIdx === colIndexToday,
-                          })}
-                          onClick={() => {
-                            onColumnClick?.(currentRota);
-                          }}
-                        >
-                          <div className="bg-black rounded-2xl w-max">
-                            <p className="bg-[#CFE6F1] px-3 py-5 text-sm leading-none text-black rounded-xl w-max ml-1">
-                              {rotaTime}
-                            </p>
-                          </div>
-                        </td>
-                      );
-                    },
-                  )}
-                </tr>
-              ))
+                      },
+                    )}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

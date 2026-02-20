@@ -16,6 +16,7 @@ const Dropdown = <T,>({
   error,
   isLoading = false,
   isSearchable = false,
+  isDisabled = false,
   label,
   position = "bottom",
   onSearch,
@@ -76,16 +77,21 @@ const Dropdown = <T,>({
       className={clsx("relative w-full", containerClassname)}
     >
       {label && (
-        <Label className="mb-1 block text-sm font-medium text-gray-700">
+        <Label
+          className={clsx("mb-1 block text-sm font-medium text-gray-700", {
+            "cursor-not-allowed": isDisabled,
+          })}
+        >
           {label}
         </Label>
       )}
 
       {/* Trigger */}
       <div
-        onClick={() => setIsOpen((p) => !p)}
-        className={`flex min-h-[42px] cursor-pointer items-center justify-between rounded-md border px-3 py-2 text-sm
+        onClick={() => !isDisabled && setIsOpen((p) => !p)}
+        className={`flex min-h-[42px]  items-center justify-between rounded-md border px-3 py-2 text-sm
           ${error ? "border-red-500" : "border-gray-300"}
+          ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}
         `}
       >
         <span className={selectedLabels ? "text-gray-900" : "text-gray-400"}>
@@ -93,7 +99,7 @@ const Dropdown = <T,>({
         </span>
 
         <div className="flex items-center gap-2">
-          {isClearable && hasValue && (
+          {isClearable && hasValue && !isDisabled && (
             <button
               type="button"
               onClick={handleClear}

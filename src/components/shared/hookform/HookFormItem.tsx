@@ -41,7 +41,7 @@ const HookFormItem = ({
             )}
             {React.cloneElement(children, {
               ...field,
-              selected: field.value, // 👈 REQUIRED for react-datepicker
+              selected: children.props.selected ?? field.value, // 👈 Allow manual override, fallback to RHF value
               onChange: (value: any) => {
                 field?.onChange?.(value); // RHF update
                 children?.props?.onChange?.(value); // your handler

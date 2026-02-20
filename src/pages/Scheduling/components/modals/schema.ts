@@ -7,7 +7,7 @@ export const alterScheduleSchema = () =>
       .array(z.number().nonnegative())
       .optional()
       .refine((val) => Array.isArray(val) && val.length > 0, {
-        message: "Department is required",
+        message: "Employee is required",
       }),
     date: z
       .string({ message: "Date is required" })

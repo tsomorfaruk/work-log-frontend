@@ -19,6 +19,7 @@ export interface DropdownProps<T = number> {
   label?: string;
   isCreatable?: boolean;
   isClearable?: boolean;
+  isDisabled?: boolean;
 
   onSearch?: (value: string) => void;
   position?: "top" | "bottom";

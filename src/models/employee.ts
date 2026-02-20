@@ -58,6 +58,15 @@ export interface EmployeeListResponse extends ApiResponse {
   };
 }
 
+export interface RotaEmployees extends ApiResponse {
+  data: {
+    users: {
+      id: number;
+      name: string;
+    }[];
+  };
+}
+
 export interface EmployeeDepartmentResponse {
   id: number;
   display_name: string;

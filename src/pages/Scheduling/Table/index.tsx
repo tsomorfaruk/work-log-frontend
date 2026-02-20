@@ -1,6 +1,5 @@
 import { useGetSchedulingListQuery } from "@/services/scheduling";
-import { formatScheduleDate, transformSchedulingResponse } from "./utils";
-import { TransformedSchedulingResponse } from "@/models/scheduling";
+import { formatScheduleDate } from "./utils";
 import RotaTable from "../components/RotaTable";
 import Button from "@/components/ui/button";
 import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
@@ -11,12 +10,17 @@ import { ScheduleFrequency } from "@/models/Requests/schedule";
 import { useState } from "react";
 import FormSkeleton from "@/components/common/Skeleton";
 import RotaModal from "../components/modals";
+import { getTodayFormatted, shiftDate } from "@/lib/date-helpers";
+import {
+  TransformedRotaResponse,
+  transformRotaByEmployee,
+} from "./rota-helper";
 
 export default function Scheduling() {
   const getScheduleFrequencyOptions = (): Option<ScheduleFrequency>[] => {
     return [
-      { label: "Month", value: "month" },
-      { label: "Week", value: "week" },
+      { label: "Month", value: "monthly" },
+      { label: "Week", value: "weekly" },
     ];
   };
 
@@ -25,19 +29,19 @@ export default function Scheduling() {
   );
   const [isOpen, setIsOpen] = useState(false);
 
+  const [startingDate, setStartingDate] = useState<string>(getTodayFormatted());
+
   const { data, isLoading, isFetching, isError } = useGetSchedulingListQuery({
     frequency,
+    date: startingDate,
   });
 
   if (!data) return;
 
-  const schedulingPeriodStartedAt =
-    frequency === "month"
-      ? (data?.data as { month: any })?.month?.start_date
-      : (data?.data as { week: any })?.week?.start_date;
+  const schedulingPeriodStartedAt = data?.data?.start_date;
 
-  const transformedScheduling: TransformedSchedulingResponse =
-    transformSchedulingResponse(data);
+  const transformedScheduling: TransformedRotaResponse =
+    transformRotaByEmployee(data);
 
   return (
     <div>
@@ -52,17 +56,35 @@ export default function Scheduling() {
               <Button
                 className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
                 title="Previous"
+                onClick={() => {
+                  const validDate = startingDate ?? schedulingPeriodStartedAt;
+                  const shiftedDate = shiftDate({
+                    dateString: validDate,
+                    unit: frequency,
+                    amount: -1,
+                  });
+                  setStartingDate(shiftedDate);
+                }}
               >
                 <LeftArrowIcon className="size-4 lg:size-auto" />
               </Button>
 
               <p className="text-base lg:text-lg 2xl:text-xl leading-none font-bold">
-                {formatScheduleDate(schedulingPeriodStartedAt)}
+                {formatScheduleDate(startingDate ?? schedulingPeriodStartedAt)}
               </p>
 
               <Button
                 className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
                 title="Next"
+                onClick={() => {
+                  const validDate = startingDate ?? schedulingPeriodStartedAt;
+                  const shiftedDate = shiftDate({
+                    dateString: validDate,
+                    unit: frequency,
+                    amount: 1,
+                  });
+                  setStartingDate(shiftedDate);
+                }}
               >
                 <RightArrowIcon className="size-4 lg:size-auto" />
               </Button>

@@ -51,10 +51,10 @@ const CustomHeader = (
       ? maxFutureYearForSelect - i
       : getYear(new Date()) - i,
   );
-
   const months = Array.from({ length: 12 }, (_, i) =>
     new Date(0, i).toLocaleString("default", { month: "long" }),
   );
+  console.log("years: ", { years, months });
 
   return (
     <div className="customDateHead">
@@ -70,7 +70,6 @@ const CustomHeader = (
           ))}
         </select>
       </div>
-
       <div className="customDateRight">
         <select
           value={months[getMonth(date)]}
@@ -93,6 +92,7 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
   function CustomDatePicker(
     {
       label,
+      // errorMessage,
       hasError,
       isRequired,
       placeholder,
@@ -120,37 +120,18 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
     },
     ref,
   ) {
+    // If maxDate is provided as a prop, set maxFutureYearForSelect to the year of maxDate
     const effectiveMaxYear =
       maxFutureYearForSelect ?? moment().add(50, "years").year();
 
+    // Determine the maxDate dynamically based on the year dropdown selection
     const years = Array.from({ length: 100 }, (_, i) =>
       effectiveMaxYear ? effectiveMaxYear - i : getYear(new Date()) - i,
     );
+    const latestYear = years[0]; // The most recent year from the dropdown
 
-    const latestYear = years[0];
+    // Set maxDate as the latest year in the dropdown, December 31st
     const dynamicMaxDate = new Date(latestYear, 11, 31);
-
-    const resolvedTimeFormat = timeFormat === "24h" ? "HH:mm" : "hh:mm aa";
-
-    const resolvedDateFormat = showTimeSelectOnly
-      ? resolvedTimeFormat
-      : dateFormat
-        ? dateFormat
-        : `${convertMomentToDateFnsFormat("YYYY-MM-DD")}${
-            showTimeSelect ? `, ${resolvedTimeFormat}` : ""
-          }`;
-
-    const parsedSelected = React.useMemo(() => {
-      if (!selected) return null;
-      if (selected instanceof Date) return selected;
-      if (typeof selected === "string") {
-        const m = showTimeSelectOnly
-          ? moment(selected, ["HH:mm", "hh:mm aa", "HH:mm:ss"])
-          : moment(selected);
-        return m.isValid() ? m.toDate() : null;
-      }
-      return null;
-    }, [selected, showTimeSelectOnly]);
 
     return (
       <div className={cn("relative", className)} ref={ref}>
@@ -164,22 +145,21 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
         >
           {label}
         </Label>
-
         <ErrorBoundary
           fallback={<p className="text-danger">Error in Datepicker</p>}
         >
           <ReactDatePicker
             disabled={disabled}
-            selected={parsedSelected} // ✅ Robust parsing
-            onChange={onChange}
-            onBlur={onBlur}
             popperPlacement={
               popperPlacement ? (popperPlacement as any) : "bottom-start"
             }
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={() => {}}
             minDate={minDate}
             maxDate={maxDate ?? dynamicMaxDate}
             showIcon={showIcon}
-            autoComplete="off"
+            autoComplete={"off"}
             renderCustomHeader={
               !showTimeSelectOnly
                 ? (e) => CustomHeader(e, effectiveMaxYear)
@@ -189,15 +169,36 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             showTimeSelectOnly={showTimeSelectOnly}
             timeIntervals={timeIntervals}
             timeCaption={timeCaption}
-            timeFormat={resolvedTimeFormat} // 👈 Added this to control dropdown format
-            dateFormat={resolvedDateFormat}
+            // dateFormat={
+            //   showTimeSelectOnly
+            //     ? (dateFormat ?? "hh:mm a")
+            //     : !dateFormat
+            //       ? `${convertMomentToDateFnsFormat("")}${!showTimeSelect ? "" : ", hh:mm a"}`
+            //       : dateFormat
+            // }
+            dateFormat={
+              showTimeSelectOnly
+                ? timeFormat === "24h"
+                  ? "HH:mm"
+                  : "hh:mm aa"
+                : !dateFormat
+                  ? `${convertMomentToDateFnsFormat("")}${
+                      !showTimeSelect
+                        ? ""
+                        : timeFormat === "24h"
+                          ? ", HH:mm"
+                          : ", hh:mm aa"
+                    }`
+                  : dateFormat
+            }
             showMonthDropdown={!showTimeSelectOnly}
+            value={selected}
             showYearDropdown={!showTimeSelectOnly}
             adjustDateOnChange
             className={cn(
               datePickerClassName,
               hasError
-                ? `!border focus:outline-none border-danger focus:ring-danger focus:ring-1 rounded-lg w-full text-sm ${size === "sm" ? "!min-h-9 h-9" : "h-10"}`
+                ? `!border  focus:outline-none border-danger focus:ring-danger focus:ring-1 rounded-lg w-full text-sm ${size === "sm" ? "!min-h-9 h-9" : "h-10"}`
                 : `!border border-gray-200 !outline-none focus:border-primary-500 focus:ring-primary-500 focus:ring-1 rounded-lg w-full text-sm text-gray-900 ${size === "sm" ? "!min-h-9 h-9" : "h-10"}`,
               disabled && "cursor-not-allowed",
             )}
@@ -213,9 +214,13 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             {...rest}
           />
         </ErrorBoundary>
+        {/* {hasError && errorMessage && (
+          <p className="px-1 -mt-1 text-xs ltr:text-left rtl:text-right text-danger">
+            {errorMessage}
+          </p>
+        )} */}
       </div>
     );
   },
 );
-
 export default CustomDatePicker;

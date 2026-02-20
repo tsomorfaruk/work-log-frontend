@@ -1,52 +1,56 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
 import {} from "@/models/employee";
-import { SchedulingListResponse } from "@/models/scheduling";
+import { AlterSchedulingPayload, RotaResponse } from "@/models/scheduling";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
 
 export const schedulingApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // alterUser: builder.mutation<any, { id?: number; formData: FormData }>({
-    //   query: ({ id, formData }) => {
-    //     const url = !id ? "/admin/users" : `/admin/users/${id}`;
-    //     return {
-    //       url,
-    //       method: !id ? "POST" : "POST",
-    //       body: formData,
-    //     };
-    //   },
-    //   invalidatesTags: (_result, _error, arg) => {
-    //     if (arg.id) return [{ type: "user", id: arg.id }, "user"];
-    //     return ["user"];
-    //   },
-    // }),
+    alterScheduling: builder.mutation<
+      any,
+      { id?: number; payload: AlterSchedulingPayload }
+    >({
+      query: ({ id, payload }) => {
+        const url = !id ? "/admin/rotas" : `/admin/rotas/${id}`;
+        return {
+          url,
+          method: !id ? "POST" : "PUT",
+          body: payload,
+        };
+      },
+      invalidatesTags: (_result, _error, arg) => {
+        if (arg.id) return [{ type: "scheduling", id: arg.id }, "scheduling"];
+        return ["scheduling"];
+      },
+    }),
     // getUserList: builder.query<Response<PromoListResponse>, PromoListParams>({
     getSchedulingList: builder.query<
-      SchedulingListResponse,
-      { frequency: ScheduleFrequency }
+      // SchedulingListResponse,
+      RotaResponse,
+      { frequency: ScheduleFrequency; date: string }
     >({
-      query: ({ frequency }) => ({
-        url: `/app/rota/${frequency}/all`,
+      query: ({ frequency, date }) => ({
+        // url: `/app/rota/${frequency}/all`,
+        // url: `/admin/rotas?view=${frequency}`,
+        // url: `/admin/rotas?view=weekly`,
+        url: `/admin/rotas?view=${frequency}`,
+        params: { date },
       }),
       providesTags: ["scheduling"],
     }),
 
-    // getUserDetails: builder.query<PromoDetailsResponse, string>({
-    // getUserDetails: builder.query<EmployeeDetailsResponse, number>({
-    //   query: (id) => ({
-    //     url: `/admin/users/${id}`,
-    //   }),
-    //   providesTags: ["user"],
-    // }),
-
-    // deleteUser: builder.mutation<any, number>({
-    //   query: (id) => ({
-    //     url: `/admin/users/${id}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["user"],
-    // }),
+    deleteSchedule: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/admin/rotas/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["scheduling"],
+    }),
   }),
 });
 
-export const { useGetSchedulingListQuery } = schedulingApi;
+export const {
+  useGetSchedulingListQuery,
+  useAlterSchedulingMutation,
+  useDeleteScheduleMutation,
+} = schedulingApi;

@@ -1,1 +1,1 @@
-export type ScheduleFrequency = "week" | "month";
+export type ScheduleFrequency = "weekly" | "monthly";

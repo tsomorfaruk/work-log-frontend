@@ -1,4 +1,5 @@
 import { ApiResponse } from "./common";
+import { ScheduleFrequency } from "./Requests/schedule";
 
 /* ----------------------------------
    Shared range type
@@ -76,7 +77,7 @@ export interface TransformedSchedulingRota extends Omit<
   SchedulingRota,
   "rotas"
 > {
-  rotas: RotaDay[];
+  rotas: SingleRotaResponse[];
 }
 
 export interface TransformedSchedulingResponse extends Omit<
@@ -85,5 +86,45 @@ export interface TransformedSchedulingResponse extends Omit<
 > {
   data: Omit<SchedulingListResponse["data"], "rotas"> & {
     rotas: TransformedSchedulingRota[];
+  };
+}
+
+export interface AlterSchedulingPayload {
+  employee_id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  notes: string;
+}
+
+export interface SingleRotaResponse {
+  id: number;
+  date: string;
+  shift_start_time: string;
+  shift_end_time: string;
+  break_start_time: string | null;
+  break_end_time: string | null;
+  employee_start_time: string | null;
+  employee_end_time: string | null;
+  total_hours: string;
+  location: string;
+  remarks: string;
+  employee_id: string;
+  created_at: string;
+  updated_at: string;
+  employee: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    display_name: string;
+  };
+}
+
+export interface RotaResponse extends ApiResponse {
+  data: {
+    end_date: string;
+    start_date: string;
+    view: ScheduleFrequency;
+    data: SingleRotaResponse[];
   };
 }

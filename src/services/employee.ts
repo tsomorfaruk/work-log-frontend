@@ -4,6 +4,7 @@ import {
   // AlterEmployeePayload,
   EmployeeDetailsResponse,
   EmployeeListResponse,
+  RotaEmployees,
 } from "@/models/employee";
 
 export const employeeApi = apiSlice.injectEndpoints({
@@ -44,6 +45,13 @@ export const employeeApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["user"],
     }),
+    getScheduleUserList: builder.query<RotaEmployees, { page?: number }>({
+      query: (params) => ({
+        url: `/admin/users/listSimple`,
+        params,
+      }),
+      providesTags: ["user"],
+    }),
 
     // getUserDetails: builder.query<PromoDetailsResponse, string>({
     getUserDetails: builder.query<EmployeeDetailsResponse, number>({
@@ -68,4 +76,5 @@ export const {
   useGetUserListQuery,
   useGetUserDetailsQuery,
   useDeleteUserMutation,
+  useGetScheduleUserListQuery,
 } = employeeApi;
