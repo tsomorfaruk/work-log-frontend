@@ -3,6 +3,8 @@ import { TLoginSchema } from "@/schemas/loginSchema";
 import { userLoggedIn, userLoggedOut } from "./authSlice";
 import { deleteAuthToken, setAuthToken } from "@/lib/authCookie";
 import { LoginResponse } from "@/models/auth";
+import { TForgotPasswordSchema } from "@/schemas/forgotPasswordSchema";
+import { TResetPasswordSchema } from "@/schemas/resetPasswordSchema";
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,7 +28,6 @@ export const authApi = apiSlice.injectEndpoints({
     }),
     logout: builder.mutation<unknown, void>({
       query: () => ({
-        // url: "/auth/login",
         url: "/admin/logout",
         method: "POST",
       }),
@@ -46,11 +47,18 @@ export const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    forgotPassword: builder.mutation({
-      query: (email) => ({
-        url: "/auth/forgot-password",
+    forgotPassword: builder.mutation<unknown, TForgotPasswordSchema>({
+      query: (data) => ({
+        url: "/admin/forgot-password",
         method: "POST",
-        body: { email },
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation<unknown, TResetPasswordSchema>({
+      query: (data) => ({
+        url: "/admin/reset-password",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -61,4 +69,5 @@ export const {
   useLogoutMutation,
   useSignupMutation,
   useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

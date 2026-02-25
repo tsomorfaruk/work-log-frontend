@@ -62,7 +62,8 @@ export default function Login() {
             <Input />
           </HookFormItem>
         </div>
-        <Button
+        <div className="flex gap-4 items-center mb-4">
+          <Button
           onClick={(e) => {
             e.preventDefault();
             methods.handleSubmit(onSubmit)();
@@ -72,6 +73,14 @@ export default function Login() {
         >
           Login
         </Button>
+          <Button
+            variant="default"
+            onClick={() => navigate("/forgot-password")}
+          >
+            Forgot password?
+          </Button>
+        </div>
+        
       </FormProvider>
     </div>
   );

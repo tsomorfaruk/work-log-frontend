@@ -6,7 +6,7 @@ import NotFound from "./NotFound";
 import PrivateRoutes from "./PrivateRoutes";
 import UnAuthorizedRoutes from "./UnAuthorizedRoutes";
 import ForgotPassword from "@/pages/ForgotPassword";
-import PasswordReset from "@/pages/PasswordRest";
+import PasswordReset from "@/pages/ResetPassword";
 import Scheduling from "@/pages/Scheduling/Table";
 import Requests from "@/pages/Requests";
 import Employees from "@/pages/Employee/Table";
@@ -20,7 +20,7 @@ export default function RootElement() {
         <Route path="login" element={<Login />} />
         {/* <Route path="/signup" element={<Signup />} /> */}
         <Route path="forgot-password" element={<ForgotPassword />} />
-        <Route path="password-rest" element={<PasswordReset />} />
+        <Route path="reset-password" element={<PasswordReset />} />
 
         {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
       </Route>

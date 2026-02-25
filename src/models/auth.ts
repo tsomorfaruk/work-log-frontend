@@ -14,3 +14,9 @@ export interface LoginResponse {
     };
   };
 }
+
+export interface ForgotPasswordResponse {
+  status: string;
+  message: string;
+  data: any;
+}

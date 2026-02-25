@@ -1,87 +1,68 @@
+import { FormProvider, useForm } from "react-hook-form";
+import HookFormItem from "@/components/shared/hookform/HookFormItem";
+import {
+  forgotPasswordDefaultValues,
+  ForgotPasswordSchema,
+  TForgotPasswordSchema,
+} from "@/schemas/forgotPasswordSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/common/Input";
-import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useApi } from "@/hooks/useApi";
-import { AuthEndpoint } from "@/apis/Auth";
-import { Utils } from "@/lib/utils";
-
-import { toast } from "sonner";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import Button from "@/components/ui/button";
+import { useForgotPasswordMutation } from "@/services/auth/authService";
 
 export default function ForgotPassword() {
-  const navigate = useNavigate();
-
-  const [error, setError] = useState<string | null>(null);
-  const { apiRequest } = useApi({
-    endpoint: AuthEndpoint.forgotPassword,
-    method: "post",
+  const methods = useForm<TForgotPasswordSchema>({
+    resolver: zodResolver(ForgotPasswordSchema),
+    defaultValues: forgotPasswordDefaultValues,
   });
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
-    const data = Utils.getFormData(e.currentTarget);
-
-    const response = await apiRequest({ payload: data });
-
-    if (!response.hasError) {
-      toast.success(`Token successfully sent to ${data.email}`);
-      navigate("/password-rest");
-      return;
-    }
-
-    /** -------------------------
-     *  Handle Error with TS-safe typing
-     * ------------------------ */
-    const axiosMsg =
-      // (response.hasError as Record<string, object>)?.response?.data?.message ??
-      (response.hasError as any)?.response?.data?.message ?? "Login failed";
-
-    setError(axiosMsg);
-
-    const timer = setTimeout(() => {
-      setError(null);
-    }, 3000);
-
-    return () => clearTimeout(timer);
+  const onSubmit = (data: TForgotPasswordSchema) => {
+    forgotPassword(data)
+      .unwrap()
+      .then(() => {
+        toast.success("A password reset link has been sent to your email. Please check your inbox.");
+      })
+      .catch((err) => {
+        console.error("err: ", err);
+        const errorMessage = err?.data?.message || "Failed to send reset link";
+        toast.error(errorMessage);
+      });
   };
+
   return (
-    <div>
-      <h2 className="text-4xl font-bold text-303030 mb-6 text-start">
-        Forgot Password
-      </h2>
-      {error && (
-        <div className="absolute top-[86px] left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-400 text-ellipsis whitespace-nowrap text-base ">
-          {error || "Something went wrong!"}
+    <div className="p-4">
+      <FormProvider {...methods}>
+        <h2 className="text-4xl font-bold text-[#303030] mb-6 text-start pt-8">
+          Forgot Password
+        </h2>
+        <div className="space-y-4 mb-4 w-full">
+          <HookFormItem name="email" label="Email" isRequired>
+            <Input height={62} placeholder="Enter your email" />
+          </HookFormItem>
         </div>
-      )}
-      <form onSubmit={(e) => handleSubmit(e)} className="space-y-6 ">
-        <div>
-          <label className="block text-sm  text-303030 mb-3">
-            Enter email or username
-          </label>
-          <Input
-            name="email"
-            height={62}
-            type="email"
-            className="input-class"
-            placeholder="Enter email or password"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="mt-[42px] w-full h-[60px] bg-007B99 text-white font-medium rounded-lg transition-colors"
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            methods.handleSubmit(onSubmit)();
+          }}
+          isLoading={isLoading}
+          variant="primary"
         >
           Submit
-        </button>
-
-        <div className="flex items-center">
-          <span className="mr-2 text-xs text-686868">Remembered Password?</span>
-          <Link to="/login" className="text-xs text-6868689">
+        </Button>
+        <div className="flex items-center mt-6">
+          <span className="mr-2 text-xs text-[#686868]">
+            Remembered Password?
+          </span>
+          <Link to="/login" className="text-xs text-[#BA1A1A] font-semibold hover:underline">
             Login
           </Link>
         </div>
-      </form>
+      </FormProvider>
     </div>
   );
 }
