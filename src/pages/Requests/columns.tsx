@@ -62,7 +62,7 @@ export const getColumns = ({
       },
     },
     {
-      key: "my_rota",
+      key: "id",
       header: "Actions",
       width: 160,
       render: (row) => {
@@ -101,7 +101,7 @@ export const getColumns = ({
       },
     },
     {
-      key: "requested",
+      key: "leave_type",
       header: "Types",
       width: 160,
       render: (row) => {

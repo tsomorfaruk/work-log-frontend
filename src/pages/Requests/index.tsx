@@ -149,6 +149,7 @@ export default function Requests() {
           header: false,
         }}
         columns={columns}
+        key={activeTab}
         data={tableData}
         border={{
           table: false,
