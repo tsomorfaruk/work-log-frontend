@@ -3,16 +3,13 @@ import Loader from "@/components/common/Loader";
 import RenderTo from "@/components/common/RenderTo";
 import Button from "@/components/ui/button";
 import { BellIcon, CalendarIcon, SearchIcon, UserIcon } from "@/icons";
-import { useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/services/auth/authService";
-import { userLoggedOut } from "@/services/auth/authSlice";
 import {} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const [logout, { isLoading }] = useLogoutMutation();
 
@@ -20,15 +17,11 @@ export default function Navbar() {
     logout()
       .unwrap()
       .then(() => {
-        dispatch(userLoggedOut());
-        // navigate("/login");
-        setTimeout(() => {
-          navigate("/login", { replace: true });
-        }, 100);
+        navigate("/login", { replace: true });
       })
       .catch((err) => {
         console.error("err: ", err);
-        toast.error("Login failed");
+        toast.error("Logout failed");
       });
   };
 
@@ -67,7 +60,7 @@ export default function Navbar() {
         </div>
         <UserIcon width={50} height={50} />
 
-        <Button variant="danger" onClick={handleLogout}>
+        <Button variant="danger" onClick={handleLogout} isLoading={isLoading}>
           Logout
         </Button>
 
