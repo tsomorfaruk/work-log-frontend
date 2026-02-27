@@ -206,7 +206,10 @@ const RotaTable = ({
               </tr>
             ) : data?.data?.length === 0 ? (
               <tr className="h-32">
-                <td className="text-sm lg:text-base font-semibold text-center text-danger py-4" colSpan={Math.min(dateColHeaders.length + 2,11)}>
+                <td
+                  className="text-sm lg:text-base font-semibold text-center text-danger py-4"
+                  colSpan={Math.min(dateColHeaders.length + 2, 11)}
+                >
                   <p className="text-center">No Data Found</p>
                 </td>
               </tr>
@@ -241,8 +244,16 @@ const RotaTable = ({
                         border.columns && "border",
                       )}
                     >
-                      <div className="flex gap-x-1.5 items-center">
-                        <div>
+                      <div>
+                        <div className="flex gap-1.5 items-center mb-1">
+                          <img
+                            src={
+                              row?.employee?.image_url ??
+                              "/images/dummy-user.png"
+                            }
+                            alt="user"
+                            className="w-6 min-w-6 lg:w-6 lg:min-w-6 h-6 min-h-6 lg:h-6 lg:min-h-6 rounded-full object-cover border border-[#007B99]"
+                          />
                           <Link
                             to={`/employees/${row?.employee?.id}`}
                             target="_blank"
@@ -250,20 +261,20 @@ const RotaTable = ({
                           >
                             {row?.employee?.display_name}
                           </Link>
-                          {completedWorkTime !== undefined && (
-                            <p
-                              className={clsx(
-                                "text-[10px] leading-none text-[#007B99]",
-                                {
-                                  "text-[#BA1A1A] font-semibold":
-                                    completedWorkTime < totalWorkTime,
-                                },
-                              )}
-                            >
-                              {completedWorkTime}/{totalWorkTime}
-                            </p>
-                          )}
                         </div>
+                        {completedWorkTime !== undefined && (
+                          <p
+                            className={clsx(
+                              "text-[10px] leading-none text-[#007B99]",
+                              {
+                                "text-[#BA1A1A] font-semibold":
+                                  completedWorkTime < totalWorkTime,
+                              },
+                            )}
+                          >
+                            {completedWorkTime}/{totalWorkTime}
+                          </p>
+                        )}
                       </div>
                     </td>
 

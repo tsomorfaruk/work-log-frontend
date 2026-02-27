@@ -117,6 +117,7 @@ export interface SingleRotaResponse {
     first_name: string;
     last_name: string;
     display_name: string;
+    image_url: string | null;
   };
 }
 
