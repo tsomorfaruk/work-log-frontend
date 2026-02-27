@@ -1,7 +1,7 @@
 .react-datepicker {
   box-shadow: 1px 2px 4px 6px #f6f6f6;
   border: 1px solid white !important;
-  display: flex !important;
+  font-family: inherit;
 }
 
 .react-datepicker__triangle {
@@ -17,12 +17,8 @@
   width: 100%;
 }
 
-.react-datepicker__calendar-icon {
-  /* background-color: #3498db; */
-}
-
 .react-datepicker__popper {
-  transform: translate(4.54545px, 68.1818px) !important;
+  z-index: 1000 !important;
 }
 
 .react-datepicker-popper {
@@ -31,45 +27,47 @@
 
 .react-datepicker__view-calendar-icon {
   display: flex;
-
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.react-datepicker__input-container {
-  /* background-color: #878787; */
-}
-
-.react-datepicker__input-container input {
-  /* background-color: #878787; */
-  padding-left: 12px;
-}
-
-.react-datepicker__triangle {
-  display: none !important;
-}
-
-.react-datepicker__header {
-  background-color: white !important;
-  border-bottom: none !important;
-}
-
-.react-datepicker__view-calendar-icon {
-  display: flex;
-
   align-items: center;
   justify-content: flex-end;
 }
 
 .react-datepicker__input-container input {
-  /* background-color: #878787; */
   padding-left: 12px;
-}
-
-.react-datepicker__popper {
-  transform: translate(4.54545px, 78.1818px) !important;
 }
 
 .react-datepicker__input-container .react-datepicker__calendar-icon {
   display: revert !important;
+}
+
+/* Month Picker Styles */
+.react-datepicker__month-container {
+  float: none;
+}
+
+.react-datepicker__month-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 250px;
+}
+
+.react-datepicker__month-text {
+  width: 25% !important;
+  padding: 10px 0 !important;
+  margin: 2px 0 !important;
+  display: inline-block !important;
+  text-align: center;
+}
+
+.react-datepicker__month--selected,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--keyboard-selected {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-radius: 0.375rem;
+}
+
+.react-datepicker__month-text:hover {
+  background-color: #f3f4f6 !important;
+  border-radius: 0.375rem;
 }

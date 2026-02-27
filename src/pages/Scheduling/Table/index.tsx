@@ -11,6 +11,8 @@ import { useState } from "react";
 import FormSkeleton from "@/components/common/Skeleton";
 import RotaModal from "../components/modals";
 import { getTodayFormatted, shiftDate } from "@/lib/date-helpers";
+import CustomDatePicker from "@/components/common/CustomDatePicker";
+import moment from "moment";
 import {
   TransformedRotaResponse,
   transformRotaByEmployee,
@@ -100,6 +102,23 @@ export default function Scheduling() {
                   setFrequency(currentValue);
                 }
               }}
+            />
+
+            <CustomDatePicker
+              selected={startingDate}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  const firstOfMonth = moment(date)
+                    .startOf("month")
+                    .format("YYYY-MM-DD");
+                  setStartingDate(firstOfMonth);
+                }
+              }}
+              showMonthYearPicker
+              dateFormat="MMMM yyyy"
+              placeholder="Select Month"
+              showIcon={true}
+              className="!w-44"
             />
           </div>
 

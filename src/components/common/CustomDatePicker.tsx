@@ -40,6 +40,7 @@ interface IDateProps {
   icon?: any;
   datePickerClassName?: string;
   timeFormat?: "24h" | "12h";
+  showMonthYearPicker?: boolean;
 }
 
 const CustomHeader = (
