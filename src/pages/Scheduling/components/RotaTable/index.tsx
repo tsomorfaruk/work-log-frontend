@@ -192,7 +192,7 @@ const RotaTable = ({
             ) : isLoading ? (
               <tr className="h-32">
                 <td
-                  // colSpan={columns.length} // must find
+                  colSpan={Math.min(dateColHeaders.length + 2, 11)}
                   className="text-sm lg:text-base font-semibold text-center text-danger py-4"
                 >
                   <Spinner />
@@ -210,7 +210,7 @@ const RotaTable = ({
                   className="text-sm lg:text-base font-semibold text-center text-danger py-4"
                   colSpan={Math.min(dateColHeaders.length + 2, 11)}
                 >
-                  <p className="text-center">No Data Found</p>
+                  <p>OOPS! No data found 🙁</p>
                 </td>
               </tr>
             ) : (
