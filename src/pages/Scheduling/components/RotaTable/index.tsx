@@ -67,6 +67,8 @@ const RotaTable = ({
   onColumnClick,
   frequency,
 }: TableProps) => {
+  console.log("data: ", data);
+
   const dateColHeaders = createDateRange({
     start: data?.start_date,
     end: data?.end_date,
