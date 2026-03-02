@@ -74,7 +74,9 @@ const Dropdown = <T,>({
   return (
     <div
       ref={dropdownRef as any}
-      className={clsx("relative w-full", containerClassname)}
+      className={clsx("relative w-full", containerClassname, {
+        "!bg-gray-100 rounded-md": isDisabled,
+      })}
     >
       {label && (
         <Label
@@ -98,24 +100,26 @@ const Dropdown = <T,>({
           {selectedLabels || placeholder}
         </span>
 
-        <div className="flex items-center gap-2">
-          {isClearable && hasValue && !isDisabled && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
-          )}
-          <ChevronDown />
-        </div>
+        {
+          <div className="flex items-center gap-2">
+            {isClearable && hasValue && !isDisabled && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
+            {!isDisabled && <ChevronDown />}
+          </div>
+        }
       </div>
 
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
       {/* Menu */}
-      {isOpen && (
+      {!isDisabled && isOpen && (
         <div
           className={`absolute z-50 w-full rounded-md border bg-white shadow-md
             ${dropdownPosition === "bottom" ? "mt-1" : "bottom-full mb-1"}

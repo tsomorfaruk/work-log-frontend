@@ -41,6 +41,8 @@ interface IDateProps {
   datePickerClassName?: string;
   timeFormat?: "24h" | "12h";
   showMonthYearPicker?: boolean;
+  minTime?: Date;
+  maxTime?: Date;
 }
 
 const CustomHeader = (
@@ -117,6 +119,8 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
       datePickerClassName,
       selected,
       timeFormat = "24h",
+      minTime,
+      maxTime,
       ...rest
     },
     ref,
@@ -140,6 +144,15 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
         : `${convertMomentToDateFnsFormat("YYYY-MM-DD")}${
             showTimeSelect ? `, ${resolvedTimeFormat}` : ""
           }`;
+
+    const safeMinTime =
+      minTime && maxTime && moment(minTime).isAfter(maxTime)
+        ? undefined
+        : minTime;
+    const safeMaxTime =
+      minTime && maxTime && moment(minTime).isAfter(maxTime)
+        ? undefined
+        : maxTime;
 
     const parsedSelected = React.useMemo(() => {
       if (!selected) return null;
@@ -179,6 +192,8 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             }
             minDate={minDate}
             maxDate={maxDate ?? dynamicMaxDate}
+            minTime={safeMinTime}
+            maxTime={safeMaxTime}
             showIcon={showIcon}
             autoComplete="off"
             renderCustomHeader={
@@ -200,7 +215,7 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
               hasError
                 ? `!border focus:outline-none border-danger focus:ring-danger focus:ring-1 rounded-lg w-full text-sm ${size === "sm" ? "!min-h-9 h-9" : "h-10"}`
                 : `!border border-gray-200 !outline-none focus:border-primary-500 focus:ring-primary-500 focus:ring-1 rounded-lg w-full text-sm text-gray-900 ${size === "sm" ? "!min-h-9 h-9" : "h-10"}`,
-              disabled && "cursor-not-allowed",
+              disabled && "bg-gray-100 cursor-not-allowed",
             )}
             icon={icon ?? <CalenderIcon />}
             calendarIconClassname="cursor-pointer absolute top-1 end-1"

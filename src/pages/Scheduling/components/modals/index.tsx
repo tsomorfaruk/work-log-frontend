@@ -179,10 +179,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
                 })}
                 isLoading={isLoadingEmployee}
                 isSearchable
-                // isDisabled={!!defaultValue?.employee_id}
-                // value={[defaultValue?.employee_id]}
-
-                // value={form.getValues("employee_id")}
+                isDisabled={isInEditMode}
               />
             </HookFormItem>
 
@@ -199,7 +196,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
                     : null;
                   if (formattedDate) form.setValue("date", formattedDate);
                 }}
-                minDate={new Date()}
+                disabled={isInEditMode}
               />
             </HookFormItem>
             <HookFormItem
