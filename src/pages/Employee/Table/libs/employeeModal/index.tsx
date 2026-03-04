@@ -19,6 +19,7 @@ import { getStatusOptions } from "@/lib/shared-static-data";
 import {
   useGetDepartmentListQuery,
   useGetRoleListQuery,
+  useGetDesignationListQuery,
 } from "@/services/shared";
 import { convertToOptions } from "@/lib/dropdown";
 import {
@@ -49,6 +50,8 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
   const { data: departments, isLoading: isLoadingDepartment } =
     useGetDepartmentListQuery();
   const { data: roles, isLoading: isLoadingRoles } = useGetRoleListQuery();
+  const { data: designations, isLoading: isLoadingDesignation } =
+    useGetDesignationListQuery();
 
   const { data: employeeDetails } = useGetUserDetailsQuery(employeeId!, {
     skip: !employeeId,
@@ -85,7 +88,10 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
     formData.append("email", data.email);
     formData.append("phone", data.phone);
 
-    formData.append("designation", data.designation);
+    formData.append(
+      "designation",
+      data.designation ? String(data.designation) : "0",
+    );
     formData.append(
       "department_id",
       data.department_id ? String(data.department_id) : "0",
@@ -175,7 +181,14 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 <Input />
               </HookFormItem>
               <HookFormItem name="designation" label="Designation" isRequired>
-                <Input />
+                <Dropdown
+                  options={convertToOptions(designations?.data?.designations, {
+                    labelKey: "name",
+                    valueKey: "id",
+                  })}
+                  isLoading={isLoadingDesignation}
+                  isSearchable
+                />
               </HookFormItem>
 
               <HookFormItem name="department_id" label="Department" isRequired>

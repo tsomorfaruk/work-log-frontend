@@ -3,6 +3,7 @@ import { apiSlice } from "@/redux/api/apiSlice";
 import {
   DepartmentRolesListResponse,
   RolesListResponse,
+  DesignationListResponse,
 } from "@/models/shared";
 
 export const sharedApi = apiSlice.injectEndpoints({
@@ -17,7 +18,16 @@ export const sharedApi = apiSlice.injectEndpoints({
         url: `/admin/roles`,
       }),
     }),
+    getDesignationList: builder.query<DesignationListResponse, void>({
+      query: () => ({
+        url: `/admin/designations`,
+      }),
+    }),
   }),
 });
 
-export const { useGetDepartmentListQuery, useGetRoleListQuery } = sharedApi;
+export const {
+  useGetDepartmentListQuery,
+  useGetRoleListQuery,
+  useGetDesignationListQuery,
+} = sharedApi;

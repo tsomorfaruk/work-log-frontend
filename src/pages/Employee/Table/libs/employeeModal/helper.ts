@@ -21,7 +21,10 @@ export const setEmployeeDetails = (
     form.setValue("phone", data?.phone);
     form.setValue("email", data?.email);
 
-    form.setValue("designation", data?.designation);
+    form.setValue(
+      "designation",
+      data?.designation ? [Number(data.designation)] : []
+    );
     form.setValue("is_active", [data?.is_active ? 1 : 0]);
     form.setValue("password", data?.password);
     form.setValue("password_confirmation", data?.password_confirmation);

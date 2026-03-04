@@ -11,7 +11,12 @@ export const alterEmployeeSchema = (isEdit = false) =>
       .min(1, "Email is required")
       .email("Please enter a valid email address"),
     phone: z.string().trim().min(1, "Phone is required"),
-    designation: z.string().trim().min(1, "Designation is required"),
+    designation: z
+      .array(z.number().nonnegative())
+      .optional()
+      .refine((val) => Array.isArray(val) && val.length > 0, {
+        message: "Designation is required",
+      }),
     department_id: z
       .array(z.number().nonnegative())
       .optional()
@@ -78,7 +83,7 @@ export const employeeDefaultValues: Partial<TAlterEmployeeSchema> = {
   phone: "",
   email: "",
 
-  designation: "",
+  designation: [],
   is_active: [1],
   password: "",
   password_confirmation: "",

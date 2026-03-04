@@ -24,3 +24,16 @@ export interface RolesListResponse {
     roles: Role[];
   };
 }
+
+export interface Designation {
+  id: number;
+  name: string;
+}
+
+export interface DesignationListResponse {
+  status: string;
+  message: string;
+  data: {
+    designations: Designation[];
+  };
+}
