@@ -6,6 +6,8 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
 import { Mutex } from "async-mutex";
+import { CookieManager } from "@/classes/CookieManger";
+import { SessionData } from "@/classes/SessionManager";
 // import { getAuthToken } from '../../lib/authCookie';
 
 // const baseUrl = process.env.BASE_API_URL;
@@ -63,6 +65,12 @@ const customFetchBase: BaseQueryFn<
   await mutex.waitForUnlock();
   const result = await baseQuery(args, api, extraOptions);
   // const getAllReducer: any = api.getState()
+
+  if ((result.error as any)?.status === 401) {
+    CookieManager.clearAll();
+    SessionData.clear();
+    window.location.href = "/login";
+  }
 
   // refresh token logic will go here
 

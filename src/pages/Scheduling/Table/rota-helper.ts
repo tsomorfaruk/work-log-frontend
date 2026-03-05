@@ -39,7 +39,7 @@ export const transformRotaByEmployee = (
 
   for (const rota of rotaList) {
     console.log("rota: ", rota);
-    if (!employeeMap.has(String(rota.employee.id))) {
+    if (!employeeMap.has(String(rota?.employee?.id))) {
       employeeMap.set(String(rota.employee.id), {
         employee: rota.employee,
         rotasByDate: {},
