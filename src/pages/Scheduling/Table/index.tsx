@@ -32,10 +32,12 @@ export default function Scheduling() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [startingDate, setStartingDate] = useState<string>(getTodayFormatted());
+  const [currentPageNo, setCurrentPageNo] = useState(1);
 
   const { data, isLoading, isFetching, isError } = useGetSchedulingListQuery({
     frequency,
     date: startingDate,
+    page: currentPageNo,
   });
 
   if (!data) return;
@@ -49,7 +51,7 @@ export default function Scheduling() {
     <div>
       <h1 className="section-title mb-6">Schedule Planner</h1>
 
-      {isFetching ? (
+      {isFetching && !data ? (
         <FormSkeleton itemCount={1} columns={2} containerClassname="mb-6" />
       ) : (
         <div className="flex flex-wrap gap-3 lg:gap-6 justify-between items-center mb-6">
@@ -66,6 +68,7 @@ export default function Scheduling() {
                     amount: -1,
                   });
                   setStartingDate(shiftedDate);
+                  setCurrentPageNo(1);
                 }}
               >
                 <LeftArrowIcon className="size-4 lg:size-auto" />
@@ -86,6 +89,7 @@ export default function Scheduling() {
                     amount: 1,
                   });
                   setStartingDate(shiftedDate);
+                  setCurrentPageNo(1);
                 }}
               >
                 <RightArrowIcon className="size-4 lg:size-auto" />
@@ -100,6 +104,7 @@ export default function Scheduling() {
                 const currentValue = values[0];
                 if (currentValue !== frequency) {
                   setFrequency(currentValue);
+                  setCurrentPageNo(1);
                 }
               }}
             />
@@ -112,6 +117,7 @@ export default function Scheduling() {
                     .startOf("month")
                     .format("YYYY-MM-DD");
                   setStartingDate(firstOfMonth);
+                  setCurrentPageNo(1);
                 }
               }}
               showMonthYearPicker
@@ -151,16 +157,15 @@ export default function Scheduling() {
           // onColumnClick={(data) => {
           //   console.log("data1111111111: ", data);
           // }}
-          // pagination={{
-          //   // limit: currentPageNo * (data?.data?.users?.per_page ?? 1),
-          //   limit: data?.data?.users?.per_page ?? 1,
-          //   offset: currentPageNo * (data?.data?.users?.per_page ?? 1),
-          //   currentPage: currentPageNo,
-          //   onPageChange: (page) => {
-          //     setCurrentPageNo(page);
-          //   },
-          //   total: data?.data?.users?.total ?? 0,
-          // }}
+          pagination={{
+            limit: transformedScheduling.per_page,
+            offset: (currentPageNo - 1) * transformedScheduling.per_page,
+            currentPage: currentPageNo,
+            onPageChange: (page) => {
+              setCurrentPageNo(page);
+            },
+            total: transformedScheduling.total,
+          }}
         />
       </div>
     </div>

@@ -126,6 +126,12 @@ export interface RotaResponse extends ApiResponse {
     end_date: string;
     start_date: string;
     view: ScheduleFrequency;
-    data: SingleRotaResponse[];
+    data: {
+      data: SingleRotaResponse[];
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+    };
   };
 }

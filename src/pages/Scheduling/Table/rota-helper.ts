@@ -11,12 +11,18 @@ export type TransformedRotaResponse = {
   start_date: string;
   end_date: string;
   data: TransformedRota[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
 };
 
 export const transformRotaByEmployee = (
   response: RotaResponse,
 ): TransformedRotaResponse => {
-  const { start_date, end_date, data: rotaList } = response.data;
+  const { start_date, end_date, data } = response.data;
+
+  const rotaList = data?.data;
 
   // 1️⃣ Generate full date range
   const dates: string[] = [];
@@ -66,5 +72,9 @@ export const transformRotaByEmployee = (
     start_date,
     end_date,
     data: transformed,
+    current_page: data.current_page,
+    last_page: data.last_page,
+    per_page: data.per_page,
+    total: data.total,
   };
 };

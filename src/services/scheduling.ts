@@ -27,14 +27,14 @@ export const schedulingApi = apiSlice.injectEndpoints({
     getSchedulingList: builder.query<
       // SchedulingListResponse,
       RotaResponse,
-      { frequency: ScheduleFrequency; date: string }
+      { frequency: ScheduleFrequency; date: string; page?: number }
     >({
-      query: ({ frequency, date }) => ({
+      query: ({ frequency, date, page }) => ({
         // url: `/app/rota/${frequency}/all`,
         // url: `/admin/rotas?view=${frequency}`,
         // url: `/admin/rotas?view=weekly`,
         url: `/admin/rotas?view=${frequency}`,
-        params: { date },
+        params: { date, page },
       }),
       providesTags: ["scheduling"],
     }),
@@ -46,6 +46,22 @@ export const schedulingApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["scheduling"],
     }),
+    swapSchedule: builder.mutation<
+      any,
+      {
+        source_id: number;
+        target_id: number | null;
+        target_employee_id?: number;
+        target_date?: string;
+      }
+    >({
+      query: (payload) => ({
+        url: `/admin/rotas/swap`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["scheduling"],
+    }),
   }),
 });
 
@@ -53,4 +69,5 @@ export const {
   useGetSchedulingListQuery,
   useAlterSchedulingMutation,
   useDeleteScheduleMutation,
+  useSwapScheduleMutation,
 } = schedulingApi;

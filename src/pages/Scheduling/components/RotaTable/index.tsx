@@ -21,6 +21,7 @@ import { ScheduleFrequency } from "@/models/Requests/schedule";
 import { EditIcon } from "@/assets/icons/EditIcon";
 import { TransformedRotaResponse } from "../../Table/rota-helper";
 import { Link } from "react-router-dom";
+import { useSwapScheduleMutation } from "@/services/scheduling";
 
 export interface TableColumn<T> {
   key: keyof T;
@@ -101,6 +102,49 @@ const RotaTable = ({
     useState<Partial<AlterSchedulingPayload> | null>(null);
 
   const [rotaId, setRotaId] = useState<number>();
+
+  const [draggedItem, setDraggedItem] = useState<{
+    id: number;
+    employeeId: number;
+    date: string;
+  } | null>(null);
+
+  const [swapSchedule] = useSwapScheduleMutation();
+
+  const handleDragStart = (
+    e: React.DragEvent,
+    item: { id: number; employeeId: number; date: string },
+  ) => {
+    setDraggedItem(item);
+    e.dataTransfer.setData("text/plain", item.id.toString());
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = async (
+    e: React.DragEvent,
+    targetItem: { id: number | null; employeeId: number; date: string },
+  ) => {
+    e.preventDefault();
+    if (!draggedItem || draggedItem.id === targetItem.id) return;
+
+    try {
+      await swapSchedule({
+        source_id: draggedItem.id,
+        target_id: targetItem.id,
+        target_employee_id: targetItem.id ? undefined : targetItem.employeeId,
+        target_date: targetItem.id ? undefined : targetItem.date,
+      }).unwrap();
+    } catch (error) {
+      console.error("Failed to swap schedules:", error);
+    } finally {
+      setDraggedItem(null);
+    }
+  };
 
   return (
     <>
@@ -247,7 +291,11 @@ const RotaTable = ({
                       )}
                     >
                       <div>
-                        <div className="flex gap-1.5 items-center mb-1">
+                        <Link
+                          to={`/employees/${row?.employee?.id}`}
+                          target="_blank"
+                          className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline"
+                        >
                           <img
                             src={
                               row?.employee?.image_url ??
@@ -256,14 +304,9 @@ const RotaTable = ({
                             alt="user"
                             className="w-6 min-w-6 lg:w-6 lg:min-w-6 h-6 min-h-6 lg:h-6 lg:min-h-6 rounded-full object-cover border border-[#007B99]"
                           />
-                          <Link
-                            to={`/employees/${row?.employee?.id}`}
-                            target="_blank"
-                            className="text-sm 2xl:text-base leading-none text-black mb-1 hover:underline"
-                          >
-                            {row?.employee?.display_name}
-                          </Link>
-                        </div>
+                          <span>{row?.employee?.display_name}</span>
+                        </Link>
+
                         {completedWorkTime !== undefined && (
                           <p
                             className={clsx(
@@ -294,9 +337,14 @@ const RotaTable = ({
                                     colIdx === colIndexToday,
                                 },
                               )}
-                              onClick={() => {
-                                onColumnClick?.(currentRota);
-                              }}
+                              onDragOver={handleDragOver}
+                              onDrop={(e) =>
+                                handleDrop(e, {
+                                  id: null,
+                                  employeeId: +row.employeeId,
+                                  date: dateColHeaders[colIdx],
+                                })
+                              }
                             >
                               <Button>
                                 <RotaButtonIcon
@@ -340,7 +388,25 @@ const RotaTable = ({
                               if (currentRota) onColumnClick?.(currentRota);
                             }}
                           >
-                            <div className="bg-black rounded-2xl w-max">
+                            <div
+                              className="bg-black rounded-2xl w-max cursor-move"
+                              draggable
+                              onDragStart={(e) =>
+                                handleDragStart(e, {
+                                  id: currentRota.id,
+                                  employeeId: +row.employeeId,
+                                  date: currentRota.date,
+                                })
+                              }
+                              onDragOver={handleDragOver}
+                              onDrop={(e) =>
+                                handleDrop(e, {
+                                  id: currentRota.id,
+                                  employeeId: +row.employeeId,
+                                  date: currentRota.date,
+                                })
+                              }
+                            >
                               <div className="flex gap-2 items-center bg-[#CFE6F1] px-3 py-5 text-sm leading-none text-black rounded-xl w-max ml-1">
                                 {/* <p>{rotaTime}</p> */}
                                 <p>
@@ -352,7 +418,8 @@ const RotaTable = ({
                                 {!hasDatePassed(dateColHeaders[colIdx]) && (
                                   <Button
                                     icon={<EditIcon className="size-4" />}
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       setIsOpen(true);
 
                                       // const xxxxxxxxxxxxxxx
