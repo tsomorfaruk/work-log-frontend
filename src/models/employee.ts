@@ -1,5 +1,4 @@
 import { ApiResponse } from "./common";
-import { Floor } from "./floor";
 
 export interface EmployeeResponse {
   id: number;
@@ -19,6 +18,10 @@ export interface EmployeeResponse {
   };
   created_at: string;
   branch: {
+    id: number;
+    name: string;
+  };
+  floor: {
     id: number;
     name: string;
   };
