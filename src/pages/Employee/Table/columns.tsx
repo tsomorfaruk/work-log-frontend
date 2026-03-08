@@ -12,12 +12,21 @@ export const getColumns = () => {
       width: 160,
     },
     {
-      key: "roles",
-      header: "Role",
+      key: "branch",
+      header: "Branch",
       width: 160,
       render: (row) => {
-        const role = row?.roles?.[0] ?? "";
-        return <p className="capitalize">{role}</p>;
+        const branch = row?.branch?.name;
+        return <p className="capitalize">{branch}</p>;
+      },
+    },
+    {
+      key: "floor",
+      header: "Floor",
+      width: 160,
+      render: (row) => {
+        const floor = row?.floor?.name;
+        return <p className="capitalize">{floor}</p>;
       },
     },
     {

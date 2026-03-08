@@ -18,9 +18,9 @@ import Textarea from "@/components/common/Textarea";
 import { getStatusOptions } from "@/lib/shared-static-data";
 import {
   useGetDepartmentListQuery,
-  useGetRoleListQuery,
   useGetDesignationListQuery,
 } from "@/services/shared";
+import { useGetFloorListQuery } from "@/services/floor";
 import { convertToOptions } from "@/lib/dropdown";
 import {
   useAlterUserMutation,
@@ -49,7 +49,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
 
   const { data: departments, isLoading: isLoadingDepartment } =
     useGetDepartmentListQuery();
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoleListQuery();
+  const { data: floors, isLoading: isLoadingFloors } = useGetFloorListQuery({});
   const { data: designations, isLoading: isLoadingDesignation } =
     useGetDesignationListQuery();
 
@@ -96,7 +96,10 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
       "department_id",
       data.department_id ? String(data.department_id) : "0",
     );
-    formData.append("role", data.role ? String(data.role) : "0");
+    formData.append("floor_id", data.floor_id ? String(data.floor_id[0]) : "0");
+
+    // ---- role: 'employee' as per requirements always employee will be created
+    formData.append("role", "employee");
     formData.append(
       "is_active",
       data.is_active ? String(data.is_active[0]) : "0",
@@ -201,13 +204,13 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                   isSearchable
                 />
               </HookFormItem>
-              <HookFormItem name="role" label="Role" isRequired>
+              <HookFormItem name="floor_id" label="Floor" isRequired>
                 <Dropdown
-                  options={convertToOptions(roles?.data?.roles, {
+                  options={convertToOptions(floors?.data?.floors?.data, {
                     labelKey: "name",
-                    valueKey: "name",
-                  })}
-                  isLoading={isLoadingRoles}
+                    valueKey: "id",
+                  } as any)}
+                  isLoading={isLoadingFloors}
                   isSearchable
                 />
               </HookFormItem>

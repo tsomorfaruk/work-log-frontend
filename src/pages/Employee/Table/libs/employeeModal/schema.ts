@@ -24,11 +24,11 @@ export const alterEmployeeSchema = (isEdit = false) =>
         message: "Department is required",
       }),
 
-    role: z
-      .array(z.string())
+    floor_id: z
+      .array(z.number().nonnegative())
       .optional()
       .refine((val) => Array.isArray(val) && val.length > 0, {
-        message: "At least one role is required",
+        message: "Floor is required",
       }),
 
     is_active: z
@@ -78,7 +78,7 @@ export const employeeDefaultValues: Partial<TAlterEmployeeSchema> = {
   last_name: "",
   display_name: "",
   department_id: [],
-  role: [],
+  floor_id: [],
 
   phone: "",
   email: "",

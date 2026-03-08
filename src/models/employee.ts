@@ -1,4 +1,5 @@
 import { ApiResponse } from "./common";
+import { Floor } from "./floor";
 
 export interface EmployeeResponse {
   id: number;
@@ -17,6 +18,10 @@ export interface EmployeeResponse {
     code_name: string;
   };
   created_at: string;
+  branch: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface EmployeeListResponse extends ApiResponse {
@@ -87,6 +92,8 @@ export interface EmployeeDetailsResponse extends ApiResponse {
       is_active: boolean;
       roles: string[];
       department: EmployeeDepartmentResponse | null;
+      // floor: Floor | null;
+      floor_id: number | null;
       password: string;
       password_confirmation: string;
       address: string | undefined;
