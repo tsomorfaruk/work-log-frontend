@@ -29,6 +29,11 @@ export const getSidebarData = (): SidebarItem[] => {
       title: "Reporting",
       icon: <AnalyticIcon width={24} height={24} />,
     },
+    {
+      link: "settings",
+      title: "Settings",
+      icon: <Element3 width={24} height={24} />, // Placeholder icon, will be Gear/Settings
+    },
   ];
 
   return data;

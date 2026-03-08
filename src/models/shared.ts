@@ -37,3 +37,23 @@ export interface DesignationListResponse {
     designations: Designation[];
   };
 }
+
+export interface Branch {
+  id: number;
+  name: string;
+  code_name: string;
+  address?: string;
+  phone?: string | null;
+  others?: any;
+  company_id: string | number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BranchListResponse {
+  status: boolean | string;
+  message: string;
+  data: {
+    branches: Branch[];
+  };
+}

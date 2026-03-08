@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 // import { baseQuery } from "./baseQuery";
 import customFetchBase from "./customFetchBase";
 
-const API_TAG_TYPE = ["tagName"];
+const API_TAG_TYPE = ["tagName", "user", "floor"];
 
 export const apiSlice = createApi({
   reducerPath: "api",

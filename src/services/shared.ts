@@ -4,6 +4,7 @@ import {
   DepartmentRolesListResponse,
   RolesListResponse,
   DesignationListResponse,
+  BranchListResponse,
 } from "@/models/shared";
 
 export const sharedApi = apiSlice.injectEndpoints({
@@ -23,6 +24,11 @@ export const sharedApi = apiSlice.injectEndpoints({
         url: `/admin/designations`,
       }),
     }),
+    getBranchList: builder.query<BranchListResponse, void>({
+      query: () => ({
+        url: `/admin/branches`,
+      }),
+    }),
   }),
 });
 
@@ -30,4 +36,5 @@ export const {
   useGetDepartmentListQuery,
   useGetRoleListQuery,
   useGetDesignationListQuery,
+  useGetBranchListQuery,
 } = sharedApi;

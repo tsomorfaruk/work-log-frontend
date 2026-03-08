@@ -12,6 +12,7 @@ import Requests from "@/pages/Requests";
 import Employees from "@/pages/Employee/Table";
 import Reporting from "@/pages/Reporting";
 import EmployeeDetailsForm from "@/pages/Employee/DetailsForm";
+import Settings from "@/pages/Settings";
 
 export default function RootElement() {
   return (
@@ -34,6 +35,7 @@ export default function RootElement() {
           <Route path="employees" element={<Employees />} />
           <Route path="employees/:id" element={<EmployeeDetailsForm />} />
           <Route path="reporting" element={<Reporting />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
 
