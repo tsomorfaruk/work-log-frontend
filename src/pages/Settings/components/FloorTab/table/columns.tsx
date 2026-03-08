@@ -1,6 +1,6 @@
 import { TableColumn } from "@/components/common/Table";
 import { Floor } from "@/models/floor";
-import ActionColumn from "./ActionColumn";
+import ActionColumn from "./actionColumn";
 
 export const getColumns = () => {
   const columns: TableColumn<Floor>[] = [

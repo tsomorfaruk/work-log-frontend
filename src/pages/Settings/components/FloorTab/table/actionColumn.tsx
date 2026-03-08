@@ -5,7 +5,7 @@ import { useState } from "react";
 import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
 import { useDeleteFloorMutation } from "@/services/floor";
 import { onShowToastMessages } from "@/lib/toast";
-import FloorModal from "./FloorModal";
+import FloorModal from "../modals/floorModal";
 
 interface Props {
   floorId: number;
