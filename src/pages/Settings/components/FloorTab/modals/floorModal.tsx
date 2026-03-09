@@ -9,15 +9,13 @@ import Input from "@/components/common/Input";
 import Dropdown from "@/components/ui/dropdown";
 import HookFormItem from "@/components/shared/hookform/HookFormItem";
 import { onShowToastMessages } from "@/lib/toast";
-import {
-  useStoreFloorMutation,
-  useUpdateFloorMutation,
-} from "@/services/floor";
+import { useAlterFloorMutation } from "@/services/floor";
 import { useGetBranchListQuery } from "@/services/shared";
 import { convertToOptions } from "@/lib/dropdown";
 
 const floorSchema = z.object({
   name: z.string().min(1, "Floor name is required"),
+  code_name: z.string().min(1, "Code is required"),
   branch_id: z.array(z.number()).min(1, "Branch is required"),
 });
 
@@ -27,6 +25,7 @@ interface Props {
   floorId?: number;
   floorData?: {
     name: string;
+    code_name: string;
     branch_id: number;
   };
   isOpen: boolean;
@@ -38,6 +37,7 @@ const FloorModal = ({ floorId, floorData, isOpen, setIsOpen }: Props) => {
     resolver: zodResolver(floorSchema),
     defaultValues: {
       name: floorData?.name ?? "",
+      code_name: floorData?.code_name ?? "",
       branch_id: floorData?.branch_id ? [floorData.branch_id] : [],
     },
   });
@@ -48,14 +48,12 @@ const FloorModal = ({ floorId, floorData, isOpen, setIsOpen }: Props) => {
   useEffect(() => {
     if (floorData) {
       form.setValue("name", floorData.name);
+      form.setValue("code_name", floorData.code_name);
       form.setValue("branch_id", [floorData.branch_id]);
     }
   }, [floorData, form]);
 
-  const [storeFloor, { isLoading: isStoring }] = useStoreFloorMutation();
-  const [updateFloor, { isLoading: isUpdating }] = useUpdateFloorMutation();
-
-  const isAltering = isStoring || isUpdating;
+  const [alterFloor, { isLoading: isAltering }] = useAlterFloorMutation();
 
   const closeModal = () => {
     setIsOpen(false);
@@ -65,14 +63,11 @@ const FloorModal = ({ floorId, floorData, isOpen, setIsOpen }: Props) => {
   const onSubmit = (data: TFloorSchema) => {
     const payload = {
       ...data,
+      id: floorId,
       branch_id: data.branch_id[0],
     };
 
-    const action = floorId
-      ? updateFloor({ id: floorId, ...payload })
-      : storeFloor(payload);
-
-    action
+    alterFloor(payload)
       .unwrap()
       .then((res) => {
         onShowToastMessages({
@@ -117,6 +112,10 @@ const FloorModal = ({ floorId, floorData, isOpen, setIsOpen }: Props) => {
 
           <HookFormItem name="name" label="Floor Name" isRequired>
             <Input placeholder="Enter floor name" />
+          </HookFormItem>
+
+          <HookFormItem name="code_name" label="Code" isRequired>
+            <Input placeholder="Enter code" />
           </HookFormItem>
 
           <div className="flex gap-6 items-center justify-end">

@@ -46,5 +46,6 @@ export interface FloorListResponse extends ApiResponse {
 export interface AlterFloorPayload {
   id?: number;
   name: string;
+  code_name: string;
   branch_id: number;
 }

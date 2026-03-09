@@ -10,6 +10,14 @@ export const getColumns = () => {
       width: 200,
     },
     {
+      key: "code_name",
+      header: "Code",
+      width: 150,
+      render: (row) => {
+        return <p>{row?.code_name}</p>;
+      },
+    },
+    {
       key: "branch",
       header: "Branch",
       width: 200,
@@ -27,6 +35,7 @@ export const getColumns = () => {
             floorId={row?.id}
             floorData={{
               name: row?.name,
+              code_name: row?.code_name,
               branch_id: Number(row?.branch_id),
             }}
           />

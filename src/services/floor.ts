@@ -14,21 +14,19 @@ export const floorApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["floor"],
     }),
-    storeFloor: builder.mutation<FloorResponse, AlterFloorPayload>({
-      query: (body) => ({
-        url: `/admin/floors`,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["floor"],
-    }),
-    updateFloor: builder.mutation<FloorResponse, AlterFloorPayload>({
-      query: ({ id, ...body }) => ({
-        url: `/admin/floors/${id}`,
-        method: "PUT",
-        body,
-      }),
-      invalidatesTags: ["floor"],
+    alterFloor: builder.mutation<FloorResponse, AlterFloorPayload>({
+      query: ({ id, ...body }) => {
+        const url = !id ? `/admin/floors` : `/admin/floors/${id}`;
+        return {
+          url,
+          method: !id ? "POST" : "PUT",
+          body,
+        };
+      },
+      invalidatesTags: (_result, _error, arg) => {
+        if (arg.id) return [{ type: "floor" as const, id: arg.id }, "floor"];
+        return ["floor"];
+      },
     }),
     deleteFloor: builder.mutation<ApiResponse, number>({
       query: (id) => ({
@@ -44,7 +42,6 @@ import { ApiResponse } from "@/models/common";
 
 export const {
   useGetFloorListQuery,
-  useStoreFloorMutation,
-  useUpdateFloorMutation,
+  useAlterFloorMutation,
   useDeleteFloorMutation,
 } = floorApi;

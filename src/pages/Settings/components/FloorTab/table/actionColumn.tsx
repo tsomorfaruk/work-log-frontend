@@ -11,6 +11,7 @@ interface Props {
   floorId: number;
   floorData: {
     name: string;
+    code_name: string;
     branch_id: number;
   };
 }
