@@ -18,7 +18,7 @@ import {
   transformRotaByEmployee,
 } from "./rota-helper";
 import {
-  useGetBranchListQuery,
+  // useGetBranchListQuery,
   useGetDepartmentListQuery,
 } from "@/services/shared";
 import { useGetFloorListQuery } from "@/services/floor";
@@ -40,11 +40,11 @@ export default function Scheduling() {
   const [startingDate, setStartingDate] = useState<string>(getTodayFormatted());
   const [currentPageNo, setCurrentPageNo] = useState(1);
 
-  const [branchId, setBranchId] = useState<number | string>();
+  // const [branchId, setBranchId] = useState<number | string>();
   const [departmentId, setDepartmentId] = useState<number | string>();
   const [floorId, setFloorId] = useState<number | string>();
 
-  const { data: branchData } = useGetBranchListQuery();
+  // const { data: branchData } = useGetBranchListQuery();
   const { data: floorData } = useGetFloorListQuery({});
   const { data: departmentData } = useGetDepartmentListQuery();
 
@@ -52,7 +52,7 @@ export default function Scheduling() {
     frequency,
     date: startingDate,
     page: currentPageNo,
-    branch_id: branchId,
+    // branch_id: branchId,
     department_id: departmentId,
     floor_id: floorId,
   });
@@ -157,7 +157,7 @@ export default function Scheduling() {
             </div>
           </div>
           <div className="flex flex-col gap-4 mt-4">
-            <div className="w-64">
+            {/* <div className="w-64">
               <Dropdown
                 isClearable
                 placeholder="Select Branch"
@@ -170,7 +170,7 @@ export default function Scheduling() {
                 value={branchId ? [branchId] : []}
                 onChange={(vals) => setBranchId(vals[0])}
               />
-            </div>
+            </div> */}
             {(floorData?.data?.floors?.data?.length || 0) > 0 &&
               (departmentData?.data?.departments?.length || 0) > 0 && (
                 <FloorDepartmentFilter
