@@ -6,6 +6,7 @@ import { ChevronDown, Check } from "lucide-react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { useDropdownPosition } from "./hooks/useDropdownPosition";
 import clsx from "clsx";
+import ThreeDotLoader from "../three-dot-loader";
 
 const Dropdown = <T,>({
   options,
@@ -90,15 +91,19 @@ const Dropdown = <T,>({
 
       {/* Trigger */}
       <div
-        onClick={() => !isDisabled && setIsOpen((p) => !p)}
+        onClick={() => (!isDisabled || !isLoading) && setIsOpen((p) => !p)}
         className={`flex min-h-[42px]  items-center justify-between rounded-md border px-3 py-2 text-sm
           ${error ? "border-red-500" : "border-gray-300"}
-          ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}
+          ${isDisabled || isLoading ? "cursor-not-allowed" : "cursor-pointer"}
         `}
       >
-        <span className={selectedLabels ? "text-gray-900" : "text-gray-400"}>
-          {selectedLabels || placeholder}
-        </span>
+        {isLoading ? (
+          <ThreeDotLoader />
+        ) : (
+          <span className={selectedLabels ? "text-gray-900" : "text-gray-400"}>
+            {selectedLabels || placeholder}
+          </span>
+        )}
 
         {
           <div className="flex items-center gap-2">
@@ -138,10 +143,6 @@ const Dropdown = <T,>({
           )}
 
           <div className="max-h-56 overflow-y-auto">
-            {isLoading && (
-              <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
-            )}
-
             {!isLoading && filteredOptions.length === 0 && (
               <div className="px-3 py-2 text-sm text-gray-500">
                 No options found
