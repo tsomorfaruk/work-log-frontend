@@ -17,6 +17,12 @@ import {
   TransformedRotaResponse,
   transformRotaByEmployee,
 } from "./rota-helper";
+import {
+  useGetBranchListQuery,
+  useGetDepartmentListQuery,
+} from "@/services/shared";
+import { useGetFloorListQuery } from "@/services/floor";
+import FloorDepartmentFilter from "./components/FloorDepartmentFilter";
 
 export default function Scheduling() {
   const getScheduleFrequencyOptions = (): Option<ScheduleFrequency>[] => {
@@ -34,10 +40,21 @@ export default function Scheduling() {
   const [startingDate, setStartingDate] = useState<string>(getTodayFormatted());
   const [currentPageNo, setCurrentPageNo] = useState(1);
 
+  const [branchId, setBranchId] = useState<number | string>();
+  const [departmentId, setDepartmentId] = useState<number | string>();
+  const [floorId, setFloorId] = useState<number | string>();
+
+  const { data: branchData } = useGetBranchListQuery();
+  const { data: floorData } = useGetFloorListQuery({});
+  const { data: departmentData } = useGetDepartmentListQuery();
+
   const { data, isLoading, isFetching, isError } = useGetSchedulingListQuery({
     frequency,
     date: startingDate,
     page: currentPageNo,
+    branch_id: branchId,
+    department_id: departmentId,
+    floor_id: floorId,
   });
 
   if (!data) return;
@@ -54,86 +71,120 @@ export default function Scheduling() {
       {isFetching && !data ? (
         <FormSkeleton itemCount={1} columns={2} containerClassname="mb-6" />
       ) : (
-        <div className="flex flex-wrap gap-3 lg:gap-6 justify-between items-center mb-6">
-          <div className="flex flex-col lg:flex-row gap-3 lg:gap-6 items-center">
-            <div className="flex gap-3 lg:gap-6 items-center">
-              <Button
-                className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
-                title="Previous"
-                onClick={() => {
-                  const validDate = startingDate ?? schedulingPeriodStartedAt;
-                  const shiftedDate = shiftDate({
-                    dateString: validDate,
-                    unit: frequency,
-                    amount: -1,
-                  });
-                  setStartingDate(shiftedDate);
-                  setCurrentPageNo(1);
-                }}
-              >
-                <LeftArrowIcon className="size-4 lg:size-auto" />
-              </Button>
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-3 lg:gap-6 justify-between items-center mb-4">
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-6 items-center">
+              <div className="flex gap-3 lg:gap-6 items-center">
+                <Button
+                  className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
+                  title="Previous"
+                  onClick={() => {
+                    const validDate = startingDate ?? schedulingPeriodStartedAt;
+                    const shiftedDate = shiftDate({
+                      dateString: validDate,
+                      unit: frequency,
+                      amount: -1,
+                    });
+                    setStartingDate(shiftedDate);
+                    setCurrentPageNo(1);
+                  }}
+                >
+                  <LeftArrowIcon className="size-4 lg:size-auto" />
+                </Button>
 
-              <p className="text-base lg:text-lg 2xl:text-xl leading-none font-bold">
-                {formatScheduleDate(startingDate ?? schedulingPeriodStartedAt)}
-              </p>
+                <p className="text-base lg:text-lg 2xl:text-xl leading-none font-bold">
+                  {formatScheduleDate(
+                    startingDate ?? schedulingPeriodStartedAt,
+                  )}
+                </p>
 
-              <Button
-                className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
-                title="Next"
-                onClick={() => {
-                  const validDate = startingDate ?? schedulingPeriodStartedAt;
-                  const shiftedDate = shiftDate({
-                    dateString: validDate,
-                    unit: frequency,
-                    amount: 1,
-                  });
-                  setStartingDate(shiftedDate);
-                  setCurrentPageNo(1);
+                <Button
+                  className="lg:bg-[#CFE6F1] lg:border-[1.5px] lg:border-[#C0C8CC] size-8 lg:size-12 lg:rounded-xl"
+                  title="Next"
+                  onClick={() => {
+                    const validDate = startingDate ?? schedulingPeriodStartedAt;
+                    const shiftedDate = shiftDate({
+                      dateString: validDate,
+                      unit: frequency,
+                      amount: 1,
+                    });
+                    setStartingDate(shiftedDate);
+                    setCurrentPageNo(1);
+                  }}
+                >
+                  <RightArrowIcon className="size-4 lg:size-auto" />
+                </Button>
+              </div>
+
+              <Dropdown
+                containerClassname="!w-40"
+                value={[frequency]}
+                options={getScheduleFrequencyOptions()}
+                onChange={(values) => {
+                  const currentValue = values[0];
+                  if (currentValue !== frequency) {
+                    setFrequency(currentValue);
+                    setCurrentPageNo(1);
+                  }
                 }}
-              >
-                <RightArrowIcon className="size-4 lg:size-auto" />
-              </Button>
+              />
+
+              <CustomDatePicker
+                selected={startingDate}
+                onChange={(date: Date | null) => {
+                  if (date) {
+                    const firstOfMonth = moment(date)
+                      .startOf("month")
+                      .format("YYYY-MM-DD");
+                    setStartingDate(firstOfMonth);
+                    setCurrentPageNo(1);
+                  }
+                }}
+                showMonthYearPicker
+                dateFormat="MMMM yyyy"
+                placeholder="Select Month"
+                showIcon={true}
+                className="!w-44"
+              />
             </div>
 
-            <Dropdown
-              containerClassname="!w-40"
-              value={[frequency]}
-              options={getScheduleFrequencyOptions()}
-              onChange={(values) => {
-                const currentValue = values[0];
-                if (currentValue !== frequency) {
-                  setFrequency(currentValue);
-                  setCurrentPageNo(1);
-                }
-              }}
-            />
+            <div>
+              <Button variant="primary" onClick={() => setIsOpen(true)}>
+                + New Shift
+              </Button>
 
-            <CustomDatePicker
-              selected={startingDate}
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const firstOfMonth = moment(date)
-                    .startOf("month")
-                    .format("YYYY-MM-DD");
-                  setStartingDate(firstOfMonth);
-                  setCurrentPageNo(1);
-                }
-              }}
-              showMonthYearPicker
-              dateFormat="MMMM yyyy"
-              placeholder="Select Month"
-              showIcon={true}
-              className="!w-44"
-            />
+              {isOpen && <RotaModal isOpen={isOpen} setIsOpen={setIsOpen} />}
+            </div>
           </div>
-
-          <div>
-            <Button variant="primary" onClick={() => setIsOpen(true)}>
-              + New Shift
-            </Button>
-
-            {isOpen && <RotaModal isOpen={isOpen} setIsOpen={setIsOpen} />}
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="w-64">
+              <Dropdown
+                isClearable
+                placeholder="Select Branch"
+                options={
+                  branchData?.data?.branches?.map((b) => ({
+                    label: b.name,
+                    value: b.id,
+                  })) || []
+                }
+                value={branchId ? [branchId] : []}
+                onChange={(vals) => setBranchId(vals[0])}
+              />
+            </div>
+            {(floorData?.data?.floors?.data?.length || 0) > 0 &&
+              (departmentData?.data?.departments?.length || 0) > 0 && (
+                <FloorDepartmentFilter
+                  floors={floorData?.data?.floors?.data || []}
+                  departments={departmentData?.data?.departments || []}
+                  selectedFloorId={floorId}
+                  selectedDepartmentId={departmentId}
+                  onChange={(fId, dId) => {
+                    setFloorId(fId);
+                    setDepartmentId(dId);
+                    setCurrentPageNo(1);
+                  }}
+                />
+              )}
           </div>
         </div>
       )}

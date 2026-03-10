@@ -27,14 +27,28 @@ export const schedulingApi = apiSlice.injectEndpoints({
     getSchedulingList: builder.query<
       // SchedulingListResponse,
       RotaResponse,
-      { frequency: ScheduleFrequency; date: string; page?: number }
+      {
+        frequency: ScheduleFrequency;
+        date: string;
+        page?: number;
+        branch_id?: string | number;
+        department_id?: string | number;
+        floor_id?: string | number;
+      }
     >({
-      query: ({ frequency, date, page }) => ({
+      query: ({
+        frequency,
+        date,
+        page,
+        branch_id,
+        department_id,
+        floor_id,
+      }) => ({
         // url: `/app/rota/${frequency}/all`,
         // url: `/admin/rotas?view=${frequency}`,
         // url: `/admin/rotas?view=weekly`,
         url: `/admin/rotas?view=${frequency}`,
-        params: { date, page },
+        params: { date, page, branch_id, department_id, floor_id },
       }),
       providesTags: ["scheduling"],
     }),
