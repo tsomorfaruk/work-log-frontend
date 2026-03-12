@@ -27,6 +27,9 @@ import {
 import { AlterSchedulingPayload } from "@/models/scheduling";
 import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
 import clsx from "clsx";
+import { useGetFloorListQuery } from "@/services/floor";
+import ShiftLeaveSelector from "./libs/ShiftLeaveSelector";
+import Label from "@/components/common/Label";
 
 interface Props {
   isOpen: boolean;
@@ -38,11 +41,26 @@ interface Props {
 
 const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
   const form = useForm<TAlterScheduleSchema>({
-    // resolver: zodResolver(alterScheduleSchema(!!rotaId)),
-    resolver: zodResolver(alterScheduleSchema()),
+    resolver: (data, context, options) => {
+      // React Hook Form evaluates this function whenever it needs to validate
+      return zodResolver(alterScheduleSchema(data.leave_type))(
+        data,
+        context,
+        options,
+      );
+    },
     defaultValues: scheduleDefaultValues,
     mode: "all",
   });
+
+  const { data: floorData, isLoading: isLoadingFloors } = useGetFloorListQuery(
+    {},
+  );
+
+  const isInEditMode =
+    !!defaultValue?.start_time ||
+    !!defaultValue?.leave_type ||
+    !!defaultValue?.employee_id;
 
   useEffect(() => {
     if (defaultValue?.employee_id) {
@@ -66,7 +84,57 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
     }
   }, [defaultValue]);
 
+  // Pre-select logic for shifts and leaves based on defaultValue
+  useEffect(() => {
+    if (defaultValue?.leave_type) {
+      setSelectedLeave(defaultValue.leave_type);
+      return;
+    }
+
+    if (defaultValue?.start_time && defaultValue?.end_time) {
+      // Find matching shift
+      const dayShifts = [
+        { code: "LD", start: "08:00", end: "20:00" },
+        ...(floorData?.data?.floors?.data || []).map((f: any) => ({
+          code: `L${f.code_name}`,
+          start: "08:00",
+          end: "20:00",
+        })),
+      ];
+
+      const nightShifts = [
+        { code: "ND", start: "20:00", end: "08:00" },
+        ...(floorData?.data?.floors?.data || []).map((f: any) => ({
+          code: `N${f.code_name}`,
+          start: "20:00",
+          end: "08:00",
+        })),
+      ];
+
+      const allShifts = [...dayShifts, ...nightShifts];
+      const match = allShifts.find(
+        (s) =>
+          s.start === defaultValue.start_time?.substring(0, 5) &&
+          s.end === defaultValue.end_time?.substring(0, 5),
+      );
+
+      if (match) {
+        setSelectedShift(match.code);
+      }
+    }
+  }, [defaultValue, floorData]);
+
+  // Auto-select floor if only 1 exists
+  useEffect(() => {
+    if (!isInEditMode && floorData?.data?.floors?.data?.length === 1) {
+      const singleFloorId = floorData.data.floors.data[0].id;
+      setSelectedFloorId(singleFloorId);
+    }
+  }, [floorData, isInEditMode]);
+
   const startTimeValue = form.watch("start_time");
+
+  console.log("😅😅😅😅", startTimeValue);
   const endTimeValue = form.watch("end_time");
 
   const selectedStartTime = startTimeValue
@@ -78,8 +146,12 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
 
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
+  const [selectedFloorId, setSelectedFloorId] = useState<number | null>(null);
+  const [selectedShift, setSelectedShift] = useState<string | null>(null);
+  const [selectedLeave, setSelectedLeave] = useState<string | null>(null);
+
   const { data: employeeData, isLoading: isLoadingEmployee } =
-    useGetScheduleUserListQuery({});
+    useGetScheduleUserListQuery({ floor_id: selectedFloorId || undefined });
 
   const closeModal = () => {
     setIsOpen(false);
@@ -101,6 +173,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
       start_time: data.start_time!,
       end_time: data.end_time!,
       notes: data.note!,
+      leave_type: data.leave_type,
     };
 
     alterScheduling({
@@ -151,13 +224,26 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
         });
   };
 
-  const isInEditMode = !!defaultValue?.start_time;
+  const isSpecificEmployeeEdit = !!defaultValue?.employee_id;
+
+  // Try to find the employee name for the title
+  const employeeDisplayName = isSpecificEmployeeEdit
+    ? employeeData?.data?.users?.find(
+        (u: any) => u.id === defaultValue.employee_id,
+      )?.name || "Employee"
+    : "";
 
   return (
     <Modal
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      title={!isInEditMode ? "Add Shift" : "Update Shift"}
+      title={
+        !isInEditMode
+          ? "Add Shift"
+          : isSpecificEmployeeEdit
+            ? `Update Shift for ${employeeDisplayName}`
+            : "Update Shift"
+      }
       size="lg"
       closeOnOutsideClick={true}
       closeOnEscape={true}
@@ -165,23 +251,81 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
       <div>
         <FormProvider {...form}>
           <div className="flex flex-col xl:grid lg:grid-cols-3 gap-6 mb-6">
-            <HookFormItem
-              name="employee_id"
-              // label="Employee / Shift Type"
-              label="Employee"
-              isRequired
-              className="col-span-3"
-            >
-              <Dropdown
-                options={convertToOptions(employeeData?.data?.users, {
-                  labelKey: "name",
-                  valueKey: "id",
-                })}
-                isLoading={isLoadingEmployee}
-                isSearchable
-                isDisabled={isInEditMode}
-              />
-            </HookFormItem>
+            {!isSpecificEmployeeEdit && (
+              <>
+                <div className="col-span-1 xl:col-span-3 lg:col-span-3">
+                  <Label
+                    className={clsx(
+                      "mb-1 block text-sm font-medium text-gray-700",
+                      {
+                        "cursor-not-allowed opacity-50": isInEditMode,
+                      },
+                    )}
+                  >
+                    Floor
+                  </Label>
+                  <Dropdown
+                    options={convertToOptions(floorData?.data?.floors?.data, {
+                      labelKey: "name",
+                      valueKey: "id",
+                    })}
+                    value={selectedFloorId ? [selectedFloorId] : []}
+                    onChange={(val) => {
+                      setSelectedFloorId(val[0] || null);
+                      form.setValue("employee_id", []); // Reset employee
+                    }}
+                    isLoading={isLoadingFloors}
+                    isClearable
+                    isDisabled={isInEditMode}
+                    placeholder="Select a floor"
+                  />
+                </div>
+
+                <HookFormItem
+                  name="employee_id"
+                  // label="Employee / Shift Type"
+                  label="Employee"
+                  isRequired
+                  className="col-span-3"
+                >
+                  <Dropdown
+                    options={convertToOptions(employeeData?.data?.users, {
+                      labelKey: "name",
+                      valueKey: "id",
+                    })}
+                    isLoading={isLoadingEmployee}
+                    isSearchable
+                    isDisabled={isInEditMode}
+                  />
+                </HookFormItem>
+              </>
+            )}
+
+            <ShiftLeaveSelector
+              floors={floorData?.data?.floors?.data || []}
+              selectedShift={selectedShift}
+              onShiftSelect={(shiftCode, start, end) => {
+                setSelectedShift(shiftCode);
+                if (start && end) {
+                  form.setValue("start_time", start);
+                  form.setValue("end_time", end);
+                } else if (!shiftCode) {
+                  form.setValue("start_time", "");
+                  form.setValue("end_time", "");
+                }
+              }}
+              selectedLeave={selectedLeave}
+              onLeaveSelect={(leaveCode) => {
+                setSelectedLeave(leaveCode);
+                if (leaveCode) {
+                  form.setValue("leave_type", leaveCode);
+                  form.trigger(["start_time", "end_time"]); // Clear errors immediately
+                } else {
+                  form.setValue("leave_type", undefined);
+                  form.trigger(["start_time", "end_time"]); // Re-validate if un-selected
+                }
+              }}
+            />
 
             <HookFormItem name="date" label="Date" componentType="datePicker">
               <CustomDatePicker
@@ -196,17 +340,18 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
                     : null;
                   if (formattedDate) form.setValue("date", formattedDate);
                 }}
-                disabled={isInEditMode}
+                // disabled={isInEditMode}
               />
             </HookFormItem>
             <HookFormItem
               name="start_time"
               label="Start Time"
               componentType="datePicker"
+              isRequired={!form.watch("leave_type")}
             >
               <CustomDatePicker
                 showTimeSelectOnly
-                timeIntervals={30}
+                timeIntervals={60}
                 selected={selectedStartTime}
                 onChange={(date: Date | null) => {
                   const formattedTime = date
@@ -225,10 +370,11 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
               name="end_time"
               label="End Time"
               componentType="datePicker"
+              isRequired={!form.watch("leave_type")}
             >
               <CustomDatePicker
                 showTimeSelectOnly
-                timeIntervals={30}
+                timeIntervals={60}
                 selected={selectedEndTime}
                 onChange={(date: Date | null) => {
                   const formattedTime = date

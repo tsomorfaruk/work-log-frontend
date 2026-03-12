@@ -95,6 +95,7 @@ export interface AlterSchedulingPayload {
   start_time: string;
   end_time: string;
   notes: string;
+  leave_type?: string;
 }
 
 export interface SingleRotaResponse {

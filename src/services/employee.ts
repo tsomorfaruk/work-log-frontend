@@ -45,7 +45,7 @@ export const employeeApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["user"],
     }),
-    getScheduleUserList: builder.query<RotaEmployees, { page?: number }>({
+    getScheduleUserList: builder.query<RotaEmployees, { page?: number; floor_id?: number | string }>({
       query: (params) => ({
         url: `/admin/users/listSimple`,
         params,
