@@ -29,6 +29,7 @@ export const setEmployeeDetails = (
     form.setValue("password", data?.password);
     form.setValue("password_confirmation", data?.password_confirmation);
     // form.setValue("image", data?.image_url);
+    form.setValue("employee_id", data?.employee_id ?? "");
     form.setValue("address", data?.address ?? "");
   }
 };

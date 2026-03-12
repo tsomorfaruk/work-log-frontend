@@ -85,6 +85,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
     formData.append("first_name", data.first_name);
     if (data?.last_name) formData.append("last_name", data.last_name);
     formData.append("display_name", data.display_name);
+    formData.append("employee_id", data.employee_id);
     formData.append("email", data.email);
     formData.append("phone", data.phone);
 
@@ -172,6 +173,8 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                   employeeId ? employeeDetails?.data?.user?.image_url : null
                 }
               />
+
+              {/* Name */}
               <HookFormItem name="first_name" label="First Name" isRequired>
                 <Input />
               </HookFormItem>
@@ -180,9 +183,25 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 <Input />
               </HookFormItem>
 
+              {/* Identity */}
               <HookFormItem name="display_name" label="Display Name" isRequired>
                 <Input />
               </HookFormItem>
+
+              <HookFormItem name="employee_id" label="Employee ID" isRequired>
+                <Input />
+              </HookFormItem>
+
+              {/* Contact */}
+              <HookFormItem name="email" label="Email" isRequired>
+                <Input />
+              </HookFormItem>
+
+              <HookFormItem name="phone" label="Phone" isRequired>
+                <Input />
+              </HookFormItem>
+
+              {/* Work Details */}
               <HookFormItem name="designation" label="Designation" isRequired>
                 <Dropdown
                   options={convertToOptions(designations?.data?.designations, {
@@ -204,7 +223,30 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                   isSearchable
                 />
               </HookFormItem>
-              <HookFormItem name="floor_id" label="Floor" isRequired>
+
+              {/* Password */}
+              <HookFormItem
+                name="password"
+                label="Password"
+                isRequired={!employeeId}
+              >
+                <Input />
+              </HookFormItem>
+
+              <HookFormItem
+                name="password_confirmation"
+                label="Confirm Password"
+                isRequired={!employeeId}
+              >
+                <Input />
+              </HookFormItem>
+
+              <HookFormItem
+                name="floor_id"
+                label="Floor"
+                className="col-span-2"
+                isRequired
+              >
                 <Dropdown
                   options={convertToOptions(floors?.data?.floors?.data, {
                     labelKey: "name",
@@ -215,26 +257,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 />
               </HookFormItem>
 
-              <HookFormItem name="phone" label="Phone" isRequired>
-                <Input />
-              </HookFormItem>
-
-              <HookFormItem name="email" label="Email" isRequired>
-                <Input />
-              </HookFormItem>
-
-              <HookFormItem name="password" label="Password" isRequired>
-                <Input />
-              </HookFormItem>
-
-              <HookFormItem
-                name="password_confirmation"
-                label="Confirm Password"
-                isRequired
-              >
-                <Input />
-              </HookFormItem>
-
+              {/* Address */}
               <HookFormItem
                 name="address"
                 label="Address"
@@ -243,6 +266,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 <Textarea className="input-class" />
               </HookFormItem>
 
+              {/* Status */}
               <HookFormItem
                 name="is_active"
                 label="Status"

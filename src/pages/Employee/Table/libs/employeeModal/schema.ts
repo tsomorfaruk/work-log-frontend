@@ -5,6 +5,7 @@ export const alterEmployeeSchema = (isEdit = false) =>
     first_name: z.string().trim().min(1, "First name is required"),
     last_name: z.string().optional(),
     display_name: z.string().trim().min(1, "Display name is required"),
+    employee_id: z.string().trim().min(1, "Employee ID is required"),
     email: z
       .string()
       .trim()
@@ -77,6 +78,7 @@ export const employeeDefaultValues: Partial<TAlterEmployeeSchema> = {
   first_name: "",
   last_name: "",
   display_name: "",
+  employee_id: "",
   department_id: [],
   floor_id: [],
 

@@ -100,6 +100,7 @@ export interface EmployeeDetailsResponse extends ApiResponse {
       password: string;
       password_confirmation: string;
       address: string | undefined;
+      employee_id: string | null;
       created_at: string;
       dob: string | null;
       blood_group: string | null;
