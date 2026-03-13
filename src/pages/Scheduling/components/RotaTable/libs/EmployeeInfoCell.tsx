@@ -2,9 +2,10 @@ import React, { useMemo } from "react";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
+import { TransformedRota } from "@/pages/Scheduling/Table/rota-helper";
 
 interface EmployeeInfoCellProps {
-  row: any;
+  row: TransformedRota;
   border?: {
     columns?: boolean;
   };
@@ -18,8 +19,8 @@ const EmployeeInfoCell: React.FC<EmployeeInfoCellProps> = ({
 }) => {
   const completedWorkTime = useMemo(() => {
     return (
-      row?.rotas?.reduce((sum: number, item: any) => {
-        const hours = Number(item?.total_hours);
+      row?.rotas?.reduce((sum: number, item) => {
+        const hours = Number(item?.job_time ?? 0);
         return sum + (Number.isFinite(hours) ? hours : 0);
       }, 0) ?? 0
     );

@@ -14,7 +14,10 @@ import {
   TAlterScheduleSchema,
 } from "./schema";
 import Dropdown from "@/components/ui/dropdown";
-import { useGetScheduleUserListQuery } from "@/services/employee";
+import {
+  useGetUserDetailsQuery,
+  useGetScheduleUserListQuery,
+} from "@/services/employee";
 import { convertToOptions } from "@/lib/dropdown";
 import CustomDatePicker from "@/components/common/CustomDatePicker";
 import Textarea from "@/components/common/Textarea";
@@ -28,7 +31,7 @@ import { AlterSchedulingPayload } from "@/models/scheduling";
 import ConfirmationModal from "@/components/common/Modals/ConfirmationModal";
 import clsx from "clsx";
 import { useGetFloorListQuery } from "@/services/floor";
-// import ShiftLeaveSelector from "./libs/ShiftLeaveSelector";
+import ShiftLeaveSelector from "./libs/ShiftLeaveSelector";
 
 interface Props {
   isOpen: boolean;
@@ -51,6 +54,8 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
     defaultValues: scheduleDefaultValues,
     mode: "all",
   });
+
+  console.log("kkkkk", form.formState.errors);
 
   const { data: floorData, isLoading: isLoadingFloors } = useGetFloorListQuery(
     {},
@@ -84,44 +89,44 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
   }, [defaultValue]);
 
   // Pre-select logic for shifts and leaves based on defaultValue
-  // useEffect(() => {
-  //   if (defaultValue?.leave_type) {
-  //     setSelectedLeave(defaultValue.leave_type);
-  //     return;
-  //   }
+  useEffect(() => {
+    if (defaultValue?.leave_type) {
+      setSelectedLeave(defaultValue.leave_type);
+      return;
+    }
 
-  //   if (defaultValue?.start_time && defaultValue?.end_time) {
-  //     // Find matching shift
-  //     const dayShifts = [
-  //       { code: "LD", start: "08:00", end: "20:00" },
-  //       ...(floorData?.data?.floors?.data || []).map((f: any) => ({
-  //         code: `L${f.code_name}`,
-  //         start: "08:00",
-  //         end: "20:00",
-  //       })),
-  //     ];
+    if (defaultValue?.start_time && defaultValue?.end_time) {
+      // Find matching shift
+      const dayShifts = [
+        { code: "LD", start: "08:00", end: "20:00" },
+        ...(floorData?.data?.floors?.data || []).map((f: any) => ({
+          code: `L${f.code_name}`,
+          start: "08:00",
+          end: "20:00",
+        })),
+      ];
 
-  //     const nightShifts = [
-  //       { code: "ND", start: "20:00", end: "08:00" },
-  //       ...(floorData?.data?.floors?.data || []).map((f: any) => ({
-  //         code: `N${f.code_name}`,
-  //         start: "20:00",
-  //         end: "08:00",
-  //       })),
-  //     ];
+      const nightShifts = [
+        { code: "ND", start: "20:00", end: "08:00" },
+        ...(floorData?.data?.floors?.data || []).map((f: any) => ({
+          code: `N${f.code_name}`,
+          start: "20:00",
+          end: "08:00",
+        })),
+      ];
 
-  //     const allShifts = [...dayShifts, ...nightShifts];
-  //     const match = allShifts.find(
-  //       (s) =>
-  //         s.start === defaultValue.start_time?.substring(0, 5) &&
-  //         s.end === defaultValue.end_time?.substring(0, 5),
-  //     );
+      const allShifts = [...dayShifts, ...nightShifts];
+      const match = allShifts.find(
+        (s) =>
+          s.start === defaultValue.start_time?.substring(0, 5) &&
+          s.end === defaultValue.end_time?.substring(0, 5),
+      );
 
-  //     if (match) {
-  //       setSelectedShift(match.code);
-  //     }
-  //   }
-  // }, [defaultValue, floorData]);
+      if (match) {
+        setSelectedShift(match.code);
+      }
+    }
+  }, [defaultValue, floorData]);
 
   // Auto-select floor if only 1 exists
   useEffect(() => {
@@ -146,9 +151,34 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
 
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
+  const isSpecificEmployeeAdd = !!defaultValue?.employee_id;
+  const isSpecificEmployeeEdit =
+    !!defaultValue?.employee_id &&
+    !!defaultValue?.start_time &&
+    !!defaultValue?.end_time;
+
   const [selectedFloorId, setSelectedFloorId] = useState<number | null>(null);
-  // const [selectedShift, setSelectedShift] = useState<string | null>(null);
-  // const [selectedLeave, setSelectedLeave] = useState<string | null>(null);
+  const [selectedShift, setSelectedShift] = useState<string | null>(null);
+  const [selectedLeave, setSelectedLeave] = useState<string | null>(null);
+
+  const { data: employeeDetailsData } = useGetUserDetailsQuery(
+    defaultValue?.employee_id!,
+    {
+      skip: !isSpecificEmployeeAdd || isSpecificEmployeeEdit,
+    },
+  );
+
+  useEffect(() => {
+    if (
+      isSpecificEmployeeAdd &&
+      !isSpecificEmployeeEdit &&
+      employeeDetailsData?.data?.user?.floor_id
+    ) {
+      const floorId = +employeeDetailsData.data.user.floor_id;
+      setSelectedFloorId(floorId);
+      form.setValue("floor_id", [floorId]);
+    }
+  }, [employeeDetailsData, isSpecificEmployeeAdd, isSpecificEmployeeEdit]);
 
   const { data: employeeData, isLoading: isLoadingEmployee } =
     useGetScheduleUserListQuery({ floor_id: selectedFloorId || undefined });
@@ -193,7 +223,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
         onShowToastMessages({
           message: "Failed to update Rota",
           type: "error",
-          data: err?.data?.data,
+          data: err?.data?.message || err?.data?.data,
           shouldExtractFirst: true,
         });
       });
@@ -224,12 +254,6 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
         });
   };
 
-  const isSpecificEmployeeAdd = !!defaultValue?.employee_id;
-  const isSpecificEmployeeEdit =
-    !!defaultValue?.employee_id &&
-    !!defaultValue?.start_time &&
-    !!defaultValue?.end_time;
-
   // Try to find the employee name for the title (used for both add and edit)
   const employeeDisplayName =
     isSpecificEmployeeAdd || isSpecificEmployeeEdit
@@ -256,7 +280,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
       <div>
         <FormProvider {...form}>
           <div className="flex flex-col xl:grid lg:grid-cols-3 gap-6 mb-6">
-            {!isSpecificEmployeeEdit && (
+            {!isSpecificEmployeeEdit && !isSpecificEmployeeAdd && (
               <>
                 {(floorData?.data?.floors?.data?.length ?? 0) > 1 && (
                   <HookFormItem
@@ -301,7 +325,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
               </>
             )}
 
-            {/* <ShiftLeaveSelector
+            <ShiftLeaveSelector
               floors={floorData?.data?.floors?.data || []}
               selectedShift={selectedShift}
               onShiftSelect={(shiftCode, start, end) => {
@@ -325,7 +349,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
                   form.trigger(["start_time", "end_time"]); // Re-validate if un-selected
                 }
               }}
-            /> */}
+            />
 
             <HookFormItem name="date" label="Date" componentType="datePicker">
               <CustomDatePicker

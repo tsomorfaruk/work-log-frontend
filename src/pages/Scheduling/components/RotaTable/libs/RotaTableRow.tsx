@@ -5,9 +5,10 @@ import RotaCell from "./RotaCell";
 import { SingleRotaResponse } from "@/models/scheduling";
 import { PaginationProps } from "@/components/common/Pagination";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
+import { TransformedRota } from "@/pages/Scheduling/Table/rota-helper";
 
 interface RotaTableRowProps {
-  row: any;
+  row: TransformedRota;
   rowIdx: number;
   showSerial?: boolean;
   border?: {

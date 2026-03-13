@@ -108,6 +108,7 @@ export interface SingleRotaResponse {
   employee_start_time: string | null;
   employee_end_time: string | null;
   total_hours: string;
+  job_time: number | null;
   location: string;
   remarks: string;
   employee_id: string;
