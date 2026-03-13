@@ -3,6 +3,13 @@ import { z } from "zod";
 export const alterScheduleSchema = (leave_type: string | null = null) =>
   z.object({
     // employee_id: z.string().min(1, "Employee / Shift Type is required"),
+    // floor_id: z.number().optional().nullable(),
+    floor_id: z
+      .array(z.number().nonnegative())
+      .optional()
+      .refine((val) => Array.isArray(val) && val.length > 0, {
+        message: "Floor is required",
+      }),
     employee_id: z
       .array(z.number().nonnegative())
       .optional()

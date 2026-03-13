@@ -217,8 +217,12 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
               </HookFormItem>
 
               {/* Password */}
-              <HookFormItem name="password" label="Password" isRequired={!employeeId}>
-                <Input />
+              <HookFormItem
+                name="password"
+                label="Password"
+                isRequired={!employeeId}
+              >
+                <Input type="password" />
               </HookFormItem>
 
               <HookFormItem
@@ -226,7 +230,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 label="Confirm Password"
                 isRequired={!employeeId}
               >
-                <Input />
+                <Input type="password" />
               </HookFormItem>
 
               {/* Address */}

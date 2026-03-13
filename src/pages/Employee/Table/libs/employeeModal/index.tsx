@@ -230,7 +230,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 label="Password"
                 isRequired={!employeeId}
               >
-                <Input />
+                <Input type="password" />
               </HookFormItem>
 
               <HookFormItem
@@ -238,7 +238,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
                 label="Confirm Password"
                 isRequired={!employeeId}
               >
-                <Input />
+                <Input type="password" />
               </HookFormItem>
 
               <HookFormItem
@@ -249,7 +249,7 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
               >
                 <Dropdown
                   options={convertToOptions(floors?.data?.floors?.data, {
-                    labelKey: "name",
+                    labelKey: "code_name",
                     valueKey: "id",
                   } as any)}
                   isLoading={isLoadingFloors}
