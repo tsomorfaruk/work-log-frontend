@@ -18,32 +18,41 @@ export const getColumns = ({
   // }): TableColumn<LeaveRequestItem>[] | TableColumn<LeaveRequestItem>[] => {
 }): TableColumn<any>[] => {
   const swapsColumn: TableColumn<SwapRequestItem>[] = [
-    {
-      key: "requested_by",
-      header: "Employee",
-      width: 160,
-      render: (row) => {
-        return (
-          <Link
-            to={`/employees/${row?.my_rota?.employee?.id}`}
-            className="text-base xl:text-base text-black hover:text-[#007B99] hover:underline"
-          >
-            {row?.my_rota?.employee?.name}
-          </Link>
-        );
-      },
-    },
+    // {
+    //   key: "requested_by",
+    //   header: "Employee",
+    //   width: 160,
+    //   render: (row) => {
+    //     return (
+    //       <Link
+    //         to={`/employees/${row?.my_rota?.employee?.id}`}
+    //         className="text-base xl:text-base text-black hover:text-[#007B99] hover:underline"
+    //       >
+    //         {row?.my_rota?.employee?.name}
+    //       </Link>
+    //     );
+    //   },
+    // },
     {
       key: "requested_at",
       header: "Requested Shift",
       width: 240,
       render: (row) => {
         return (
-          <p className="text-xs font-bold text-[#007B99]">
-            {formatRequestTime(row?.requested_rota?.shift_start || "")} -{" "}
-            {formatRequestTime(row?.requested_rota?.shift_end || "")}(
-            {row?.requested_rota?.date})
-          </p>
+          <div>
+            <Link
+              to={`/employees/${row?.requested_rota?.employee?.id}`}
+              target="_blank"
+              className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
+            >
+              <span>{row?.requested_rota?.employee?.name}</span>
+            </Link>{" "}
+            <p className="text-xs font-bold text-[#007B99]">
+              {formatRequestTime(row?.requested_rota?.shift_start || "")} -{" "}
+              {formatRequestTime(row?.requested_rota?.shift_end || "")}(
+              {row?.requested_rota?.date})
+            </p>
+          </div>
         );
       },
     },
@@ -53,11 +62,20 @@ export const getColumns = ({
       width: 240,
       render: (row) => {
         return (
-          <p className="text-xs font-bold text-[#BA1A1A]">
-            {formatRequestTime(row?.my_rota?.shift_start || "")} -{" "}
-            {formatRequestTime(row?.my_rota?.shift_end || "")}(
-            {row?.my_rota?.date})
-          </p>
+          <div>
+            <Link
+              to={`/employees/${row?.my_rota?.employee?.id}`}
+              target="_blank"
+              className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
+            >
+              <span>{row?.my_rota?.employee?.name}</span>
+            </Link>{" "}
+            <p className="text-xs font-bold text-[#BA1A1A]">
+              {formatRequestTime(row?.my_rota?.shift_start || "")} -{" "}
+              {formatRequestTime(row?.my_rota?.shift_end || "")}(
+              {row?.my_rota?.date})
+            </p>
+          </div>
         );
       },
     },
