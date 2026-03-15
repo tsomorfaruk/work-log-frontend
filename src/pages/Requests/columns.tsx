@@ -2,9 +2,11 @@ import { TableColumn } from "@/components/common/Table";
 import { RequestType } from "@/models/Requests/common";
 import { SwapRequestItem } from "@/models/Requests/swap";
 import { LeaveRequestItem } from "@/models/Requests/leave";
+import { HandoverRequestItem } from "@/models/Requests/handover";
 import SwapActionColumn from "./libs/swapActionColumn";
 import { Link } from "react-router-dom";
 import LeaveActionColumn from "./libs/leaveActionColumn";
+import HandoverActionColumn from "./libs/handoverActionColumn";
 import { Image } from "@/components/ui/image";
 
 const formatRequestTime = (time: string): string => {
@@ -164,6 +166,64 @@ export const getColumns = ({
     },
   ];
 
+  const handoversColumn: TableColumn<HandoverRequestItem>[] = [
+    {
+      key: "requested_by",
+      header: "Employee",
+      width: 200,
+      render: (row) => {
+        return (
+          <Link
+            to={`/employees/${row?.rota?.employee?.id}`}
+            target="_blank"
+            className="flex gap-1.5 items-center text-sm 2xl:text-base leading-none text-black hover:underline"
+          >
+            <span>{row?.rota?.employee?.name ?? row?.requested_by}</span>
+          </Link>
+        );
+      },
+    },
+    {
+      key: "rota",
+      header: "Shift Details",
+      width: 240,
+      render: (row) => {
+        return (
+          <div>
+            <p className="text-xs font-bold text-[#007B99]">
+              {formatRequestTime(row?.rota?.shift_start || "")} -{" "}
+              {formatRequestTime(row?.rota?.shift_end || "")} ({row?.rota?.date})
+            </p>
+            <p className="text-xs text-[#454545] capitalize mt-0.5">
+              {row?.rota?.shift_type} shift
+            </p>
+          </div>
+        );
+      },
+    },
+    {
+      key: "requested_at",
+      header: "Requested At",
+      width: 180,
+      render: (row) => (
+        <p className="text-sm text-[#454545]">
+          {new Date(row?.requested_at).toLocaleString()}
+        </p>
+      ),
+    },
+    {
+      key: "id",
+      header: "Actions",
+      width: 160,
+      render: (row) => {
+        if (!row?.approved_at)
+          return <HandoverActionColumn requestId={row?.id} />;
+      },
+      align: "center",
+    },
+  ];
+
   if (activeTab === "swaps") return swapsColumn;
+  if (activeTab === "handovers") return handoversColumn;
   return leavesColumn;
 };
