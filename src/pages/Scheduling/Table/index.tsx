@@ -149,9 +149,9 @@ export default function Scheduling() {
             </div>
 
             <div>
-              <Button variant="primary" onClick={() => setIsOpen(true)}>
+              {/* <Button variant="primary" onClick={() => setIsOpen(true)}>
                 + New Shift
-              </Button>
+              </Button> */}
 
               {isOpen && <RotaModal isOpen={isOpen} setIsOpen={setIsOpen} />}
             </div>
@@ -188,6 +188,16 @@ export default function Scheduling() {
           </div>
         </div>
       )}
+
+      <div className="flex gap-4 gap-6 justify-end items-center mb-4">
+        <Button variant="primary" onClick={() => setIsOpen(true)}>
+          + New Shift
+        </Button>
+
+        <Button variant="neutral">Upload CSV</Button>
+
+        <Button variant="fancy">AI Generate</Button>
+      </div>
 
       <div>
         <RotaTable

@@ -25,6 +25,18 @@ const PersonalInformation = ({ form }: PersonalInformationProps) => {
           <Input />
         </HookFormItem>
 
+        <HookFormItem name="display_name" label="Display Name" isRequired>
+          <Input />
+        </HookFormItem>
+
+        <HookFormItem name="employee_id" label="Employee ID" isRequired>
+          <Input />
+        </HookFormItem>
+
+        <HookFormItem name="phone" label="Phone" isRequired>
+          <Input />
+        </HookFormItem>
+
         <HookFormItem name="phone" label="Phone" isRequired>
           <Input />
         </HookFormItem>

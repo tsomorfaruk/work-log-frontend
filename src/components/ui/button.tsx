@@ -8,7 +8,8 @@ export type ButtonVariants =
   | "tertiary"
   | "danger"
   | "success"
-  | "neutral";
+  | "neutral"
+  | "fancy";
 
 interface Props extends DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -50,6 +51,8 @@ const Button = (props: Props) => {
           "bg-[#FFDAD6] text-[#93000A]": variant === "danger",
           "bg-[#86EFAC] text-[#166534]": variant === "success",
           "bg-[#CFE6F1] text-[#354A53]": variant === "neutral",
+          "bg-gradient-to-r from-[#007B99] via-[#0891B2] to-[#00BCD4] text-white shadow-lg border-none hover:brightness-110":
+            variant === "fancy",
         },
         className,
       )}

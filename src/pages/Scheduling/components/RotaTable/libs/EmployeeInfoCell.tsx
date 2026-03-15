@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
+import { Image } from "@/components/ui/image";
 import { ScheduleFrequency } from "@/models/Requests/schedule";
 import { TransformedRota } from "@/pages/Scheduling/Table/rota-helper";
 
@@ -38,8 +39,9 @@ const EmployeeInfoCell: React.FC<EmployeeInfoCellProps> = ({
           target="_blank"
           className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline"
         >
-          <img
-            src={row?.employee?.image_url ?? "/images/dummy-user.png"}
+          <Image
+            src={row?.employee?.image_url!}
+            name={row?.employee?.display_name}
             alt="user"
             className="w-6 min-w-6 lg:w-6 lg:min-w-6 h-6 min-h-6 lg:h-6 lg:min-h-6 rounded-full object-cover border border-[#007B99]"
           />

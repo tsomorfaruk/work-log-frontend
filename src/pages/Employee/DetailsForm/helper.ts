@@ -14,6 +14,8 @@ export const setEmployeeDetails = (
     form.setValue("last_name", data?.last_name);
     form.setValue("phone", data?.phone);
     form.setValue("email", data?.email);
+    form.setValue("display_name", data?.display_name);
+    if (data?.employee_id) form.setValue("employee_id", data?.employee_id);
     if (data?.dob) form.setValue("dob", data.dob);
     form.setValue("address", data?.address ?? "");
     // form.setValue("blood_group", data?.blood_group);
@@ -28,7 +30,7 @@ export const setEmployeeDetails = (
     form.setValue("role", data?.roles);
     if (data?.day_of_joining)
       form.setValue("day_of_joining", data.day_of_joining);
-    if (data?.job_type) form.setValue("job_type", data.job_type);
+    if (data?.job_type) form.setValue("job_type", [data.job_type]);
 
     // section - 3
 
@@ -74,7 +76,7 @@ export const formatPayload = ({
 
   if (data?.day_of_joining)
     formData.append("day_of_joining", data.day_of_joining);
-  if (data?.job_type) formData.append("job_type", data.job_type);
+  if (data?.job_type?.[0]) formData.append("job_type", data.job_type?.[0]);
 
   // section - 3
   if (data?.bank_acc_name) formData.append("bank_acc_name", data.bank_acc_name);
@@ -83,6 +85,8 @@ export const formatPayload = ({
   if (data?.bank_routing_number)
     formData.append("bank_routing_number", data.bank_routing_number);
   if (data?.bank_address) formData.append("bank_address", data.bank_address);
+  if (data?.employee_id) formData.append("employee_id", data.employee_id);
+  if (data?.display_name) formData.append("display_name", data.display_name);
 
   // unchanged
 

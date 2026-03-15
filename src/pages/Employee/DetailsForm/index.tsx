@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Image } from "@/components/ui/image";
 
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -116,9 +117,10 @@ const EmployeeDetailsForm = () => {
       <FormProvider {...form}>
         <div className="flex justify-between bg-[#CFE6F1] p-6 mb-6 rounded-tl-3xl rounded-tr-3xl">
           <div className="flex gap-6">
-            <img
-              src={"image source"}
-              alt="uploaded"
+            <Image
+              src={employeeDetails?.data?.user?.image_url!}
+              name={employeeDetails?.data?.user?.display_name}
+              alt="user-image"
               className="w-28 h-28 rounded-3xl object-cover border border-[#007B99]"
             />
 

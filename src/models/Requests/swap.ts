@@ -7,6 +7,7 @@ export interface SwapRequestRota {
   employee: {
     id: number;
     name: string;
+    image_url: string | null;
   };
 }
 

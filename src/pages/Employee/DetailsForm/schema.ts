@@ -5,6 +5,8 @@ export const alterEmployeeSchema = () =>
     first_name: z.string().trim().min(1, "First name is required"),
     last_name: z.string().optional(),
     phone: z.string().trim().min(1, "Phone is required"),
+    display_name: z.string().trim().min(1, "Display name is required"),
+    employee_id: z.string().trim().min(1, "Display name is required"),
     email: z
       .string()
       .trim()
@@ -29,8 +31,10 @@ export const alterEmployeeSchema = () =>
         message: "At least one role is required",
       }),
     day_of_joining: z.string().optional(),
-    job_type: z.string().optional(),
-
+    job_type: z.array(z.string()).optional(),
+    // .refine((val) => Array.isArray(val) && val.length > 0, {
+    //   message: "At least one role is required",
+    // })
     // section - 3
 
     bank_acc_name: z.string().optional(),

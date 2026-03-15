@@ -1,15 +1,29 @@
+import { Image } from "@/components/ui/image";
 import { TableColumn } from "@/components/common/Table";
 import { EmployeeResponse } from "@/models/employee";
 // import Badge from "@/components/common/Badge";
 import ActionColumn from "./libs/employeeModal/libs/actionColumn";
 
-export const getColumns = () => {
-  const columns: TableColumn<EmployeeResponse>[] = [
+export const getColumns = (): TableColumn<EmployeeResponse>[] => {
+  return [
     // { key: "id", header: "ID", width: 80 },
     {
       key: "display_name",
       header: "Name",
       width: 160,
+      render: (row) => {
+        return (
+          <div className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 cursor-pointer">
+            <Image
+              src={row?.image_url!}
+              name={row?.display_name}
+              alt="user"
+              className="w-6 min-w-6 lg:w-6 lg:min-w-6 h-6 min-h-6 lg:h-6 lg:min-h-6 rounded-full object-cover border border-[#007B99]"
+            />
+            <span>{row?.display_name}</span>
+          </div>
+        );
+      },
     },
     {
       key: "branch",
@@ -60,6 +74,4 @@ export const getColumns = () => {
       align: "center",
     },
   ];
-
-  return columns;
 };

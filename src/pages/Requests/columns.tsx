@@ -5,6 +5,7 @@ import { LeaveRequestItem } from "@/models/Requests/leave";
 import SwapActionColumn from "./libs/swapActionColumn";
 import { Link } from "react-router-dom";
 import LeaveActionColumn from "./libs/leaveActionColumn";
+import { Image } from "@/components/ui/image";
 
 const formatRequestTime = (time: string): string => {
   const [h = "00", m = "00"] = time.split(":");
@@ -45,6 +46,12 @@ export const getColumns = ({
               target="_blank"
               className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
             >
+              <Image
+                src={row?.requested_rota?.employee?.image_url!}
+                name={row?.requested_rota?.employee?.name}
+                alt="user"
+                className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#007B99]"
+              />
               <span>{row?.requested_rota?.employee?.name}</span>
             </Link>{" "}
             <p className="text-xs font-bold text-[#007B99]">
@@ -68,6 +75,12 @@ export const getColumns = ({
               target="_blank"
               className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
             >
+              <Image
+                src={row?.my_rota?.employee?.image_url!}
+                name={row?.my_rota?.employee?.name}
+                alt="user"
+                className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#ba1a1a]"
+              />
               <span>{row?.my_rota?.employee?.name}</span>
             </Link>{" "}
             <p className="text-xs font-bold text-[#BA1A1A]">
