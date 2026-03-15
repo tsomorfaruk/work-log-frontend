@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import clsx from "clsx";
 import Button from "../ui/button";
 
@@ -13,6 +14,8 @@ interface TabProps<T = string, V = string> {
   onTabChange?: ({ key, value }: { key: T; value: V | undefined }) => void;
   defaultTab?: T;
   containerClassname?: string;
+  /** When provided, the active tab key is persisted to the URL as ?{urlKey}={tabKey} */
+  urlKey?: string;
 }
 
 export default function Tab<T = string, V = string>({
@@ -20,11 +23,31 @@ export default function Tab<T = string, V = string>({
   onTabChange,
   defaultTab,
   containerClassname,
+  urlKey,
 }: TabProps<T, V>) {
-  const [activeTab, setActiveTab] = useState<T>(defaultTab || tabs[0]?.key);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const resolveInitial = (): T => {
+    if (urlKey) {
+      const fromUrl = searchParams.get(urlKey) as T | null;
+      if (fromUrl && tabs.some((t) => t.key === fromUrl)) return fromUrl;
+    }
+    return defaultTab ?? tabs[0]?.key;
+  };
+
+  const [activeTab, setActiveTab] = useState<T>(resolveInitial);
 
   const handleTabClick = (key: T, value?: V) => {
     setActiveTab(key);
+    if (urlKey) {
+      setSearchParams(
+        (prev) => {
+          prev.set(urlKey, String(key));
+          return prev;
+        },
+        { replace: true },
+      );
+    }
     onTabChange?.({ key, value });
   };
 

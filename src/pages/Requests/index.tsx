@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Tab, { TabItem } from "../../components/common/Tab";
 import {
   RequestType,
@@ -69,14 +70,28 @@ const handoverRequestTabs: TabItem<HandoverRequestTabs>[] = [
 ];
 
 export default function Requests() {
-  const [activeTab, setActiveTab] = useState<RequestType>("swaps");
+  const [searchParams] = useSearchParams();
+
+  const initialTab = (): RequestType => {
+    const t = searchParams.get("tab") as RequestType | null;
+    return t && ["swaps", "leaves", "handovers"].includes(t) ? t : "swaps";
+  };
+
+  const initialStatus = (): RequestStatusEnum | undefined => {
+    const sub = searchParams.get("sub");
+    if (sub) return Number(sub) as RequestStatusEnum;
+    const tab = initialTab();
+    return tab === "handovers" ? RequestStatusEnum.PENDING : undefined;
+  };
+
+  const [activeTab, setActiveTab] = useState<RequestType>(initialTab);
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [currentTab, setCurrentTab] = useState<
     SwapRequestTabs | LeaveRequestTabs | HandoverRequestTabs
   >("all");
 
   const [status, setStatus] = useState<undefined | RequestStatusEnum>(
-    undefined,
+    initialStatus,
   );
 
   console.log("currentTab: ", currentTab); // will be used later based on API
@@ -108,6 +123,7 @@ export default function Requests() {
       return (
         <Tab
           tabs={swapRequestTabs}
+          urlKey="swaps_sub"
           onTabChange={({ key, value }) => {
             setCurrentTab(key as SwapRequestTabs);
             if (value !== "") setStatus(Number(value));
@@ -121,6 +137,7 @@ export default function Requests() {
       return (
         <Tab
           tabs={handoverRequestTabs}
+          urlKey="handovers_sub"
           onTabChange={({ key, value }) => {
             setCurrentTab(key as HandoverRequestTabs);
             if (value !== "") setStatus(Number(value));
@@ -134,6 +151,7 @@ export default function Requests() {
     return (
       <Tab
         tabs={leaveRequestTabs}
+        urlKey="leaves_sub"
         onTabChange={({ key, value }) => {
           setCurrentTab(key as LeaveRequestTabs);
           if (value !== "") setStatus(Number(value));
@@ -173,6 +191,7 @@ export default function Requests() {
         </div>
         <Tab
           tabs={tabs}
+          urlKey="tab"
           onTabChange={({ key }) => {
             setActiveTab(key as RequestType);
             setCurrentPageNo(1);

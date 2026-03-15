@@ -8,10 +8,23 @@ import { Link } from "react-router-dom";
 import LeaveActionColumn from "./libs/leaveActionColumn";
 import HandoverActionColumn from "./libs/handoverActionColumn";
 import { Image } from "@/components/ui/image";
+import Badge from "@/components/common/Badge";
+import { RequestStatusEnum } from "@/services/requests";
 
 const formatRequestTime = (time: string): string => {
   const [h = "00", m = "00"] = time.split(":");
   return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const s = Number(status);
+  if (s === RequestStatusEnum.PENDING)
+    return <Badge variant="primary" containerClassname="w-max mx-auto">Pending</Badge>;
+  if (s === RequestStatusEnum.APPROVED)
+    return <Badge variant="success" containerClassname="w-max mx-auto">Approved</Badge>;
+  if (s === RequestStatusEnum.REJECTED)
+    return <Badge variant="error" containerClassname="w-max mx-auto">Rejected</Badge>;
+  return null;
 };
 
 export const getColumns = ({
@@ -100,6 +113,7 @@ export const getColumns = ({
       width: 160,
       render: (row) => {
         if (!row?.approved_at) return <SwapActionColumn requestId={row?.id} />;
+        return <StatusBadge status={row?.status} />;
       },
       align: "center",
     },
@@ -109,14 +123,21 @@ export const getColumns = ({
     {
       key: "requested_by",
       header: "Employee",
-      width: 160,
+      width: 180,
       render: (row) => {
         return (
           <Link
             to={`/employees/${row?.requested?.employee?.id}`}
-            className="text-base xl:text-base text-black hover:text-[#007B99] hover:underline"
+            target="_blank"
+            className="flex gap-1.5 items-center text-sm 2xl:text-base leading-none text-black hover:underline"
           >
-            {row?.requested?.employee?.name}
+            <Image
+              src={undefined!}
+              name={row?.requested?.employee?.name}
+              alt="user"
+              className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#007B99]"
+            />
+            <span>{row?.requested?.employee?.name}</span>
           </Link>
         );
       },
@@ -124,34 +145,53 @@ export const getColumns = ({
     {
       key: "requested",
       header: "Dates",
-      width: 160,
+      width: 200,
       render: (row) => {
+        const from = row?.requested?.from;
+        const to = row?.requested?.to;
+        const totalDay = row?.requested?.total_day;
+        const isSameDay = from === to;
         return (
-          <p className="text-sm">
-            {row?.requested?.from} - {row?.requested?.to}
-          </p>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-semibold text-[#007B99] bg-[#007B99]/10 px-2 py-0.5 rounded">
+                {from}
+              </span>
+              {!isSameDay && (
+                <>
+                  <span className="text-[#70787C] text-xs">→</span>
+                  <span className="text-xs font-semibold text-[#007B99] bg-[#007B99]/10 px-2 py-0.5 rounded">
+                    {to}
+                  </span>
+                </>
+              )}
+            </div>
+            {totalDay && (
+              <span className="text-[10px] font-medium text-[#454545]">
+                {totalDay} {Number(totalDay) === 1 ? "day" : "days"}
+              </span>
+            )}
+          </div>
         );
       },
     },
     {
       key: "leave_type",
       header: "Types",
-      width: 160,
+      width: 140,
       render: (row) => {
-        return <p className="text-sm">{row?.leave_type}</p>;
+        return <p className="text-sm capitalize">{row?.leave_type}</p>;
       },
     },
     {
       key: "note",
       header: "Reason",
-      width: 160,
+      width: 180,
       render: (row) => {
         return (
-          <>
-            <p className="text-sm xl:text-base leading-none font-semibold text-[#454545]">
-              {row?.note}
-            </p>
-          </>
+          <p className="text-sm xl:text-base leading-none font-semibold text-[#454545]">
+            {row?.note}
+          </p>
         );
       },
     },
@@ -161,6 +201,7 @@ export const getColumns = ({
       width: 160,
       render: (row) => {
         if (!row?.approved_at) return <LeaveActionColumn requestId={row?.id} />;
+        return <StatusBadge status={row?.status} />;
       },
       align: "center",
     },
@@ -172,13 +213,20 @@ export const getColumns = ({
       header: "Employee",
       width: 200,
       render: (row) => {
+        const name = row?.rota?.employee?.name ?? row?.requested_by;
         return (
           <Link
             to={`/employees/${row?.rota?.employee?.id}`}
             target="_blank"
             className="flex gap-1.5 items-center text-sm 2xl:text-base leading-none text-black hover:underline"
           >
-            <span>{row?.rota?.employee?.name ?? row?.requested_by}</span>
+            <Image
+              src={undefined!}
+              name={name}
+              alt="user"
+              className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#007B99]"
+            />
+            <span>{name}</span>
           </Link>
         );
       },
@@ -218,6 +266,7 @@ export const getColumns = ({
       render: (row) => {
         if (!row?.approved_at)
           return <HandoverActionColumn requestId={row?.id} />;
+        return <StatusBadge status={row?.status} />;
       },
       align: "center",
     },
