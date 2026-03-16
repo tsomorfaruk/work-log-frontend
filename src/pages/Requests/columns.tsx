@@ -8,23 +8,11 @@ import { Link } from "react-router-dom";
 import LeaveActionColumn from "./libs/leaveActionColumn";
 import HandoverActionColumn from "./libs/handoverActionColumn";
 import { Image } from "@/components/ui/image";
-import Badge from "@/components/common/Badge";
-import { RequestStatusEnum } from "@/services/requests";
+import StatusBadge from "./libs/statusBadge";
 
 const formatRequestTime = (time: string): string => {
   const [h = "00", m = "00"] = time.split(":");
   return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
-};
-
-const StatusBadge = ({ status }: { status: string }) => {
-  const s = Number(status);
-  if (s === RequestStatusEnum.PENDING)
-    return <Badge variant="primary" containerClassname="w-max mx-auto">Pending</Badge>;
-  if (s === RequestStatusEnum.APPROVED)
-    return <Badge variant="success" containerClassname="w-max mx-auto">Approved</Badge>;
-  if (s === RequestStatusEnum.REJECTED)
-    return <Badge variant="error" containerClassname="w-max mx-auto">Rejected</Badge>;
-  return null;
 };
 
 export const getColumns = ({
@@ -59,10 +47,10 @@ export const getColumns = ({
             <Link
               to={`/employees/${row?.requested_rota?.employee?.id}`}
               target="_blank"
-              className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
+              className="flex gap-1.5 items-center text-sm 2xl:text-base leading-none text-black hover:underline mb-1"
             >
               <Image
-                src={row?.requested_rota?.employee?.image_url!}
+                src={row?.requested_rota?.employee?.image_url ?? ""}
                 name={row?.requested_rota?.employee?.name}
                 alt="user"
                 className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#007B99]"
@@ -88,10 +76,10 @@ export const getColumns = ({
             <Link
               to={`/employees/${row?.my_rota?.employee?.id}`}
               target="_blank"
-              className="flex gap-1.5 items-center mb-1 text-sm 2xl:text-base leading-none text-black mb-1 hover:underline mb-1"
+              className="flex gap-1.5 items-center text-sm 2xl:text-base leading-none text-black hover:underline mb-1"
             >
               <Image
-                src={row?.my_rota?.employee?.image_url!}
+                src={row?.my_rota?.employee?.image_url ?? ""}
                 name={row?.my_rota?.employee?.name}
                 alt="user"
                 className="w-6 min-w-6 h-6 rounded-full object-cover border border-[#ba1a1a]"
@@ -240,7 +228,8 @@ export const getColumns = ({
           <div>
             <p className="text-xs font-bold text-[#007B99]">
               {formatRequestTime(row?.rota?.shift_start || "")} -{" "}
-              {formatRequestTime(row?.rota?.shift_end || "")} ({row?.rota?.date})
+              {formatRequestTime(row?.rota?.shift_end || "")} ({row?.rota?.date}
+              )
             </p>
             <p className="text-xs text-[#454545] capitalize mt-0.5">
               {row?.rota?.shift_type} shift
