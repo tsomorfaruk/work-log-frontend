@@ -188,7 +188,14 @@ export const getColumns = ({
       header: "Actions",
       width: 160,
       render: (row) => {
-        if (!row?.approved_at) return <LeaveActionColumn requestId={row?.id} />;
+        if (!row?.approved_at)
+          return (
+            <LeaveActionColumn
+              requestId={row?.id}
+              requestedFrom={row?.requested?.from}
+              requestedTo={row?.requested?.to}
+            />
+          );
         return <StatusBadge status={row?.status} />;
       },
       align: "center",

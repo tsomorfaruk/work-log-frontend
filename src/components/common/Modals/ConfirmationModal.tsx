@@ -16,6 +16,7 @@ interface ConfirmationModalProps {
   closeOnOutsideClick?: boolean; // default false
   closeOnEscape?: boolean; // default true
   customFooter?: ReactNode;
+  children?: ReactNode;
   actions?: {
     variant: ButtonVariants;
     buttonText: string;
@@ -47,6 +48,7 @@ const ConfirmationModal = ({
   closeOnEscape = true,
   actions,
   note,
+  children,
 }: ConfirmationModalProps) => {
   const [noteValue, setNoteValue] = useState<string | null>(null);
 
@@ -99,6 +101,7 @@ const ConfirmationModal = ({
                 {description}
               </p>
             )}
+            {children}
           </div>
           {note && (
             <div className="flex flex-col justify-start items-start mb-4">

@@ -69,6 +69,20 @@ const handoverRequestTabs: TabItem<HandoverRequestTabs>[] = [
   },
 ];
 
+// Map from tab type → its URL sub-param key
+const subParamKey: Record<RequestType, string> = {
+  swaps: "swaps_sub",
+  leaves: "leaves_sub",
+  handovers: "handovers_sub",
+};
+
+// All sub-tab definitions in one place for lookup
+const allSubTabs = {
+  swaps: swapRequestTabs,
+  leaves: leaveRequestTabs,
+  handovers: handoverRequestTabs,
+};
+
 export default function Requests() {
   const [searchParams] = useSearchParams();
 
@@ -77,18 +91,35 @@ export default function Requests() {
     return t && ["swaps", "leaves", "handovers"].includes(t) ? t : "swaps";
   };
 
-  const initialStatus = (): RequestStatusEnum | undefined => {
-    const sub = searchParams.get("sub");
-    if (sub) return Number(sub) as RequestStatusEnum;
+  const initialCurrentTab = (): SwapRequestTabs | LeaveRequestTabs | HandoverRequestTabs => {
     const tab = initialTab();
-    return tab === "handovers" ? RequestStatusEnum.PENDING : undefined;
+    const subKey = subParamKey[tab];
+    const fromUrl = searchParams.get(subKey);
+    const subTabs = allSubTabs[tab] as TabItem<any>[];
+    const match = fromUrl && subTabs.find((t) => t.key === fromUrl);
+    if (match) return match.key;
+    // handovers defaults to "pending"
+    if (tab === "handovers") return "pending";
+    return "all";
+  };
+
+  const initialStatus = (): RequestStatusEnum | undefined => {
+    const tab = initialTab();
+    const subKey = subParamKey[tab];
+    const fromUrl = searchParams.get(subKey);
+    const subTabs = allSubTabs[tab] as TabItem<any>[];
+    const match = fromUrl && subTabs.find((t) => t.key === fromUrl);
+    if (match && match.value !== "") return Number(match.value) as RequestStatusEnum;
+    // handovers always starts on pending when no sub param
+    if (tab === "handovers") return RequestStatusEnum.PENDING;
+    return undefined;
   };
 
   const [activeTab, setActiveTab] = useState<RequestType>(initialTab);
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [currentTab, setCurrentTab] = useState<
     SwapRequestTabs | LeaveRequestTabs | HandoverRequestTabs
-  >("all");
+  >(initialCurrentTab);
 
   const [status, setStatus] = useState<undefined | RequestStatusEnum>(
     initialStatus,
