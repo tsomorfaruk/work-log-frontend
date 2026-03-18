@@ -375,7 +375,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
             >
               <CustomDatePicker
                 showTimeSelectOnly
-                timeIntervals={60}
+                timeIntervals={1}
                 selected={selectedStartTime}
                 onChange={(date: Date | null) => {
                   const formattedTime = date
@@ -398,7 +398,7 @@ const RotaModal = ({ isOpen, setIsOpen, defaultValue, rotaId }: Props) => {
             >
               <CustomDatePicker
                 showTimeSelectOnly
-                timeIntervals={60}
+                timeIntervals={1}
                 selected={selectedEndTime}
                 onChange={(date: Date | null) => {
                   const formattedTime = date
