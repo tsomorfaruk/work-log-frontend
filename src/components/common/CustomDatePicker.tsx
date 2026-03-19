@@ -12,6 +12,7 @@ import Label from "./Label";
 import { cn } from "@/lib/utils";
 import { convertMomentToDateFnsFormat } from "@/lib/date-helpers";
 import { CalenderIcon } from "@/assets/icons/CalenderIcon";
+import TimeSpinner from "@/components/common/TimeSpinner";
 
 interface IDateProps {
   label?: string;
@@ -166,6 +167,31 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
       return null;
     }, [selected, showTimeSelectOnly]);
 
+    // ── Drum-style time spinner for time-only mode ──────────────────────────
+    if (showTimeSelectOnly) {
+      return (
+        <div className={cn("relative", className)} ref={ref}>
+          <Label
+            className={cn(
+              "font-medium text-gray-700 mb-0.5",
+              labelClassName,
+              size === "sm" ? "text-xs" : "text-sm",
+            )}
+            isRequired={isRequired}
+          >
+            {label}
+          </Label>
+          <TimeSpinner
+            value={parsedSelected}
+            onChange={onChange}
+            hasError={hasError}
+            disabled={disabled}
+            size={size}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className={cn("relative", className)} ref={ref}>
         <Label
@@ -205,7 +231,7 @@ const CustomDatePicker = React.forwardRef<HTMLDivElement, IDateProps>(
             showTimeSelectOnly={showTimeSelectOnly}
             timeIntervals={timeIntervals}
             timeCaption={timeCaption}
-            timeFormat={resolvedTimeFormat} // 👈 Added this to control dropdown format
+            timeFormat={resolvedTimeFormat}
             dateFormat={resolvedDateFormat}
             showMonthDropdown={!showTimeSelectOnly}
             showYearDropdown={!showTimeSelectOnly}
