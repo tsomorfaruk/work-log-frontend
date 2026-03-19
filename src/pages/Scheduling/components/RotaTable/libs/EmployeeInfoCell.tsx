@@ -53,7 +53,8 @@ const EmployeeInfoCell: React.FC<EmployeeInfoCellProps> = ({
             "text-[#BA1A1A] font-semibold": completedWorkTime < totalWorkTime,
           })}
         >
-          {completedWorkTime}/{totalWorkTime}
+          {Math.floor(completedWorkTime * 100) / 100}/
+          {Math.floor(totalWorkTime * 100) / 100}
         </p>
       </div>
     </td>
