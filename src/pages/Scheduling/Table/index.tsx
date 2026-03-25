@@ -189,7 +189,7 @@ export default function Scheduling() {
         </div>
       )}
 
-      <div className="flex gap-4 gap-6 justify-end items-center mb-4">
+      <div className="flex flex-wrap gap-4 gap-6 lg:justify-end items-center mb-4">
         <Button variant="primary" onClick={() => setIsOpen(true)}>
           + New Shift
         </Button>
