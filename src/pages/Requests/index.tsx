@@ -26,6 +26,8 @@ import SummaryCard from "./summaryCard";
 import { SunIcon } from "@/assets/icons/SunIcon";
 import { SwapIcon } from "@/assets/icons/SwapIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
+import { ReloadIcon } from "@/assets/icons";
+import Button from "@/components/ui/button";
 
 const tabs: TabItem<RequestType>[] = [
   { title: "Swap", key: "swaps" },
@@ -91,7 +93,10 @@ export default function Requests() {
     return t && ["swaps", "leaves", "handovers"].includes(t) ? t : "swaps";
   };
 
-  const initialCurrentTab = (): SwapRequestTabs | LeaveRequestTabs | HandoverRequestTabs => {
+  const initialCurrentTab = ():
+    | SwapRequestTabs
+    | LeaveRequestTabs
+    | HandoverRequestTabs => {
     const tab = initialTab();
     const subKey = subParamKey[tab];
     const fromUrl = searchParams.get(subKey);
@@ -109,7 +114,8 @@ export default function Requests() {
     const fromUrl = searchParams.get(subKey);
     const subTabs = allSubTabs[tab] as TabItem<any>[];
     const match = fromUrl && subTabs.find((t) => t.key === fromUrl);
-    if (match && match.value !== "") return Number(match.value) as RequestStatusEnum;
+    if (match && match.value !== "")
+      return Number(match.value) as RequestStatusEnum;
     // handovers always starts on pending when no sub param
     if (tab === "handovers") return RequestStatusEnum.PENDING;
     return undefined;
@@ -127,15 +133,19 @@ export default function Requests() {
 
   console.log("currentTab: ", currentTab); // will be used later based on API
 
-  const { data, isLoading, isFetching, isError } = useGetRequestListQuery({
-    page: currentPageNo,
-    type: activeTab,
-    status,
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetRequestListQuery({
+      page: currentPageNo,
+      type: activeTab,
+      status,
+    });
 
   const columns = getColumns({ activeTab });
 
-  const tableData: SwapRequestItem[] | LeaveRequestItem[] | HandoverRequestItem[] =
+  const tableData:
+    | SwapRequestItem[]
+    | LeaveRequestItem[]
+    | HandoverRequestItem[] =
     activeTab === "swaps"
       ? ((data as SwapRequestListResponse)?.data?.swaps?.data ?? [])
       : activeTab === "handovers"
@@ -195,7 +205,10 @@ export default function Requests() {
 
   return (
     <div>
-      <h1 className="section-title mb-6">Requests &amp; Approvals</h1>
+      <div className="reload-btn-div-wrapper">
+        <Button icon={<ReloadIcon />} onClick={refetch} title="Refresh" />
+        <h1 className="section-title">Requests &amp; Approvals</h1>
+      </div>
 
       <div className="mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 mb-6">

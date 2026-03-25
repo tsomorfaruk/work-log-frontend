@@ -34,6 +34,10 @@
     @apply text-xl lg:text-2xl 2xl:text-[28px] leading-tight font-bold text-[#111827];
   }
 
+  .reload-btn-div-wrapper {
+    @apply flex flex-wrap gap-2 items-center mb-6;
+  }
+
   .form-subsection-title {
     @apply text-lg lg:text-xl font-bold text-black mb-6;
   }

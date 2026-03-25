@@ -23,6 +23,7 @@ import {
 } from "@/services/shared";
 import { useGetFloorListQuery } from "@/services/floor";
 import FloorDepartmentFilter from "./components/FloorDepartmentFilter";
+import { ReloadIcon } from "@/assets/icons";
 
 export default function Scheduling() {
   const getScheduleFrequencyOptions = (): Option<ScheduleFrequency>[] => {
@@ -48,14 +49,15 @@ export default function Scheduling() {
   const { data: floorData } = useGetFloorListQuery({});
   const { data: departmentData } = useGetDepartmentListQuery();
 
-  const { data, isLoading, isFetching, isError } = useGetSchedulingListQuery({
-    frequency,
-    date: startingDate,
-    page: currentPageNo,
-    // branch_id: branchId,
-    department_id: departmentId,
-    floor_id: floorId,
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetSchedulingListQuery({
+      frequency,
+      date: startingDate,
+      page: currentPageNo,
+      // branch_id: branchId,
+      department_id: departmentId,
+      floor_id: floorId,
+    });
 
   if (!data) return;
 
@@ -66,7 +68,10 @@ export default function Scheduling() {
 
   return (
     <div>
-      <h1 className="section-title mb-6">Schedule Planner</h1>
+      <div className="reload-btn-div-wrapper">
+        <Button icon={<ReloadIcon />} onClick={refetch} title="Refresh" />
+        <h1 className="section-title">Schedule Planner</h1>
+      </div>
 
       {isFetching && !data ? (
         <FormSkeleton itemCount={1} columns={2} containerClassname="mb-6" />

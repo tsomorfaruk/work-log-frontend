@@ -8,21 +8,27 @@ import { useGetUserListQuery } from "@/services/employee";
 import EmployeeModal from "./libs/employeeModal";
 import Button from "@/components/ui/button";
 import { getColumns } from "./columns";
+import { ReloadIcon } from "@/assets/icons";
 
 export default function Employees() {
   // const [value, setValue] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentPageNo, setCurrentPageNo] = useState(1);
 
-  const { data, isLoading, isFetching, isError } = useGetUserListQuery({
-    page: currentPageNo,
-  });
+  const { data, isLoading, isFetching, isError, refetch } = useGetUserListQuery(
+    {
+      page: currentPageNo,
+    },
+  );
   const columns = getColumns();
 
   return (
     <div className="mb-10">
       <div className="flex flex-wrap justify-between gap-3 lg:gap-6 items-center mb-6 lg:mb-10">
-        <h1 className="section-title">Employee List</h1>
+        <div className="reload-btn-div-wrapper">
+          <Button icon={<ReloadIcon />} onClick={refetch} title="Refresh" />
+          <h1 className="section-title">Employee List</h1>
+        </div>
 
         <div className="flex gap-6 items-center">
           {/* <Dropdown
