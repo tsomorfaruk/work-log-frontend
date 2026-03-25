@@ -15,6 +15,12 @@ export const alterEmployeeSchema = () =>
     dob: z.string().optional(),
     address: z.string().trim().optional(),
     blood_group: z.array(z.string()).optional(),
+    floor_id: z
+      .array(z.number().nonnegative())
+      .optional()
+      .refine((val) => Array.isArray(val) && val.length > 0, {
+        message: "Floor is required",
+      }),
     // section - 2
 
     department_id: z

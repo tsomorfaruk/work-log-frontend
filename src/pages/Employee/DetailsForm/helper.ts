@@ -20,6 +20,7 @@ export const setEmployeeDetails = (
     form.setValue("address", data?.address ?? "");
     // form.setValue("blood_group", data?.blood_group);
     form.setValue("blood_group", data?.blood_group ? [data.blood_group] : []);
+    if (data?.floor_id) form.setValue("floor_id", [+data.floor_id]);
 
     // section - 2
 
@@ -65,6 +66,8 @@ export const formatPayload = ({
   formData.append("address", data.address ?? "");
   if (data?.dob) formData.append("dob", data?.dob);
   if (data?.blood_group) formData.append("blood_group", data?.blood_group?.[0]);
+  if (data?.floor_id?.[0])
+    formData.append("floor_id", String(data.floor_id[0]));
 
   // section - 2
 

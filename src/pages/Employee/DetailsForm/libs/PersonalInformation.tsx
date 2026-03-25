@@ -7,12 +7,18 @@ import Dropdown from "@/components/ui/dropdown";
 import { getBloodGroupOptions } from "@/lib/shared-static-data";
 import moment from "moment";
 import { TAlterEmployeeSchema } from "../schema";
+import { useGetFloorListQuery } from "@/services/floor";
+import { convertToOptions } from "@/lib/dropdown";
 
 interface PersonalInformationProps {
   form: UseFormReturn<TAlterEmployeeSchema>;
 }
 
 const PersonalInformation = ({ form }: PersonalInformationProps) => {
+  const { data: floorData, isLoading: isLoadingFloors } = useGetFloorListQuery(
+    {},
+  );
+
   return (
     <div className="p-6">
       <h5 className="form-subsection-title">Personal Information</h5>
@@ -65,6 +71,26 @@ const PersonalInformation = ({ form }: PersonalInformationProps) => {
         <HookFormItem name="blood_group" label="Blood Group">
           <Dropdown options={getBloodGroupOptions()} isSearchable />
         </HookFormItem>
+
+        <div>
+          {(floorData?.data?.floors?.data?.length ?? 0) > 1 && (
+            <HookFormItem
+              name="floor_id"
+              label="Floor"
+              className="col-span-1 xl:col-span-3 lg:col-span-3"
+              isRequired
+            >
+              <Dropdown
+                options={convertToOptions(floorData?.data?.floors?.data, {
+                  labelKey: "code_name",
+                  valueKey: "id",
+                })}
+                isLoading={isLoadingFloors}
+                placeholder="Select a floor"
+              />
+            </HookFormItem>
+          )}
+        </div>
 
         <HookFormItem name="address" label="Address" className="col-span-2">
           <Textarea className="input-class" />

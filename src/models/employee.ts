@@ -90,7 +90,10 @@ export interface EmployeeDetailsResponse extends ApiResponse {
       display_name: string;
       email: string;
       phone: string;
-      designation: string;
+      designation: {
+        id: number;
+        name: string;
+      };
       image_url: string | null;
       is_active: boolean;
       roles: string[];

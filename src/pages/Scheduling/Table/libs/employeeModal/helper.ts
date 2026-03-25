@@ -4,7 +4,7 @@ import { TAlterEmployeeSchema } from "./schema";
 
 export const setEmployeeDetails = (
   employeeDetails: EmployeeDetailsResponse | undefined,
-  form: UseFormReturn<TAlterEmployeeSchema>
+  form: UseFormReturn<TAlterEmployeeSchema>,
 ) => {
   if (employeeDetails?.data?.user) {
     const data = employeeDetails.data.user;
@@ -14,14 +14,14 @@ export const setEmployeeDetails = (
 
     form.setValue(
       "department_id",
-      data?.department?.id ? [data.department.id] : []
+      data?.department?.id ? [data.department.id] : [],
     );
     form.setValue("role", data?.roles);
 
     form.setValue("phone", data?.phone);
     form.setValue("email", data?.email);
 
-    form.setValue("designation", data?.designation);
+    form.setValue("designation", String(data?.designation?.id));
     form.setValue("is_active", [data?.is_active ? 1 : 0]);
     form.setValue("password", data?.password);
     form.setValue("password_confirmation", data?.password_confirmation);

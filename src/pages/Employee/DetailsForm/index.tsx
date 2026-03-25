@@ -137,7 +137,7 @@ const EmployeeDetailsForm = () => {
                 )}
                 {employeeDetails?.data?.user?.designation && (
                   <Badge variant="primary">
-                    {employeeDetails.data.user.designation}
+                    {employeeDetails.data.user.designation?.name}
                   </Badge>
                 )}
               </div>

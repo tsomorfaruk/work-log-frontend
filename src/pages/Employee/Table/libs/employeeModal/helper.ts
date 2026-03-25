@@ -23,7 +23,7 @@ export const setEmployeeDetails = (
 
     form.setValue(
       "designation",
-      data?.designation ? [Number(data.designation)] : [],
+      data?.designation?.id ? [Number(data.designation.id)] : [],
     );
     form.setValue("is_active", [data?.is_active ? 1 : 0]);
     form.setValue("password", data?.password);
