@@ -105,8 +105,9 @@ const EmployeeModal = ({ employeeId, isOpen, setIsOpen }: Props) => {
       "is_active",
       data.is_active ? String(data.is_active[0]) : "0",
     );
-    formData.append("password", data.password ?? "");
-    formData.append("password_confirmation", data.password_confirmation ?? "");
+    if (data?.password) formData.append("password", data.password);
+    if (data?.password_confirmation)
+      formData.append("password_confirmation", data.password_confirmation);
     formData.append("address", data.address ?? "");
 
     // ---- update
